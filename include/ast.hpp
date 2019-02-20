@@ -2,11 +2,10 @@
 #define ast_hpp
 
 #include "ast/_expression.hpp"
-#include "ast/ast_primitives.hpp"
-#include "ast/ast_operators.hpp"
-#include "ast/ast_functions.hpp"
+#include "ast/translation_unit.hpp"
+#include "ast/te.hpp"
 
 
-extern const Expression *parseAST();
+extern const expression * parseAST();
 
 #endif

@@ -2,3 +2,4 @@ working
 bin
 .idea
 _playground
+*.out

@@ -5,24 +5,24 @@
 #include <iostream>
 #include <sstream>
 
-class Expression;
+class expression;
 
-typedef const Expression *ExpressionPtr;
+typedef const expression *astPtr;
 
-class Expression
+class expression
 {
 public:
-    virtual ~Expression()
+    virtual ~expression()
     {}
 
     //! Tell and expression to print itself to the given stream
-    virtual void print(std::ostream &dst) const =0;
+//    virtual void print(std::ostream &dst) const =0;
 
     //! convert ast to python
-    virtual double python( ) const
+    virtual void py(std::string& dst) const
     { throw std::runtime_error("Not implemented."); }
 
-    virtual double mips( ) const
+    virtual void mp() const
     { throw std::runtime_error("Not implemented."); }
 };
 
