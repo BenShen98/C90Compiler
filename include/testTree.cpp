@@ -57,6 +57,27 @@ int main(){
             );
 
     ast->py(pythonCode);
+    std::cout<<pythonCode<<"\n";
 
+
+    // ((1<<2)and(a*(xx+yy)))
+    ast=new algebra(AND_OP,
+            new algebra(
+                    LEFT_OP,
+                    new te("1"),
+                    new te("2")
+                    ),
+            new algebra(
+                    MUL,
+                    new te("a"),
+                    new algebra(
+                            ADD,
+                            new te("xx"),
+                            new te("yy")
+                            )
+                    )
+            );
+
+    ast->py(pythonCode);
     std::cout<<pythonCode<<"\n";
 }

@@ -27,6 +27,7 @@
 #include "ast/statement_list.hpp"
 #include "ast/te.hpp"
 #include "ast/translation_unit.hpp"
+#include "ast/algebra.hpp"
 
 
 
