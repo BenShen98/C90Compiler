@@ -41,7 +41,7 @@ public:
         declarator->py(func);
 
         compound_statement->py(body);
-//        indent(body);
+        indent(body);
 
         dst = "def " + func + ":\n" + body;
 

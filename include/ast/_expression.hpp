@@ -1,13 +1,13 @@
-#ifndef ast_expression_hpp
-#define ast_expression_hpp
+#ifndef ast_hpp
+#define ast_hpp
 
 #include <string>
 #include <iostream>
 #include <sstream>
 
-class expression;
+class ast;
 
-typedef const expression *astPtr;
+typedef const ast *astPtr;
 inline void notImplemented(){ throw std::runtime_error("Not implemented."); }
 
 void indent(std::string& str){
@@ -19,10 +19,10 @@ void indent(std::string& str){
     }
 }
 
-class expression
+class ast
 {
 public:
-    virtual ~expression()
+    virtual ~ast()
     {}
 
     //! Tell and expression to print itself to the given stream

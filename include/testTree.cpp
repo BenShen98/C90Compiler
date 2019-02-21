@@ -32,21 +32,21 @@ int main(){
             )
     );
 
-    ast=new translation_unit(
-                new external_declaration(
-                        0,
-                        new function_definition(
-                                new declarator(
-                                        new direct_declarator(
-                                                3,
-                                                new direct_declarator("main"),
-                                                NULL
-                                                )
-                                        ),
-                                        new te("statements etc")
-                                )
-                        )
-            );
+//    ast=new translation_unit(
+//                new external_declaration(
+//                        0,
+//                        new function_definition(
+//                                new declarator(
+//                                        new direct_declarator(
+//                                                3,
+//                                                new direct_declarator("main"),
+//                                                NULL
+//                                                )
+//                                        ),
+//                                        new te("statements etc")
+//                                )
+//                        )
+//            );
 
     ast->py(pythonCode);
 

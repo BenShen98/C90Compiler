@@ -13,8 +13,7 @@
 #include "ast/te.hpp"
 #include "ast/external_declaration.hpp"
 #include "ast/function_definition.hpp"
-#include "ast/declarator.hpp"
-#include "ast/direct_declarator.hpp"
+
 
 
 
