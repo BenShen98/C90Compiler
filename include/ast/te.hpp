@@ -14,7 +14,7 @@ public:
 
 
     void py(std::string& dst) const override{
-        dst=dst+" "+str;
+        dst=str;
     }
 
     void mp() const override{
