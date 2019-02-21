@@ -1,13 +1,14 @@
-#ifndef ast_hpp
-#define ast_hpp
+#ifndef ast_abs_hpp
+#define ast_abs_hpp
 
 #include <string>
 #include <iostream>
 #include <sstream>
 
-class ast;
+class ast_abs;
 
-typedef const ast *astPtr;
+typedef const ast_abs * astPtr;
+
 inline void notImplemented(){ throw std::runtime_error("Not implemented."); }
 
 void indent(std::string& str){
@@ -19,10 +20,10 @@ void indent(std::string& str){
     }
 }
 
-class ast
+class ast_abs
 {
 public:
-    virtual ~ast()
+    virtual ~ast_abs()
     {}
 
     //! Tell and expression to print itself to the given stream

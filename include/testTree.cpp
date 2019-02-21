@@ -22,31 +22,39 @@ int main(){
     std::string pythonCode;
 
 
-    ast=new translation_unit(
-            new external_declaration(
-                    0,
-                    new function_definition(
-                            new te("statements etc"),
-                            new te("statements etc")
-                    )
-            )
-    );
+//    ast= new te("statements etc");
 
-//    ast=new translation_unit(
-//                new external_declaration(
-//                        0,
-//                        new function_definition(
-//                                new declarator(
-//                                        new direct_declarator(
-//                                                3,
-//                                                new direct_declarator("main"),
-//                                                NULL
-//                                                )
-//                                        ),
-//                                        new te("statements etc")
-//                                )
-//                        )
-//            );
+    ast=new translation_unit(
+                new external_declaration(
+                        0,
+                        new function_definition(
+                                new declarator(
+                                        new direct_declarator(
+                                                3,
+                                                new direct_declarator("main"),
+                                                NULL
+                                                )
+                                        ),
+                                        new compound_statement(
+                                                new declaration_list(
+                                                        new declaration(
+                                                                new te("declaration_specifiers"),
+                                                                new init_declarator_list(
+                                                                        new init_declarator(
+                                                                                new direct_declarator(
+                                                                                        "x"
+                                                                                        )
+                                                                                )
+                                                                        )
+                                                                )
+                                                        ),
+                                                new statement_list(
+                                                        new jump_statement(RETURN)
+                                                        )
+                                                )
+                                )
+                        )
+            );
 
     ast->py(pythonCode);
 

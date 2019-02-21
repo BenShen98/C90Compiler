@@ -12,9 +12,11 @@ jump_statement
 	;
  */
 
-enum jump_type = {GOTO, CONTINUE,BREAK,RETURN };
+enum jump_type {GOTO, CONTINUE,BREAK,RETURN };
 
-class jump_statement: public expression{
+
+class jump_statement: public ast_abs{
+
     jump_type type;
     astPtr exp=0;
 
@@ -30,7 +32,7 @@ public:
                     exp->py(e);
                     dst="return " + e;
                 }else{
-                    dst="return"
+                    dst="return";
                 }
                 break;
 

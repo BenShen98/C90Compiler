@@ -1,7 +1,7 @@
 #ifndef ast_initializer
 #define ast_initializer
 
-#include "_expression.hpp"
+#include "_ast_abs.hpp"
 /*
 initializer
 0	: assignment_expression
@@ -11,7 +11,7 @@ initializer
 
  */
 
-class initializer: public expression{
+class initializer: public ast_abs{
     int type;
     astPtr data;
 

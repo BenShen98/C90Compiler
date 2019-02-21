@@ -1,7 +1,7 @@
 #ifndef ast_assignment_expression
 #define ast_assignment_expression
 
-#include "_expression.hpp"
+#include "_ast_abs.hpp"
 /*
 assignment_expression
 0	: conditional_expression
@@ -10,7 +10,7 @@ assignment_expression
 
  */
 
-class assignment_expression: public expression{
+class assignment_expression: public ast_abs{
     astPtr expression;
     astPtr assignment_operator=0;
     astPtr assignment_exp;

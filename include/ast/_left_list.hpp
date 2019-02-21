@@ -1,7 +1,7 @@
 #ifndef ast_left_associative_list
 #define ast_left_associative_list
 
-#include "_expression.hpp"
+#include "_ast_abs.hpp"
 
 /*
  * left associative list
@@ -11,7 +11,7 @@ LIST
 	;
  */
 
-class left_list: public expression{
+class left_list: public ast_abs{
     astPtr list=0;   //can only be translation_unit
     astPtr element;    //can only be external_declaration
 
@@ -26,13 +26,16 @@ public:
 
     virtual void py(std::string& dst) const override{
         std::string e, l;
-        element->py(l);
+        element->py(e);
 
         if(list!=NULL){
             list->py(l);
+            dst = l + '\n' + e;
+        }else{
+            dst=e;
         }
 
-        dst = l + '\n' + e;
+
 
     }
 

@@ -1,7 +1,7 @@
 #ifndef ast_function_definition
 #define ast_function_definition
 
-#include "_expression.hpp"
+#include "_ast_abs.hpp"
 
 /*
 function_definition
@@ -16,7 +16,7 @@ function_definition
 
 
 
-class function_definition: public expression{
+class function_definition: public ast_abs{
     int type;
     astPtr declaration_specifiers;
     astPtr declarator;

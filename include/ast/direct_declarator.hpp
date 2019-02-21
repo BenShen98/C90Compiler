@@ -1,7 +1,7 @@
 #ifndef ast_direct_declarator
 #define ast_direct_declarator
 
-#include "_expression.hpp"
+#include "_ast_abs.hpp"
 #include <string>
 /*
 direct_declarator
@@ -16,7 +16,7 @@ direct_declarator
 	;
  */
 
-class direct_declarator: public expression{
+class direct_declarator: public ast_abs{
     int type;
     astPtr right;
 

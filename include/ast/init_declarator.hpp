@@ -1,7 +1,7 @@
 #ifndef ast_init_declarator
 #define ast_init_declarator
 
-#include "_expression.hpp"
+#include "_ast_abs.hpp"
 #include <iostream>
 /*
 init_declarator
@@ -9,7 +9,7 @@ init_declarator
 	| declarator '=' initializer
  */
 
-class init_declarator: public expression{
+class init_declarator: public ast_abs{
     astPtr declarator;
     astPtr initializer=0;
 
@@ -30,7 +30,7 @@ public:
         if(initializer==NULL){
             dst=d;
         }else{
-            initializer-py(i);
+            initializer->py(i);
             dst = d + '=' + i;
         }
     }

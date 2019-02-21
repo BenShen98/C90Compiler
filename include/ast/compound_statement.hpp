@@ -1,7 +1,7 @@
 #ifndef ast_compound_statement
 #define ast_compound_statement
 
-#include "_expression.hpp"
+#include "_ast_abs.hpp"
 #include <string>
 /*
 compound_statement
@@ -12,7 +12,7 @@ compound_statement
 	;
  */
 
-class compound_statement: public expression{
+class compound_statement: public ast_abs{
     astPtr declaration_list=0;
     astPtr statement_list=0;
 

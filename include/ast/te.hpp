@@ -1,11 +1,11 @@
-#ifndef te_x
-#define te_x
+#ifndef te_
+#define te_
 
 #include <string>
 #include <iostream>
-#include "_expression.hpp"
+#include "_ast_abs.hpp"
 
-class te: public expression{
+class te: public ast_abs{
     std::string str;
 
 

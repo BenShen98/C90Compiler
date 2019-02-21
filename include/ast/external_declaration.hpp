@@ -1,7 +1,7 @@
 #ifndef ast_external_declaration
 #define ast_external_declaration
 
-#include "_expression.hpp"
+#include "_ast_abs.hpp"
 
 /*
 external_declaration
@@ -9,7 +9,7 @@ external_declaration
 1	| declaration
  */
 
-class external_declaration: public expression{
+class external_declaration: public ast_abs{
     int type;
     astPtr data;
 

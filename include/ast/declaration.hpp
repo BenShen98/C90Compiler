@@ -1,7 +1,7 @@
 #ifndef ast_declaration
 #define ast_declaration
 
-#include "_expression.hpp"
+#include "_ast_abs.hpp"
 
 /*
 declaration
@@ -10,7 +10,7 @@ declaration
 	;
  */
 
-class declaration: public expression{
+class declaration: public ast_abs{
     astPtr declaration_specifiers;
     astPtr init_declarator_list=0;
 

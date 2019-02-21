@@ -1,7 +1,7 @@
 #ifndef ast_declarator
 #define ast_declarator
 
-#include "_expression.hpp"
+#include "_ast_abs.hpp"
 #include <iostream>
 /*
 declarator
@@ -10,7 +10,7 @@ declarator
 	;
  */
 
-class declarator: public expression{
+class declarator: public ast_abs{
     astPtr pointer;
     astPtr direct_declarator;
 
