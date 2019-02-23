@@ -4,3 +4,4 @@ bin
 _playground
 *.out
 *.temp
+output
