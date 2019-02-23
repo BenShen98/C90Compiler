@@ -4,9 +4,9 @@
 #include "_ast_abs.hpp"
 
 /*
-expression_statement
-	: ';'
-	| expression ';'
+external_declaration
+	: function_definition
+	| declaration
 	;
  */
 

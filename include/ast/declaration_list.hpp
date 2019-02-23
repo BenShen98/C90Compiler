@@ -4,9 +4,9 @@
 #include "_left_list.hpp"
 
 /*
-translation_unit
-	: external_declaration
-	| translation_unit external_declaration
+declaration
+	: declaration_specifiers ';'
+	| declaration_specifiers init_declarator_list ';'
 	;
  */
 

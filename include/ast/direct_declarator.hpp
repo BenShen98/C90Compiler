@@ -5,13 +5,13 @@
 #include <string>
 /*
 direct_declarator
-0	: IDENTIFIER                                        DONE
-1	| '(' declarator ')'                                DONE
+0	: IDENTIFIER
+1	| '(' declarator ')'
 2	| direct_declarator '[' constant_expression ']'
 2	| direct_declarator '[' ']'
-3	| direct_declarator '(' parameter_type_list ')'     (K&R-style ?)
-3	| direct_declarator '(' identifier_list ')'
-3	| direct_declarator '(' ')'                         DONE
+3	| direct_declarator '(' parameter_type_list ')'
+X	| direct_declarator '(' identifier_list ')'         (K&R-style) REMOVED
+3	| direct_declarator '(' ')'
 	;
 	;
  */
@@ -37,23 +37,24 @@ public:
 
     void py(std::string& dst) const override{
         std::string s;
+        right->py(s);
+
         switch (type){
-            case 0: //IDENTIFIER
+            case 0: //variable deceleration
                 dst=identifier;
                 break;
-            case 1:
-                right->py(s);
+            case 1: //function deceleration WITHOUT prototype
                 dst = '(' + s + ')';
-            case 3:
-                if(right==0){   //direct_declarator '(' ')'
-                    left->py(s);
-                    dst = s + "()";
-                }else{
-                    notImplemented();
-                }
                 break;
-            default:
+
+            case 2: //array deceleration
                 notImplemented();
+                break;
+
+            case 3:  //function deceleration (prototype) (NOT definition)
+                //ignore all function deceleration in python
+                //python DOES NOT support function deceleration
+                break;
         }
 
     }
