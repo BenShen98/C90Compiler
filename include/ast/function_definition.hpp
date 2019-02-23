@@ -5,28 +5,24 @@
 
 /*
 function_definition
-0 : declaration_specifiers declarator declaration_list compound_statement     (K&R-style ?)  int foo(a, b) int a; double b; { ... }
-1 | declaration_specifiers declarator compound_statement                      int, main(int a, ...), {...}
-2 | declarator declaration_list compound_statement                            (K&R-style ?)
-3 | declarator compound_statement                                             main(int a, ...), {...}, ASSUME INT https://stackoverflow.com/questions/30542092/function-without-return-type-specified-in-c
+ : ~~declaration_specifiers declarator declaration_list compound_statement~~     REMOVED (K&R-style)  int foo(a, b) int a; double b; { ... }
+ | declaration_specifiers declarator compound_statement                      int, main(int a, ...), {...}
+ | ~~declarator declaration_list compound_statement~~                            REMOVED (K&R-style)
+ | declarator compound_statement                                             main(int a, ...), {...}, ASSUME INT https://stackoverflow.com/questions/30542092/function-without-return-type-specified-in-c
 ;
-
- simplify logic if dont need KR style
 */
 
 
 
 class function_definition: public ast_abs{
-    int type;
     astPtr declaration_specifiers;
     astPtr declarator;
-//    astPtr declaration_list;
     astPtr compound_statement;
 
 
 public:
-//    function_definition(astPtr a, astPtr b, astPtr c):declaration_specifiers(a),declarator(b), compound_statement(c), type(1){}
-    function_definition(astPtr b, astPtr c):declarator(b), compound_statement(c), type(3){}
+    function_definition(astPtr a, astPtr b, astPtr c):declaration_specifiers(a),declarator(b), compound_statement(c){}
+    function_definition(astPtr b, astPtr c):declarator(b), compound_statement(c){}
 
 
     ~function_definition() override{
@@ -45,24 +41,15 @@ public:
 
         dst = "def " + func + ":\n" + body;
 
-//        switch (type){
-//            case 1:
-//                dst="def "+
-//                break;
-//            case 2:
-//
-//                break;
-//            default:
-//                notImplemented();
-//        }
-
     }
 
     void mp() const override{
-        switch (type){
+        notImplemented();
+        if (declaration_specifiers==NULL){
+        //declarator compound_statement  , default int as return type
 
-            default:
-                notImplemented();
+        }else{
+
         }
     }
 

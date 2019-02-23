@@ -4,9 +4,10 @@
 #include "_ast_abs.hpp"
 
 /*
-external_declaration
-0	: function_definition
-1	| declaration
+expression_statement
+	: ';'
+	| expression ';'
+	;
  */
 
 class external_declaration: public ast_abs{

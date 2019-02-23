@@ -36,13 +36,18 @@ public:
     }
 
     void py(std::string& dst) const override{
+        std::string s;
         switch (type){
             case 0: //IDENTIFIER
                 dst=identifier;
                 break;
+            case 1:
+                right->py(s);
+                dst = '(' + s + ')';
             case 3:
                 if(right==0){   //direct_declarator '(' ')'
-                    left->py(dst);
+                    left->py(s);
+                    dst = s + "()";
                 }else{
                     notImplemented();
                 }

@@ -13,7 +13,7 @@ assignment_expression
 class assignment_expression: public ast_abs{
     astPtr expression;
     astPtr assignment_operator=0;
-    astPtr assignment_exp;
+    astPtr assignment_exp=0;
 
 public:
     assignment_expression(astPtr conditional_expression):expression(conditional_expression){}

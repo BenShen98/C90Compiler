@@ -6,14 +6,14 @@
 /*
  * left associative list
 LIST
-	: LIST
+	: ELEMENT
 	| LIST ELEMENT
 	;
  */
 
 class left_list: public ast_abs{
-    astPtr list=0;   //can only be translation_unit
-    astPtr element;    //can only be external_declaration
+    astPtr list=0;
+    astPtr element;
 
 public:
     left_list(astPtr l, astPtr e):list(l),element(e){}
