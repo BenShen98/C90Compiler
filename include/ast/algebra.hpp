@@ -68,12 +68,12 @@ logical_or_expression
 
  */
 
-enum enum_algebra {MUL,DIV,MOD ,ADD,SUB, LEFT_OP,RIGHT_OP, SMALLER,GREATER, LE_OP,GE_OP,EQ_OP,NE_OP, AND,XOR,OR, AND_OP,OR_OP, };
+enum enum_algebra {MUL,DIV,MOD ,ADD,SUB, LEFT_,RIGHT_, SMALLER,GREATER, LE_,GE_,EQ_,NE_, AND,XOR,OR, AND_,OR_, };
 
 class algebra: public ast_abs{
     enum_algebra type;
-    astPtr right;   //can only be translation_unit
-    astPtr left;    //can only be external_declaration
+    astPtr left;
+    astPtr right;
 
 public:
     algebra(enum_algebra t, astPtr l, astPtr r):type(t),left(l),right(r){}
@@ -110,11 +110,11 @@ public:
                 dst = '(' +  l + '-' + r + ')';
                 break;
 
-            case LEFT_OP:
+            case LEFT_:
                 dst = '(' +  l + "<<" + r + ')';
                 break;
 
-            case RIGHT_OP:
+            case RIGHT_:
                 dst = '(' +  l + ">>" + r + ')';
                 break;
 
@@ -126,19 +126,19 @@ public:
                 dst = '(' +  l + '>' + r + ')';
                 break;
 
-            case LE_OP:
+            case LE_:
                 dst = '(' +  l + "<=" + r + ')';
                 break;
 
-            case GE_OP:
+            case GE_:
                 dst = '(' +  l + ">=" + r + ')';
                 break;
 
-            case EQ_OP:
+            case EQ_:
                 dst = '(' +  l + "==" + r + ')';
                 break;
 
-            case NE_OP:
+            case NE_:
                 dst = '(' +  l + "!=" + r + ')';
                 break;
 
@@ -154,11 +154,11 @@ public:
                 dst = '(' +  l + '|' + r + ')';
                 break;
 
-            case AND_OP:
+            case AND_:
                 dst = '(' +  l + "and" + r + ')';
                 break;
 
-            case OR_OP:
+            case OR_:
                 dst = '(' +  l + "or" + r + ')';
                 break;
         }
@@ -184,10 +184,10 @@ public:
             case SUB:
                 break;
 
-            case LEFT_OP:
+            case LEFT_:
                 break;
 
-            case RIGHT_OP:
+            case RIGHT_:
                 break;
 
             case SMALLER:
@@ -196,16 +196,16 @@ public:
             case GREATER:
                 break;
 
-            case LE_OP:
+            case LE_:
                 break;
 
-            case GE_OP:
+            case GE_:
                 break;
 
-            case EQ_OP:
+            case EQ_:
                 break;
 
-            case NE_OP:
+            case NE_:
                 break;
 
             case AND:
@@ -217,11 +217,11 @@ public:
             case OR:
                 break;
 
-            case AND_OP:
+            case AND_:
                 //short circuit
                 break;
 
-            case OR_OP:
+            case OR_:
                 //short circuit
                 break;
         }

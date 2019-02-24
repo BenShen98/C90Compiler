@@ -3,7 +3,7 @@
 
   #include <cassert>
 
-  extern const astPtr *g_root; // A way of getting the AST out
+  //extern const astPtr *g_root; // A way of getting the AST out
 
   //! This is to fix problems when generating C++
   // We are declaring the functions provided by Flex, so
@@ -14,7 +14,7 @@
 }
 
 %union{
-  const astPtr *expr;
+  const astPtr expr;
   std::string *str;
   int i;
   enum_assignment en_ass;
@@ -102,22 +102,22 @@ additive_expression
 
 shift_expression
 	: additive_expression					{ $$ = $1; }
-	| shift_expression LEFT_OP additive_expression		{ $$ = new algebra(LEFT_OP, $1, $3 ); }
-	| shift_expression RIGHT_OP additive_expression		{ $$ = new algebra(RIGHT_OP, $1, $3 ); }
+	| shift_expression LEFT_OP additive_expression		{ $$ = new algebra(LEFT_, $1, $3 ); }
+	| shift_expression RIGHT_OP additive_expression		{ $$ = new algebra(RIGHT_, $1, $3 ); }
 	;
 
 relational_expression
 	: shift_expression					{ $$ = $1; }
 	| relational_expression '<' shift_expression		{ $$ = new algebra(SMALLER, $1, $3 ); }
 	| relational_expression '>' shift_expression		{ $$ = new algebra(GREATER, $1, $3 ); }
-	| relational_expression LE_OP shift_expression		{ $$ = new algebra(LE_OP, $1, $3 ); }
-	| relational_expression GE_OP shift_expression		{ $$ = new algebra(GE_OP, $1, $3 ); }
+	| relational_expression LE_OP shift_expression		{ $$ = new algebra(LE_, $1, $3 ); }
+	| relational_expression GE_OP shift_expression		{ $$ = new algebra(GE_, $1, $3 ); }
 	;
 
 equality_expression
 	: relational_expression					{ $$ = $1; }
-	| equality_expression EQ_OP relational_expression	{ $$ = new algebra(EQ_OP, $1, $3 ); }
-	| equality_expression NE_OP relational_expression	{ $$ = new algebra(NE_OP, $1, $3 ); }
+	| equality_expression EQ_OP relational_expression	{ $$ = new algebra(EQ_, $1, $3 ); }
+	| equality_expression NE_OP relational_expression	{ $$ = new algebra(NE_, $1, $3 ); }
 	;
 
 and_expression
@@ -137,12 +137,12 @@ inclusive_or_expression
 
 logical_and_expression
 	: inclusive_or_expression				{ $$ = $1; }
-	| logical_and_expression AND_OP inclusive_or_expression	{ $$ = new algebra(AND_OP, $1, $3 ); }
+	| logical_and_expression AND_OP inclusive_or_expression	{ $$ = new algebra(AND_, $1, $3 ); }
 	;
 
 logical_or_expression
 	: logical_and_expression				{ $$ = $1; }
-	| logical_or_expression OR_OP logical_and_expression	{ $$ = new algebra(OR_OP, $1, $3 ); }
+	| logical_or_expression OR_OP logical_and_expression	{ $$ = new algebra(OR_, $1, $3 ); }
 	;
 
 conditional_expression
@@ -443,14 +443,12 @@ function_definition
 	;
 
 %%
-#include <stdio.h>
 
-extern char yytext[];
-extern int column;
+const astPtr g_root
 
-yyerror(s)
-char *s;
+const Expression *parseAST()
 {
-	fflush(stdout);
-	printf("\n%*s\n%*s\n", column, "^", column, s);
+  g_root=NULL;
+  yyparse();
+  return g_root;
 }

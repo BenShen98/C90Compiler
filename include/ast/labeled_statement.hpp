@@ -13,8 +13,8 @@ labeled_statement
 class labeled_statement: public ast_abs{
 
     int type;
-    astPtr st;
     astPtr exp=0;
+    astPtr st;
 
 public:
     labeled_statement(int t, astPtr s): type(t), st(s){}

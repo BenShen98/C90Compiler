@@ -18,16 +18,17 @@ X	| direct_declarator '(' identifier_list ')'         (K&R-style) REMOVED
 
 class direct_declarator: public ast_abs{
     int type;
-    astPtr right;
 
     //only one of below is active, change to union (need  user-defineddestructors)
-    const std::string *identifier;
+    std::string * identifier;
     astPtr left;
 
+    astPtr right;
+
 public:
-    direct_declarator(const std::string *id):type(0),identifier(id){}              //for case 0
+    direct_declarator(std::string * id):type(0),identifier(id){}              //for case 0
     direct_declarator(int t, astPtr declarator):type(t),left(declarator){}        //for case 1,2,3
-    direct_declarator(int t, astPtr declarator, astPtr identifier_list):type(t),left(declarator),right(identifier_list){}   //for case 2,3
+    direct_declarator(int t, astPtr declarator, astPtr identifier_list):type(t), left(declarator),right(identifier_list){}   //for case 2,3
 
 
     ~direct_declarator() override{

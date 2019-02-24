@@ -12,8 +12,8 @@ cast_expression
  */
 
 class cast_expression: public ast_abs{
-    astPtr exp;
     astPtr type=0;
+    astPtr exp;
 
 public:
     cast_expression(astPtr t, astPtr e):type(t),exp(e){}
