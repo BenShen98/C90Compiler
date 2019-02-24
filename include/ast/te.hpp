@@ -1,5 +1,5 @@
-#ifndef te_
-#define te_
+#ifndef ast_te
+#define ast_te
 
 #include <string>
 #include <iostream>
@@ -11,6 +11,7 @@ class te: public ast_abs{
 
 public:
     te(std::string rx):str(rx){}
+    ~te()override{}
 
 
     void py(std::string& dst) const override{

@@ -35,7 +35,11 @@
 
 %start translation_unit
 
-%type <expr> primary_expression postfix_expression argument_expression_list unary_expression cast_expression multiplicative_expression additive_expression shift_expression relational_expression equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression conditional_expression assignment_expression expression constant_expression declaration declaration_specifiers init_declarator_list init_declarator storage_class_specifier type_specifier struct_or_union_specifier struct_or_union struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list struct_declarator enum_specifier enumerator_list enumerator type_qualifier declarator direct_declarator pointer type_qualifier_list parameter_type_list parameter_list parameter_declaration type_name abstract_declarator direct_abstract_declarator initializer initializer_list labeled_statement compound_statement declaration_list statement_list expression_statement selection_statement iteration_statement jump_statement statement translation_unit external_declaration function_definition
+// parameter_type_list parameter_list struct_or_union_specifier struct_or_union pointer struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list struct_declarator enum_specifier enumerator_list enumerator type_qualifier_list direct_abstract_declarator abstract_declarator type_name parameter_declaration
+%type <expr> primary_expression postfix_expression argument_expression_list unary_expression cast_expression multiplicative_expression additive_expression shift_expression
+%type <expr> relational_expression equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
+%type <expr> conditional_expression assignment_expression expression constant_expression declaration declaration_specifiers init_declarator_list init_declarator
+%type <expr>storage_class_specifier type_specifier  declarator direct_declarator initializer initializer_list labeled_statement compound_statement declaration_list statement_list expression_statement selection_statement iteration_statement jump_statement statement translation_unit external_declaration function_definition
 %type <i> unary_operator
 %type <en_ass> assignment_operator
 
@@ -69,8 +73,8 @@ unary_expression
 	| INC_OP unary_expression		{ $$ = new unary_expression(1, $2); }
 	| DEC_OP unary_expression		{ $$ = new unary_expression(2, $2); }
 	| unary_operator cast_expression	{ $$ = new unary_expression($1, $2); }
-	| SIZEOF unary_expression		{ $$ = new unary_expression(3, $2); }
-	| SIZEOF '(' type_name ')'		{ $$ = new unary_expression(4, $3); }
+//	| SIZEOF unary_expression		{ $$ = new unary_expression(3, $2); }
+//	| SIZEOF '(' type_name ')'		{ $$ = new unary_expression(4, $3); }
 	;
 
 unary_operator
@@ -84,7 +88,7 @@ unary_operator
 
 cast_expression
 	: unary_expression			{ $$ = new cast_expression($1); }
-	| '(' type_name ')' cast_expression	{ $$ = new cast_expression($2,$4); }
+//	| '(' type_name ')' cast_expression	{ $$ = new cast_expression($2,$4); }
 	;
 
 multiplicative_expression
@@ -184,12 +188,12 @@ declaration
 	;
 
 declaration_specifiers
-	: storage_class_specifier
-	| storage_class_specifier declaration_specifiers
-	| type_specifier
-	| type_specifier declaration_specifiers
-	| type_qualifier
-	| type_qualifier declaration_specifiers
+	: type_specifier					{ $$ = new declaration_specifiers($1); }
+	| type_specifier declaration_specifiers			{ $$ = new declaration_specifiers($1,$2); }
+	| storage_class_specifier				{ $$ = new declaration_specifiers($1); }
+//	| storage_class_specifier declaration_specifiers	{ $$ = new declaration_specifiers($1,$2); }
+//	| type_qualifier					does not support type_qualifier
+//	| type_qualifier declaration_specifiers			does not support type_qualifier
 	;
 
 init_declarator_list
@@ -203,90 +207,90 @@ init_declarator
 	;
 
 storage_class_specifier
-	: TYPEDEF		{/*not in use*/}
-	| EXTERN
-	| STATIC		{/*not in use*/}
-	| AUTO			{/*not in use*/}
-	| REGISTER		{/*not in use*/}
+	: TYPEDEF		{ $$ = new storage_class_specifier(0); }
+	| EXTERN		{ $$ = new storage_class_specifier(1); }
+//	| STATIC		{/*not in use*/}
+//	| AUTO			{/*not in use*/}
+//	| REGISTER		{/*not in use*/}
 	;
 
 type_specifier
-	: VOID
-	| CHAR
-	| SHORT  {/*not in use*/}
-	| INT
-	| LONG
-	| FLOAT
-	| DOUBLE
-	| SIGNED
-	| UNSIGNED
-	| struct_or_union_specifier
-	| enum_specifier
-	| TYPE_NAME
+	: VOID				{ $$ = new type_specifier(0); }
+	| CHAR				{ $$ = new type_specifier(1); }
+	| SHORT  			{ $$ = new type_specifier(2); }
+	| INT				{ $$ = new type_specifier(3); }
+	| LONG				{ $$ = new type_specifier(4); }
+	| FLOAT				{ $$ = new type_specifier(5); }
+	| DOUBLE			{ $$ = new type_specifier(5); }
+	| SIGNED			{ $$ = new type_specifier(7); }
+	| UNSIGNED			{ $$ = new type_specifier(8); }
+//	| struct_or_union_specifier	{ $$ = new type_specifier(9); }
+//	| enum_specifier		{ $$ = new type_specifier(10); }
+//	| TYPE_NAME			{ $$ = new type_specifier(11); }
 	;
+//
+//struct_or_union_specifier
+//	: struct_or_union IDENTIFIER '{' struct_declaration_list '}'
+//	| struct_or_union '{' struct_declaration_list '}'
+//	| struct_or_union IDENTIFIER
+//	;
+//
+//struct_or_union
+//	: STRUCT
+////	| UNION {/*not in use*/}
+//	;
+//
+//struct_declaration_list
+//	: struct_declaration
+//	| struct_declaration_list struct_declaration
+//	;
+//
+//struct_declaration
+//	: specifier_qualifier_list struct_declarator_list ';'
+//	;
+//
+//specifier_qualifier_list
+//	: type_specifier specifier_qualifier_list
+//	| type_specifier
+//	| type_qualifier specifier_qualifier_list
+//	| type_qualifier
+//	;
+//
+//struct_declarator_list
+//	: struct_declarator
+//	| struct_declarator_list ',' struct_declarator
+//	;
+//
+//struct_declarator
+//	: declarator
+//	| ':' constant_expression
+//	| declarator ':' constant_expression
+//	;
+//
+//enum_specifier
+//	: ENUM '{' enumerator_list '}'
+//	| ENUM IDENTIFIER '{' enumerator_list '}'
+//	| ENUM IDENTIFIER
+//	;
+//
+//enumerator_list
+//	: enumerator
+//	| enumerator_list ',' enumerator
+//	;
+//
+//enumerator
+//	: IDENTIFIER
+//	| IDENTIFIER '=' constant_expression
+//	;
 
-struct_or_union_specifier
-	: struct_or_union IDENTIFIER '{' struct_declaration_list '}'
-	| struct_or_union '{' struct_declaration_list '}'
-	| struct_or_union IDENTIFIER
-	;
-
-struct_or_union
-	: STRUCT
-	| UNION {/*not in use*/}
-	;
-
-struct_declaration_list
-	: struct_declaration
-	| struct_declaration_list struct_declaration
-	;
-
-struct_declaration
-	: specifier_qualifier_list struct_declarator_list ';'
-	;
-
-specifier_qualifier_list
-	: type_specifier specifier_qualifier_list
-	| type_specifier
-	| type_qualifier specifier_qualifier_list
-	| type_qualifier
-	;
-
-struct_declarator_list
-	: struct_declarator
-	| struct_declarator_list ',' struct_declarator
-	;
-
-struct_declarator
-	: declarator
-	| ':' constant_expression
-	| declarator ':' constant_expression
-	;
-
-enum_specifier
-	: ENUM '{' enumerator_list '}'
-	| ENUM IDENTIFIER '{' enumerator_list '}'
-	| ENUM IDENTIFIER
-	;
-
-enumerator_list
-	: enumerator
-	| enumerator_list ',' enumerator
-	;
-
-enumerator
-	: IDENTIFIER
-	| IDENTIFIER '=' constant_expression
-	;
-
-type_qualifier
-	: CONST
-	| VOLATILE {/*not in use*/}
-	;
+//type_qualifier
+//	: CONST
+//	| VOLATILE
+//	;
 
 declarator
-	: pointer direct_declarator	{ $$ = new declarator($1, $2); }
-	| direct_declarator		{ $$ = new declarator($1); }
+	: direct_declarator		{ $$ = new declarator($1); }
+//	| pointer direct_declarator	{ $$ = new declarator($1, $2); }
 	;
 
 direct_declarator
@@ -294,67 +298,67 @@ direct_declarator
 	| '(' declarator ')'				{ $$ = new direct_declarator(1, $2); }
 	| direct_declarator '[' constant_expression ']'	{ $$ = new direct_declarator(2, $1, $3); }
 	| direct_declarator '[' ']'			{ $$ = new direct_declarator(2, $1); }
-	| direct_declarator '(' parameter_type_list ')'	{ $$ = new direct_declarator(3, $1, $3); }
+//	| direct_declarator '(' parameter_type_list ')'	{ $$ = new direct_declarator(3, $1, $3); }
 //	| direct_declarator '(' identifier_list ')'	// OLD KR style
 	| direct_declarator '(' ')'			{ $$ = new direct_declarator(3, $1); }
 	;
 
-pointer
-	: '*'
-	| '*' type_qualifier_list
-	| '*' pointer
-	| '*' type_qualifier_list pointer
+//pointer
+//	: '*'
+//	| '*' type_qualifier_list
+//	| '*' pointer
+//	| '*' type_qualifier_list pointer
 	;
 
-type_qualifier_list
-	: type_qualifier
-	| type_qualifier_list type_qualifier
-	;
-
-
-parameter_type_list
-	: parameter_list
-	| parameter_list ',' ELLIPSIS {/*not in use*/}
-	;
-
-parameter_list
-	: parameter_declaration
-	| parameter_list ',' parameter_declaration
-	;
-
-parameter_declaration
-	: declaration_specifiers declarator
-	| declaration_specifiers abstract_declarator
-	| declaration_specifiers
-	;
-
-//identifier_list
-//	: IDENTIFIER
-//	| identifier_list ',' IDENTIFIER
+//type_qualifier_list
+//	: type_qualifier
+//	| type_qualifier_list type_qualifier
 //	;
 
-type_name
-	: specifier_qualifier_list
-	| specifier_qualifier_list abstract_declarator
+
+//parameter_type_list
+//	: parameter_list	{ $$=$1; }
+//	| parameter_list ',' ELLIPSIS {/*not in use*/}
 	;
 
-abstract_declarator
-	: pointer
-	| direct_abstract_declarator
-	| pointer direct_abstract_declarator
-	;
+//parameter_list
+//	: parameter_declaration				{ $$ =new parameter_list($1); }
+//	| parameter_list ',' parameter_declaration	{ $$ =new parameter_list($1,$2); }
+//	;
 
-direct_abstract_declarator
-	: '(' abstract_declarator ')'
-	| '[' ']'
-	| '[' constant_expression ']'
-	| direct_abstract_declarator '[' ']'
-	| direct_abstract_declarator '[' constant_expression ']'
-	| '(' ')'
-	| '(' parameter_type_list ')'
-	| direct_abstract_declarator '(' ')'
-	| direct_abstract_declarator '(' parameter_type_list ')'
-	;
+//parameter_declaration
+//	: declaration_specifiers declarator
+//	| declaration_specifiers abstract_declarator
+//	| declaration_specifiers
+//	;
+//
+////identifier_list
+////	: IDENTIFIER
+////	| identifier_list ',' IDENTIFIER
+////	;
+//
+//type_name
+//	: specifier_qualifier_list
+//	| specifier_qualifier_list abstract_declarator
+//	;
+//
+//abstract_declarator
+//	: pointer
+//	| direct_abstract_declarator
+//	| pointer direct_abstract_declarator
+//	;
+//
+//direct_abstract_declarator
+//	: '(' abstract_declarator ')'
+//	| '[' ']'
+//	| '[' constant_expression ']'
+//	| direct_abstract_declarator '[' ']'
+//	| direct_abstract_declarator '[' constant_expression ']'
+//	| '(' ')'
+//	| '(' parameter_type_list ')'
+//	| direct_abstract_declarator '(' ')'
+//	| direct_abstract_declarator '(' parameter_type_list ')'
+//	;
 
 initializer
 	: assignment_expression		{ $$ = new initializer(0, $1); }

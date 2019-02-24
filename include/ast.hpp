@@ -19,6 +19,7 @@
 #include "ast/constant_expression.hpp"
 #include "ast/declaration.hpp"
 #include "ast/declaration_list.hpp"
+#include "ast/declaration_specifiers.hpp"
 #include "ast/declarator.hpp"
 #include "ast/direct_declarator.hpp"
 #include "ast/expression.hpp"
@@ -33,15 +34,20 @@
 #include "ast/jump_statement.hpp"
 #include "ast/labeled_statement.hpp"
 #include "ast/_left_list.hpp"
+#include "ast/parameter_list.hpp"
 #include "ast/postfix_expression.hpp"
 #include "ast/primary_expression.hpp"
+#include "ast/_right_list.hpp"
 #include "ast/selection_statement.hpp"
 #include "ast/statement.hpp"
 #include "ast/statement_list.hpp"
+#include "ast/storage_class_specifier.hpp"
 #include "ast/te.hpp"
 #include "ast/translation_unit.hpp"
+#include "ast/type_specifier.hpp"
 #include "ast/unary_expression.hpp"
 #include "ast/unary_operator.hpp"
+
 
 
 

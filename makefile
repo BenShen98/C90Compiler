@@ -1,5 +1,5 @@
 CPPFLAGS += -std=c++11 -W -Wall -g -Wno-unused-parameter
-CPPFLAGS += -I include
+CPPFLAGS += -I include -std=c++11
 CPPFLAGS += -Wfatal-errors
 
 all : bin/c_compiler

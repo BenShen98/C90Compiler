@@ -1,3 +1,4 @@
+%option noyywrap
 
 D			[0-9]
 L			[a-zA-Z_]
@@ -11,7 +12,7 @@ IS			(u|U|l|L)*
 
 %{
 #include <stdio.h>
-#include "y.tab.h"
+#include "C90_parser.tab.h"
 
 void count();
 %}

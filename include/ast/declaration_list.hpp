@@ -1,23 +1,27 @@
 #ifndef ast_declaration_list
 #define ast_declaration_list
 
-#include "_left_list.hpp"
+#include "_right_list.hpp"
 
 /*
-declaration
-	: declaration_specifiers ';'
-	| declaration_specifiers init_declarator_list ';'
+declaration_specifiers
+	: storage_class_specifier
+	| storage_class_specifier declaration_specifiers
+	| type_specifier
+	| type_specifier declaration_specifiers
+	| type_qualifier
+	| type_qualifier declaration_specifiers
 	;
  */
 
-class declaration_list: public left_list{
+class declaration_list: public right_list{
 
 public:
-    declaration_list(astPtr l, astPtr e)
-        :left_list(l,e){}
+    declaration_list(astPtr e, astPtr l)
+        :right_list(e,l){}
 
     declaration_list(astPtr e)
-        :left_list(e){}
+        :right_list(e){}
 
 };
 
