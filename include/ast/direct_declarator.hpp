@@ -8,10 +8,10 @@ direct_declarator
 0	: IDENTIFIER
 1	| '(' declarator ')'
 2	| direct_declarator '[' constant_expression ']'
-2	| direct_declarator '[' ']'
-3	| direct_declarator '(' parameter_type_list ')'
+3	| direct_declarator '[' ']'
+4	| direct_declarator '(' parameter_type_list ')'
 X	| direct_declarator '(' identifier_list ')'         (K&R-style) REMOVED
-3	| direct_declarator '(' ')'
+5	| direct_declarator '(' ')'
 	;
 	;
  */
@@ -26,9 +26,9 @@ class direct_declarator: public ast_abs{
     astPtr right;
 
 public:
-    direct_declarator(std::string * id):type(0),identifier(id){}              //for case 0
-    direct_declarator(int t, astPtr declarator):type(t),left(declarator){}        //for case 1,2,3
-    direct_declarator(int t, astPtr declarator, astPtr identifier_list):type(t), left(declarator),right(identifier_list){}   //for case 2,3
+    direct_declarator(std::string * id):type(0),identifier(id){std::cerr<<"direct_declarator type0 | get0"<<*id<<"\n";}              //for case 0
+    direct_declarator(int t, astPtr declarator):type(t),left(declarator){ std::cerr<<"direct_declarator type1,3,5 | get"<<t<<"\n"; }        //for case 1,2,3
+    direct_declarator(int t, astPtr declarator, astPtr identifier_list):type(t), left(declarator),right(identifier_list){std::cerr<<"direct_declarator type2,4 | get"<<t<<"\n";}   //for case 2,3
 
 
     ~direct_declarator() override{
@@ -38,25 +38,31 @@ public:
     }
 
     void py(std::string& dst) const override{
-        std::string s;
+        std::string s,s_opt;
         right->py(s);
 
         switch (type){
             case 0: //variable deceleration
+                std::cerr<<"xxx\n";
                 dst=*identifier;
+                std::cerr<<"***\n";
                 break;
             case 1: //function deceleration WITHOUT prototype
                 dst = '(' + s + ')';
                 break;
 
-            case 2: //array deceleration
-                notImplemented();
+            case 4:
+                left->py(s);
+                dst = s + '(' + s_opt + ')';
                 break;
 
-            case 3:  //function deceleration (prototype) (NOT definition)
-                //ignore all function deceleration in python
-                //python DOES NOT support function deceleration
+            case 5:
+                dst = s + "()";
                 break;
+
+            default:
+                std::cerr<<"direct_declarator default case\n";
+                notImplemented();
         }
 
     }

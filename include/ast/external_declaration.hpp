@@ -5,8 +5,8 @@
 
 /*
 external_declaration
-	: function_definition
-	| declaration
+0	: function_definition
+1	| declaration
 	;
  */
 

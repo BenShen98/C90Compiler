@@ -15,8 +15,8 @@ class declarator: public ast_abs{
     astPtr direct_declarator;
 
 public:
-    declarator(astPtr t, astPtr d):pointer(t),direct_declarator(d){}
-    declarator(astPtr d):pointer(0),direct_declarator(d){}
+    declarator(astPtr t, astPtr d):pointer(t),direct_declarator(d){ std::cerr<<"declarator 2 arg\n"; }
+    declarator(astPtr d):pointer(0),direct_declarator(d){ std::cerr<<"declarator 1 arg\n"; }
 
     ~declarator() override{
         delete pointer;

@@ -1,8 +1,11 @@
 CPPFLAGS += -std=c++11 -W -Wall -g -Wno-unused-parameter
 CPPFLAGS += -I include -std=c++11
-CPPFLAGS += -Wfatal-errors
+CPPFLAGS += -Wfatal-errors -ggdb
 
-all : bin/c_compiler
+
+
+all : clean ./bin/c_compiler
+	 ./bin/c_compiler < ./test.c
 
 src/C90_parser.tab.cpp src/C90_parser.tab.hpp : src/C90.y
 	bison -v -d src/C90.y -o src/C90_parser.tab.cpp
@@ -12,10 +15,10 @@ src/C90_lexer.yy.cpp : src/C90.flex src/C90_parser.tab.hpp
 
 bin/c_compiler : src/c_compiler.o src/C90_parser.tab.o src/C90_lexer.yy.o src/C90_parser.tab.o
 	mkdir -p bin
-	g++ $(CPPFLAGS) -o bin/print_canonical $^
+	g++ $(CPPFLAGS) -o $@ $^
 
 clean :
-	rm src/*.o
-	rm bin/*
-	rm src/*.tab.cpp
-	rm src/*.yy.cpp
+	rm -f src/*.o
+	rm -f bin/*
+	rm -f src/*.tab.cpp
+	rm -f src/*.yy.cpp

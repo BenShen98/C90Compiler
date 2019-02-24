@@ -12,9 +12,12 @@ IS			(u|U|l|L)*
 
 %{
 #include <stdio.h>
-#include "C90_parser.tab.h"
+#include "C90_parser.tab.hpp"
 
 void count();
+void comment();
+void not_vaild();
+int check_type();
 %}
 
 %%
@@ -53,18 +56,18 @@ void count();
 "volatile"		{ not_vaild();return(VOLATILE); }
 "while"			{ /*count();*/ return(WHILE); }
 
-{L}({L}|{D})*			{ count(); return(check_type()); }
+{L}({L}|{D})*			{ yylval.str=new std::string(yytext); return(check_type()); }
 
-0[xX]{H}+{IS}?			{ count(); return(CONSTANT); }
-0{D}+{IS}?				{ count(); return(CONSTANT); }
-{D}+{IS}?				{ count(); return(CONSTANT); }
-L?'(\\.|[^\\'])+'		{ count(); return(CONSTANT); }
+0[xX]{H}+{IS}?			{ yylval.str=new std::string(yytext); return(CONSTANT); }
+0{D}+{IS}?				{ yylval.str=new std::string(yytext); return(CONSTANT); }
+{D}+{IS}?				{ yylval.str=new std::string(yytext); return(CONSTANT); }
+L?'(\\.|[^\\'])+'		{ yylval.str=new std::string(yytext); return(CONSTANT); }
 
-{D}+{E}{FS}?			{ count(); return(CONSTANT); }
-{D}*"."{D}+({E})?{FS}?	{ count(); return(CONSTANT); }
-{D}+"."{D}*({E})?{FS}?	{ count(); return(CONSTANT); }
+{D}+{E}{FS}?			{ yylval.str=new std::string(yytext); return(CONSTANT); }
+{D}*"."{D}+({E})?{FS}?	{ yylval.str=new std::string(yytext); return(CONSTANT); }
+{D}+"."{D}*({E})?{FS}?	{ yylval.str=new std::string(yytext); return(CONSTANT); }
 
-L?\"(\\.|[^\\"])*\"		{ count(); return(STRING_LITERAL); }
+L?\"(\\.|[^\\"])*\"		{ yylval.str=new std::string(yytext); return(STRING_LITERAL); }
 
 
 ">>="			{ /*count();*/ return(RIGHT_ASSIGN); }
@@ -119,21 +122,21 @@ L?\"(\\.|[^\\"])*\"		{ count(); return(STRING_LITERAL); }
 
 %%
 
-yywrap()
-{
-	return(1);
-}
+//yywrap()
+//{
+//	return(1);
+//}
 
 
-comment()
+void comment()
 {
 	char c, c1;
 
 loop:
-	while ((c = input()) != '*' && c != 0)
+	while ((c = yyinput()) != '*' && c != 0)
 		putchar(c);
 
-	if ((c1 = input()) != '/' && c != 0)
+	if ((c1 = yyinput()) != '/' && c != 0)
 	{
 		unput(c1);
 		goto loop;
@@ -183,4 +186,10 @@ int check_type()
 void not_vaild(){
   fprintf (stderr, "%s not supported\n", yytext);
 
+}
+
+void yyerror (char const *s)
+{
+  fprintf (stderr, "Parse error : %s\n", s);
+  exit(1);
 }

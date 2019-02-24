@@ -3,7 +3,7 @@
 
   #include <cassert>
 
-  //extern const astPtr *g_root; // A way of getting the AST out
+  extern const ast_abs * g_root; // A way of getting the AST out
 
   //! This is to fix problems when generating C++
   // We are declaring the functions provided by Flex, so
@@ -14,14 +14,14 @@
 }
 
 %union{
-  const astPtr expr;
+  const ast_abs * expr;
   std::string *str;
   int i;
   enum_assignment en_ass;
 }
 
 
-%token <str> IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
+%token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
 %token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
@@ -40,8 +40,10 @@
 %type <expr> relational_expression equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
 %type <expr> conditional_expression assignment_expression expression constant_expression declaration declaration_specifiers init_declarator_list init_declarator
 %type <expr>storage_class_specifier type_specifier  declarator direct_declarator initializer initializer_list labeled_statement compound_statement declaration_list statement_list expression_statement selection_statement iteration_statement jump_statement statement translation_unit external_declaration function_definition
+%type <str> IDENTIFIER CONSTANT STRING_LITERAL
 %type <i> unary_operator
 %type <en_ass> assignment_operator
+
 
 %%
 
@@ -78,12 +80,12 @@ unary_expression
 	;
 
 unary_operator
-	: '&'	{ $$ = '&' }
-	| '*'	{ $$ = '*' }
-	| '+'	{ $$ = '+' }
-	| '-'	{ $$ = '-' }
-	| '~'	{ $$ = '~' }
-	| '!'	{ $$ = '!' }
+	: '&'	{ $$ = '&'; }
+	| '*'	{ $$ = '*'; }
+	| '+'	{ $$ = '+'; }
+	| '-'	{ $$ = '-'; }
+	| '~'	{ $$ = '~'; }
+	| '!'	{ $$ = '!'; }
 	;
 
 cast_expression
@@ -155,8 +157,8 @@ conditional_expression
 	;
 
 assignment_expression
-	: conditional_expression					{ $$ = assignment_expression($1); }
-	| unary_expression assignment_operator assignment_expression	{ $$ = assignment_expression($1, $2, $3); }
+	: conditional_expression					{ $$ = new assignment_expression($1); }
+	| unary_expression assignment_operator assignment_expression	{ $$ = new assignment_expression($1, $2, $3); }
 	;
 
 assignment_operator
@@ -294,13 +296,13 @@ declarator
 	;
 
 direct_declarator
-	: IDENTIFIER					{ $$ = new direct_declarator($1); }
+	: IDENTIFIER					{ std::cout<<"   str   "<<std::flush;std::cout<<*$1; $$ = new direct_declarator(($1)); }
 	| '(' declarator ')'				{ $$ = new direct_declarator(1, $2); }
 	| direct_declarator '[' constant_expression ']'	{ $$ = new direct_declarator(2, $1, $3); }
-	| direct_declarator '[' ']'			{ $$ = new direct_declarator(2, $1); }
-//	| direct_declarator '(' parameter_type_list ')'	{ $$ = new direct_declarator(3, $1, $3); }
+	| direct_declarator '[' ']'			{ $$ = new direct_declarator(3, $1); }
+//	| direct_declarator '(' parameter_type_list ')'	{ $$ = new direct_declarator(4, $1, $3); }
 //	| direct_declarator '(' identifier_list ')'	// OLD KR style
-	| direct_declarator '(' ')'			{ $$ = new direct_declarator(3, $1); }
+	| direct_declarator '(' ')'			{ $$ = new direct_declarator(5, $1); }
 	;
 
 //pointer
@@ -430,13 +432,13 @@ jump_statement
 	;
 
 translation_unit
-	: external_declaration			{ $$ new translation_unit($1); }
-	| translation_unit external_declaration	{ $$ new translation_unit($1, $2); }
+	: external_declaration			{ $$ = new translation_unit($1); }
+	| translation_unit external_declaration	{ $$ = new translation_unit($1, $2); }
 	;
 
 external_declaration
-	: function_definition	{ $$ = new external_declaration($1); }
-	| declaration		{ $$ = new external_declaration($1); }
+	: function_definition	{ $$ = new external_declaration(0, $1); }
+	| declaration		{ $$ = new external_declaration(1, $1); }
 	;
 
 function_definition
@@ -448,11 +450,11 @@ function_definition
 
 %%
 
-const astPtr g_root
+const ast_abs * g_root;
 
-const Expression *parseAST()
+const ast_abs * parseAST(void)
 {
-  g_root=NULL;
+  g_root=0;
   yyparse();
   return g_root;
 }

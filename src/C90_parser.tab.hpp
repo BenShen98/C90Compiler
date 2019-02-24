@@ -46,7 +46,7 @@ extern int yydebug;
 
   #include <cassert>
 
-  //extern const astPtr *g_root; // A way of getting the AST out
+  extern const ast_abs * g_root; // A way of getting the AST out
 
   //! This is to fix problems when generating C++
   // We are declaring the functions provided by Flex, so
@@ -130,7 +130,7 @@ union YYSTYPE
 {
 #line 16 "src/C90.y" /* yacc.c:1909  */
 
-  const astPtr expr;
+  const ast_abs * expr;
   std::string *str;
   int i;
   enum_assignment en_ass;

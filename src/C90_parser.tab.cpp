@@ -99,7 +99,7 @@ extern int yydebug;
 
   #include <cassert>
 
-  //extern const astPtr *g_root; // A way of getting the AST out
+  extern const ast_abs * g_root; // A way of getting the AST out
 
   //! This is to fix problems when generating C++
   // We are declaring the functions provided by Flex, so
@@ -183,7 +183,7 @@ union YYSTYPE
 {
 #line 16 "src/C90.y" /* yacc.c:355  */
 
-  const astPtr expr;
+  const ast_abs * expr;
   std::string *str;
   int i;
   enum_assignment en_ass;
@@ -508,21 +508,21 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    49,    49,    50,    51,    52,    56,    57,    58,    59,
-      60,    61,    62,    63,    67,    68,    72,    73,    74,    75,
-      81,    82,    83,    84,    85,    86,    90,    95,    96,    97,
-      98,   102,   103,   104,   108,   109,   110,   114,   115,   116,
-     117,   118,   122,   123,   124,   128,   129,   133,   134,   138,
-     139,   143,   144,   148,   149,   153,   154,   158,   159,   163,
-     164,   165,   166,   167,   168,   169,   170,   171,   172,   173,
-     177,   178,   182,   186,   187,   191,   192,   193,   200,   201,
-     205,   206,   210,   211,   218,   219,   220,   221,   222,   223,
-     224,   225,   226,   292,   297,   298,   299,   300,   303,   364,
-     365,   366,   370,   371,   375,   376,   377,   378,   379,   380,
-     384,   385,   386,   390,   391,   392,   393,   397,   398,   402,
-     403,   407,   408,   412,   413,   414,   418,   419,   420,   421,
-     425,   426,   427,   428,   429,   433,   434,   438,   439,   443,
-     444
+       0,    51,    51,    52,    53,    54,    58,    59,    60,    61,
+      62,    63,    64,    65,    69,    70,    74,    75,    76,    77,
+      83,    84,    85,    86,    87,    88,    92,    97,    98,    99,
+     100,   104,   105,   106,   110,   111,   112,   116,   117,   118,
+     119,   120,   124,   125,   126,   130,   131,   135,   136,   140,
+     141,   145,   146,   150,   151,   155,   156,   160,   161,   165,
+     166,   167,   168,   169,   170,   171,   172,   173,   174,   175,
+     179,   180,   184,   188,   189,   193,   194,   195,   202,   203,
+     207,   208,   212,   213,   220,   221,   222,   223,   224,   225,
+     226,   227,   228,   294,   299,   300,   301,   302,   305,   366,
+     367,   368,   372,   373,   377,   378,   379,   380,   381,   382,
+     386,   387,   388,   392,   393,   394,   395,   399,   400,   404,
+     405,   409,   410,   414,   415,   416,   420,   421,   422,   423,
+     427,   428,   429,   430,   431,   435,   436,   440,   441,   445,
+     446
 };
 #endif
 
@@ -1546,829 +1546,829 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 49 "src/C90.y" /* yacc.c:1646  */
+#line 51 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new primary_expression(0, (yyvsp[0].str)); }
 #line 1552 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 50 "src/C90.y" /* yacc.c:1646  */
+#line 52 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new primary_expression(1, (yyvsp[0].str)); }
 #line 1558 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 51 "src/C90.y" /* yacc.c:1646  */
+#line 53 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new primary_expression(2, (yyvsp[0].str)); }
 #line 1564 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 52 "src/C90.y" /* yacc.c:1646  */
+#line 54 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new primary_expression(3, (yyvsp[-1].expr)); }
 #line 1570 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 56 "src/C90.y" /* yacc.c:1646  */
+#line 58 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new postfix_expression(0, (yyvsp[0].expr)); }
 #line 1576 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 57 "src/C90.y" /* yacc.c:1646  */
+#line 59 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new postfix_expression(1, (yyvsp[-3].expr), (yyvsp[-1].expr)); }
 #line 1582 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 58 "src/C90.y" /* yacc.c:1646  */
+#line 60 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new postfix_expression(2, (yyvsp[-2].expr)); }
 #line 1588 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 59 "src/C90.y" /* yacc.c:1646  */
+#line 61 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new postfix_expression(3, (yyvsp[-3].expr), (yyvsp[-1].expr)); }
 #line 1594 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 60 "src/C90.y" /* yacc.c:1646  */
+#line 62 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new postfix_expression(4, (yyvsp[-2].expr), (yyvsp[0].str)); }
 #line 1600 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 61 "src/C90.y" /* yacc.c:1646  */
+#line 63 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new postfix_expression(5, (yyvsp[-2].expr), (yyvsp[0].str)); }
 #line 1606 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 62 "src/C90.y" /* yacc.c:1646  */
+#line 64 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new postfix_expression(6, (yyvsp[-1].expr)); }
 #line 1612 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 63 "src/C90.y" /* yacc.c:1646  */
+#line 65 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new postfix_expression(7, (yyvsp[-1].expr)); }
 #line 1618 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 67 "src/C90.y" /* yacc.c:1646  */
+#line 69 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new argument_expression_list((yyvsp[0].expr)); }
 #line 1624 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 68 "src/C90.y" /* yacc.c:1646  */
+#line 70 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new argument_expression_list((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 1630 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 72 "src/C90.y" /* yacc.c:1646  */
+#line 74 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new unary_expression(0, (yyvsp[0].expr)); }
 #line 1636 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 73 "src/C90.y" /* yacc.c:1646  */
+#line 75 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new unary_expression(1, (yyvsp[0].expr)); }
 #line 1642 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 74 "src/C90.y" /* yacc.c:1646  */
+#line 76 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new unary_expression(2, (yyvsp[0].expr)); }
 #line 1648 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 75 "src/C90.y" /* yacc.c:1646  */
+#line 77 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new unary_expression((yyvsp[-1].i), (yyvsp[0].expr)); }
 #line 1654 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 81 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.i) = '&' }
+#line 83 "src/C90.y" /* yacc.c:1646  */
+    { (yyval.i) = '&'; }
 #line 1660 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 82 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.i) = '*' }
+#line 84 "src/C90.y" /* yacc.c:1646  */
+    { (yyval.i) = '*'; }
 #line 1666 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 83 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.i) = '+' }
+#line 85 "src/C90.y" /* yacc.c:1646  */
+    { (yyval.i) = '+'; }
 #line 1672 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 84 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.i) = '-' }
+#line 86 "src/C90.y" /* yacc.c:1646  */
+    { (yyval.i) = '-'; }
 #line 1678 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 85 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.i) = '~' }
+#line 87 "src/C90.y" /* yacc.c:1646  */
+    { (yyval.i) = '~'; }
 #line 1684 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 86 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.i) = '!' }
+#line 88 "src/C90.y" /* yacc.c:1646  */
+    { (yyval.i) = '!'; }
 #line 1690 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 90 "src/C90.y" /* yacc.c:1646  */
+#line 92 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new cast_expression((yyvsp[0].expr)); }
 #line 1696 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 95 "src/C90.y" /* yacc.c:1646  */
+#line 97 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
 #line 1702 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 96 "src/C90.y" /* yacc.c:1646  */
+#line 98 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(MUL, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1708 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 97 "src/C90.y" /* yacc.c:1646  */
+#line 99 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(DIV, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1714 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 98 "src/C90.y" /* yacc.c:1646  */
+#line 100 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(MOD, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1720 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 102 "src/C90.y" /* yacc.c:1646  */
+#line 104 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
 #line 1726 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 103 "src/C90.y" /* yacc.c:1646  */
+#line 105 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(ADD, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1732 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 104 "src/C90.y" /* yacc.c:1646  */
+#line 106 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(SUB, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1738 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 108 "src/C90.y" /* yacc.c:1646  */
+#line 110 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
 #line 1744 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 109 "src/C90.y" /* yacc.c:1646  */
+#line 111 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(LEFT_, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1750 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 110 "src/C90.y" /* yacc.c:1646  */
+#line 112 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(RIGHT_, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1756 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 114 "src/C90.y" /* yacc.c:1646  */
+#line 116 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
 #line 1762 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 115 "src/C90.y" /* yacc.c:1646  */
+#line 117 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(SMALLER, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1768 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 116 "src/C90.y" /* yacc.c:1646  */
+#line 118 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(GREATER, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1774 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 117 "src/C90.y" /* yacc.c:1646  */
+#line 119 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(LE_, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1780 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 118 "src/C90.y" /* yacc.c:1646  */
+#line 120 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(GE_, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1786 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 122 "src/C90.y" /* yacc.c:1646  */
+#line 124 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
 #line 1792 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 123 "src/C90.y" /* yacc.c:1646  */
+#line 125 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(EQ_, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1798 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 124 "src/C90.y" /* yacc.c:1646  */
+#line 126 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(NE_, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1804 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 128 "src/C90.y" /* yacc.c:1646  */
+#line 130 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
 #line 1810 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 129 "src/C90.y" /* yacc.c:1646  */
+#line 131 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(AND, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1816 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 133 "src/C90.y" /* yacc.c:1646  */
+#line 135 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
 #line 1822 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 134 "src/C90.y" /* yacc.c:1646  */
+#line 136 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(XOR, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1828 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 138 "src/C90.y" /* yacc.c:1646  */
+#line 140 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
 #line 1834 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 139 "src/C90.y" /* yacc.c:1646  */
+#line 141 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(OR, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1840 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 143 "src/C90.y" /* yacc.c:1646  */
+#line 145 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
 #line 1846 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 144 "src/C90.y" /* yacc.c:1646  */
+#line 146 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(AND_, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1852 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 148 "src/C90.y" /* yacc.c:1646  */
+#line 150 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
 #line 1858 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 149 "src/C90.y" /* yacc.c:1646  */
+#line 151 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new algebra(OR_, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 1864 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 153 "src/C90.y" /* yacc.c:1646  */
+#line 155 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new conditional_expression((yyvsp[0].expr)); }
 #line 1870 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 154 "src/C90.y" /* yacc.c:1646  */
+#line 156 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new conditional_expression((yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 1876 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 158 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = assignment_expression((yyvsp[0].expr)); }
+#line 160 "src/C90.y" /* yacc.c:1646  */
+    { (yyval.expr) = new assignment_expression((yyvsp[0].expr)); }
 #line 1882 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 159 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = assignment_expression((yyvsp[-2].expr), (yyvsp[-1].en_ass), (yyvsp[0].expr)); }
+#line 161 "src/C90.y" /* yacc.c:1646  */
+    { (yyval.expr) = new assignment_expression((yyvsp[-2].expr), (yyvsp[-1].en_ass), (yyvsp[0].expr)); }
 #line 1888 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 163 "src/C90.y" /* yacc.c:1646  */
+#line 165 "src/C90.y" /* yacc.c:1646  */
     { (yyval.en_ass) = ASSIGN; }
 #line 1894 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 164 "src/C90.y" /* yacc.c:1646  */
+#line 166 "src/C90.y" /* yacc.c:1646  */
     { (yyval.en_ass) = MULA; }
 #line 1900 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 165 "src/C90.y" /* yacc.c:1646  */
+#line 167 "src/C90.y" /* yacc.c:1646  */
     { (yyval.en_ass) = DIVA; }
 #line 1906 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 166 "src/C90.y" /* yacc.c:1646  */
+#line 168 "src/C90.y" /* yacc.c:1646  */
     { (yyval.en_ass) = MODA; }
 #line 1912 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 167 "src/C90.y" /* yacc.c:1646  */
+#line 169 "src/C90.y" /* yacc.c:1646  */
     { (yyval.en_ass) = ADDA; }
 #line 1918 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 168 "src/C90.y" /* yacc.c:1646  */
+#line 170 "src/C90.y" /* yacc.c:1646  */
     { (yyval.en_ass) = SUBA; }
 #line 1924 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 169 "src/C90.y" /* yacc.c:1646  */
+#line 171 "src/C90.y" /* yacc.c:1646  */
     { (yyval.en_ass) = LEFTA; }
 #line 1930 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 170 "src/C90.y" /* yacc.c:1646  */
+#line 172 "src/C90.y" /* yacc.c:1646  */
     { (yyval.en_ass) = RIGHTA; }
 #line 1936 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 171 "src/C90.y" /* yacc.c:1646  */
+#line 173 "src/C90.y" /* yacc.c:1646  */
     { (yyval.en_ass) = ANDA; }
 #line 1942 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 172 "src/C90.y" /* yacc.c:1646  */
+#line 174 "src/C90.y" /* yacc.c:1646  */
     { (yyval.en_ass) = XORA; }
 #line 1948 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 173 "src/C90.y" /* yacc.c:1646  */
+#line 175 "src/C90.y" /* yacc.c:1646  */
     { (yyval.en_ass) = ORA; }
 #line 1954 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 177 "src/C90.y" /* yacc.c:1646  */
+#line 179 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new expression((yyvsp[0].expr)); }
 #line 1960 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 178 "src/C90.y" /* yacc.c:1646  */
+#line 180 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new expression((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 1966 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 182 "src/C90.y" /* yacc.c:1646  */
+#line 184 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
 #line 1972 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 186 "src/C90.y" /* yacc.c:1646  */
+#line 188 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new declaration_specifiers((yyvsp[-1].expr)); }
 #line 1978 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 187 "src/C90.y" /* yacc.c:1646  */
+#line 189 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new declaration_specifiers((yyvsp[-2].expr), (yyvsp[-1].expr)); }
 #line 1984 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 191 "src/C90.y" /* yacc.c:1646  */
+#line 193 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new declaration_specifiers((yyvsp[0].expr)); }
 #line 1990 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 192 "src/C90.y" /* yacc.c:1646  */
+#line 194 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new declaration_specifiers((yyvsp[-1].expr),(yyvsp[0].expr)); }
 #line 1996 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 193 "src/C90.y" /* yacc.c:1646  */
+#line 195 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new declaration_specifiers((yyvsp[0].expr)); }
 #line 2002 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 200 "src/C90.y" /* yacc.c:1646  */
+#line 202 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new init_declarator_list((yyvsp[0].expr)); }
 #line 2008 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 201 "src/C90.y" /* yacc.c:1646  */
+#line 203 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new init_declarator_list((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2014 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 205 "src/C90.y" /* yacc.c:1646  */
+#line 207 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new init_declarator((yyvsp[0].expr)); }
 #line 2020 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 206 "src/C90.y" /* yacc.c:1646  */
+#line 208 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new init_declarator((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2026 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 210 "src/C90.y" /* yacc.c:1646  */
+#line 212 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new storage_class_specifier(0); }
 #line 2032 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 211 "src/C90.y" /* yacc.c:1646  */
+#line 213 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new storage_class_specifier(1); }
 #line 2038 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 218 "src/C90.y" /* yacc.c:1646  */
+#line 220 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new type_specifier(0); }
 #line 2044 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 219 "src/C90.y" /* yacc.c:1646  */
+#line 221 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new type_specifier(1); }
 #line 2050 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 220 "src/C90.y" /* yacc.c:1646  */
+#line 222 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new type_specifier(2); }
 #line 2056 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 221 "src/C90.y" /* yacc.c:1646  */
+#line 223 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new type_specifier(3); }
 #line 2062 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 222 "src/C90.y" /* yacc.c:1646  */
+#line 224 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new type_specifier(4); }
 #line 2068 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 223 "src/C90.y" /* yacc.c:1646  */
+#line 225 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new type_specifier(5); }
 #line 2074 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 224 "src/C90.y" /* yacc.c:1646  */
+#line 226 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new type_specifier(5); }
 #line 2080 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 225 "src/C90.y" /* yacc.c:1646  */
+#line 227 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new type_specifier(7); }
 #line 2086 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 92:
-#line 226 "src/C90.y" /* yacc.c:1646  */
+#line 228 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new type_specifier(8); }
 #line 2092 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 292 "src/C90.y" /* yacc.c:1646  */
+#line 294 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new declarator((yyvsp[0].expr)); }
 #line 2098 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 94:
-#line 297 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new direct_declarator((yyvsp[0].str)); }
+#line 299 "src/C90.y" /* yacc.c:1646  */
+    { std::cout<<"   str   "<<std::flush;std::cout<<*(yyvsp[0].str); (yyval.expr) = new direct_declarator(((yyvsp[0].str))); }
 #line 2104 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 298 "src/C90.y" /* yacc.c:1646  */
+#line 300 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new direct_declarator(1, (yyvsp[-1].expr)); }
 #line 2110 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 96:
-#line 299 "src/C90.y" /* yacc.c:1646  */
+#line 301 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new direct_declarator(2, (yyvsp[-3].expr), (yyvsp[-1].expr)); }
 #line 2116 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 97:
-#line 300 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new direct_declarator(2, (yyvsp[-2].expr)); }
+#line 302 "src/C90.y" /* yacc.c:1646  */
+    { (yyval.expr) = new direct_declarator(3, (yyvsp[-2].expr)); }
 #line 2122 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 303 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new direct_declarator(3, (yyvsp[-2].expr)); }
+#line 305 "src/C90.y" /* yacc.c:1646  */
+    { (yyval.expr) = new direct_declarator(5, (yyvsp[-2].expr)); }
 #line 2128 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 99:
-#line 364 "src/C90.y" /* yacc.c:1646  */
+#line 366 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new initializer(0, (yyvsp[0].expr)); }
 #line 2134 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 100:
-#line 365 "src/C90.y" /* yacc.c:1646  */
+#line 367 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new initializer(1, (yyvsp[-1].expr)); }
 #line 2140 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 101:
-#line 366 "src/C90.y" /* yacc.c:1646  */
+#line 368 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new initializer(1, (yyvsp[-2].expr)); }
 #line 2146 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 102:
-#line 370 "src/C90.y" /* yacc.c:1646  */
+#line 372 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new initializer_list((yyvsp[0].expr)); }
 #line 2152 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 103:
-#line 371 "src/C90.y" /* yacc.c:1646  */
+#line 373 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new initializer_list((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2158 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 104:
-#line 375 "src/C90.y" /* yacc.c:1646  */
+#line 377 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
 #line 2164 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 105:
-#line 376 "src/C90.y" /* yacc.c:1646  */
+#line 378 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
 #line 2170 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 106:
-#line 377 "src/C90.y" /* yacc.c:1646  */
+#line 379 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
 #line 2176 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 107:
-#line 378 "src/C90.y" /* yacc.c:1646  */
+#line 380 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
 #line 2182 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 108:
-#line 379 "src/C90.y" /* yacc.c:1646  */
+#line 381 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
 #line 2188 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 110:
-#line 384 "src/C90.y" /* yacc.c:1646  */
+#line 386 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new labeled_statement(0, (yyvsp[0].expr)); }
 #line 2194 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 111:
-#line 385 "src/C90.y" /* yacc.c:1646  */
+#line 387 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new labeled_statement((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2200 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 112:
-#line 386 "src/C90.y" /* yacc.c:1646  */
+#line 388 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new labeled_statement(2, (yyvsp[0].expr)); }
 #line 2206 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 113:
-#line 390 "src/C90.y" /* yacc.c:1646  */
+#line 392 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new compound_statement(NULL, NULL);}
 #line 2212 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 114:
-#line 391 "src/C90.y" /* yacc.c:1646  */
+#line 393 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new compound_statement(NULL, (yyvsp[-1].expr));}
 #line 2218 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 115:
-#line 392 "src/C90.y" /* yacc.c:1646  */
+#line 394 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new compound_statement((yyvsp[-1].expr), NULL);}
 #line 2224 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 116:
-#line 393 "src/C90.y" /* yacc.c:1646  */
+#line 395 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new compound_statement((yyvsp[-2].expr), (yyvsp[-1].expr));}
 #line 2230 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 117:
-#line 397 "src/C90.y" /* yacc.c:1646  */
+#line 399 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new declaration_list((yyvsp[0].expr)); }
 #line 2236 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 118:
-#line 398 "src/C90.y" /* yacc.c:1646  */
+#line 400 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new declaration_list((yyvsp[-1].expr), (yyvsp[0].expr)); }
 #line 2242 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 119:
-#line 402 "src/C90.y" /* yacc.c:1646  */
+#line 404 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new statement_list((yyvsp[0].expr)); }
 #line 2248 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 120:
-#line 403 "src/C90.y" /* yacc.c:1646  */
+#line 405 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new statement_list((yyvsp[-1].expr), (yyvsp[0].expr)); }
 #line 2254 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 121:
-#line 407 "src/C90.y" /* yacc.c:1646  */
+#line 409 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new expression_statement(); }
 #line 2260 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 122:
-#line 408 "src/C90.y" /* yacc.c:1646  */
+#line 410 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new expression_statement((yyvsp[-1].expr)); }
 #line 2266 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 123:
-#line 412 "src/C90.y" /* yacc.c:1646  */
+#line 414 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new selection_statement(0, (yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2272 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 124:
-#line 413 "src/C90.y" /* yacc.c:1646  */
+#line 415 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new selection_statement((yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2278 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 125:
-#line 414 "src/C90.y" /* yacc.c:1646  */
+#line 416 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new selection_statement(2, (yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2284 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 126:
-#line 418 "src/C90.y" /* yacc.c:1646  */
+#line 420 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new iteration_statement(0, (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 2290 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 127:
-#line 419 "src/C90.y" /* yacc.c:1646  */
+#line 421 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new iteration_statement(1, (yyvsp[-5].expr), (yyvsp[-2].expr) ); }
 #line 2296 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 128:
-#line 420 "src/C90.y" /* yacc.c:1646  */
+#line 422 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new iteration_statement((yyvsp[-3].expr), (yyvsp[-2].expr), (yyvsp[0].expr) ); }
 #line 2302 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 129:
-#line 421 "src/C90.y" /* yacc.c:1646  */
+#line 423 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new iteration_statement((yyvsp[-4].expr), (yyvsp[-3].expr), (yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2308 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 130:
-#line 425 "src/C90.y" /* yacc.c:1646  */
+#line 427 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new jump_statement(0); }
 #line 2314 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 131:
-#line 426 "src/C90.y" /* yacc.c:1646  */
+#line 428 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new jump_statement(1); }
 #line 2320 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 132:
-#line 427 "src/C90.y" /* yacc.c:1646  */
+#line 429 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new jump_statement(2); }
 #line 2326 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 133:
-#line 428 "src/C90.y" /* yacc.c:1646  */
+#line 430 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new jump_statement(3); }
 #line 2332 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 134:
-#line 429 "src/C90.y" /* yacc.c:1646  */
+#line 431 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new jump_statement(4, (yyvsp[-1].expr)); }
 #line 2338 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 135:
-#line 433 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) new translation_unit((yyvsp[0].expr)); }
+#line 435 "src/C90.y" /* yacc.c:1646  */
+    { (yyval.expr) = new translation_unit((yyvsp[0].expr)); }
 #line 2344 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 136:
-#line 434 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) new translation_unit((yyvsp[-1].expr), (yyvsp[0].expr)); }
+#line 436 "src/C90.y" /* yacc.c:1646  */
+    { (yyval.expr) = new translation_unit((yyvsp[-1].expr), (yyvsp[0].expr)); }
 #line 2350 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 137:
-#line 438 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new external_declaration((yyvsp[0].expr)); }
+#line 440 "src/C90.y" /* yacc.c:1646  */
+    { (yyval.expr) = new external_declaration(0, (yyvsp[0].expr)); }
 #line 2356 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 138:
-#line 439 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new external_declaration((yyvsp[0].expr)); }
+#line 441 "src/C90.y" /* yacc.c:1646  */
+    { (yyval.expr) = new external_declaration(1, (yyvsp[0].expr)); }
 #line 2362 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 139:
-#line 443 "src/C90.y" /* yacc.c:1646  */
+#line 445 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new function_definition((yyvsp[-2].expr),(yyvsp[-1].expr),(yyvsp[0].expr)); }
 #line 2368 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 140:
-#line 444 "src/C90.y" /* yacc.c:1646  */
+#line 446 "src/C90.y" /* yacc.c:1646  */
     { (yyval.expr) = new function_definition((yyvsp[-1].expr),(yyvsp[0].expr)); }
 #line 2374 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
@@ -2602,14 +2602,14 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 449 "src/C90.y" /* yacc.c:1906  */
+#line 451 "src/C90.y" /* yacc.c:1906  */
 
 
-const astPtr g_root
+const ast_abs * g_root;
 
-const Expression *parseAST()
+const ast_abs * parseAST(void)
 {
-  g_root=NULL;
+  g_root=0;
   yyparse();
   return g_root;
 }
