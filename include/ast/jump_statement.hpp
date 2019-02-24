@@ -4,36 +4,32 @@
 #include "_left_list.hpp"
 /*
 jump_statement
-	: GOTO IDENTIFIER ';'
-	| CONTINUE ';'
-	| BREAK ';'
-	| RETURN ';'
-	| RETURN expression ';'
+0	: GOTO IDENTIFIER ';'
+1	| CONTINUE ';'
+2	| BREAK ';'
+3	| RETURN ';'
+4	| RETURN expression ';'
 	;
  */
 
-enum jump_type {GOTO, CONTINUE,BREAK,RETURN };
-
-
 class jump_statement: public ast_abs{
 
-    jump_type type;
+    int type;
     astPtr exp=0;
 
 public:
-    jump_statement(jump_type t): type(t){}
-    jump_statement(jump_type t, astPtr e): type(t), exp(e) {}
+    jump_statement(int t): type(t){}
+    jump_statement(int t, astPtr e): type(t), exp(e) {}
 
     void py(std::string& dst) const override{
+        std::string e;
         switch (type){
-            case RETURN:
-                if(exp!=NULL){
-                    std::string e;
-                    exp->py(e);
-                    dst="return " + e;
-                }else{
-                    dst="return";
-                }
+            case 3: // RETURN ';'
+                exp->py(e);
+                dst="return " + e;
+                break;
+            case 4: // RETURN expression ';'
+                dst="return";
                 break;
 
             default:

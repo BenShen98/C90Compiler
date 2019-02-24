@@ -21,18 +21,19 @@ class direct_declarator: public ast_abs{
     astPtr right;
 
     //only one of below is active, change to union (need  user-defineddestructors)
-    std::string identifier;
+    const std::string *identifier;
     astPtr left;
 
 public:
-    direct_declarator(std::string id):type(0),identifier(id){}              //for case 0
-    direct_declarator(astPtr declarator):type(1),left(declarator){}        //for case 1
+    direct_declarator(const std::string *id):type(0),identifier(id){}              //for case 0
+    direct_declarator(int t, astPtr declarator):type(t),left(declarator){}        //for case 1,2,3
     direct_declarator(int t, astPtr declarator, astPtr identifier_list):type(t),left(declarator),right(identifier_list){}   //for case 2,3
 
 
     ~direct_declarator() override{
         delete right;
         delete left;
+        delete identifier;
     }
 
     void py(std::string& dst) const override{
@@ -41,7 +42,7 @@ public:
 
         switch (type){
             case 0: //variable deceleration
-                dst=identifier;
+                dst=*identifier;
                 break;
             case 1: //function deceleration WITHOUT prototype
                 dst = '(' + s + ')';

@@ -25,7 +25,7 @@ public:
     }
 
     void py(std::string& dst) const override{
-        if(type!=0){
+        if(type!=NULL){
             //unary_expression
             exp->py(dst);
         }else{
@@ -37,7 +37,7 @@ public:
 
     void mp() const override{
         notImplemented();
-        if(type!=0){
+        if(type!=NULL){
             //unary_expression
 
 
