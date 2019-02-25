@@ -24,7 +24,7 @@ public:
     }
 
     void py(std::string& dst) const override{
-        if(pointer==0){
+        if(pointer==NULL){
             //case 1, direct_declarator
             direct_declarator->py(dst);
         }else{

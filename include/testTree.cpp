@@ -21,49 +21,78 @@ int main(){
     astPtr  ast=0;
     std::string pythonCode;
 
+    std::string * m = new std::string("main");
 
-//    ast= new te("statements etc");
+    std::string * x = new std::string("x");
+
 
 //    ast=new translation_unit(
-//                new external_declaration(
-//                        0,
-//                        new function_definition(
-//                                new declarator(
-//                                        new direct_declarator(
-//                                                3,
-//                                                new direct_declarator("main"),
-//                                                NULL
-//                                                )
-//                                        ),
-//                                        new compound_statement(
-//                                                new declaration_list(
-//                                                        new declaration(
-//                                                                new te("declaration_specifiers"),
-//                                                                new init_declarator_list(
-//                                                                        new init_declarator(
-//                                                                                new direct_declarator(
-//                                                                                        "x"
-//                                                                                        )
-//                                                                                )
-//                                                                        )
-//                                                                )
-//                                                        ),
-//                                                new statement_list(
-//                                                        new jump_statement(RETURN)
-//                                                        )
-//                                                )
-//                                )
-//                        )
-//            );
+//            new external_declaration(
+//                    0,
+//                    new function_definition(
+//                            new declarator(
+//                                    new direct_declarator(
+//                                            5,
+//                                            new direct_declarator(m),
+//                                            NULL
+//                                    )
+//                            ),
+//                            new compound_statement(
+//                                    new te("declaration_specifiers"),
+//                                    NULL
+//
+//                            )
+//                    )
+//            )
+//    );
 //
 //    ast->py(pythonCode);
 //    std::cout<<pythonCode<<"\n";
 
 
+    ast=new translation_unit(
+                new external_declaration(
+                        0,
+                        new function_definition(
+                                new declarator(
+                                        new direct_declarator(
+                                                5,
+                                                new direct_declarator(m),
+                                                NULL
+                                                )
+                                        ),
+                                        new compound_statement(
+                                                new declaration_list(
+                                                        new declaration(
+                                                                new te("declaration_specifiers"),
+                                                                new init_declarator_list(
+                                                                        new init_declarator(
+                                                                                new direct_declarator(
+                                                                                        x
+                                                                                        )
+                                                                                )
+                                                                        )
+                                                                )
+                                                        ),
+                                                new statement_list(
+                                                        new jump_statement(3)
+                                                        )
+                                                )
+                                )
+                        )
+            );
+
+    std::cout<<"to py"<<"\n";
+
+
+    ast->py(pythonCode);
+    std::cout<<pythonCode<<"\n";
+
+
     // ((1<<2)and(a*(xx+yy)))
-    ast=new algebra(AND_OP,
+    ast=new algebra(AND_,
             new algebra(
-                    LEFT_OP,
+                    LEFT_,
                     new te("1"),
                     new te("2")
                     ),
