@@ -339,11 +339,11 @@ direct_declarator
 ////	| identifier_list ',' IDENTIFIER
 ////	;
 //
-//type_name
-//	: specifier_qualifier_list
-//	| specifier_qualifier_list abstract_declarator
-//	;
-//
+
+type_name
+	: specifier_qualifier_list
+	| specifier_qualifier_list abstract_declarator;
+
 //abstract_declarator
 //	: pointer
 //	| direct_abstract_declarator
