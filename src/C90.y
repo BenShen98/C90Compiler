@@ -33,7 +33,7 @@
 
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
 
-%start translation_unit
+%start top
 
 // parameter_type_list parameter_list struct_or_union_specifier struct_or_union pointer struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list struct_declarator enum_specifier enumerator_list enumerator type_qualifier_list direct_abstract_declarator abstract_declarator type_name parameter_declaration
 %type <expr> primary_expression postfix_expression argument_expression_list unary_expression cast_expression multiplicative_expression additive_expression shift_expression
@@ -296,7 +296,7 @@ declarator
 	;
 
 direct_declarator
-	: IDENTIFIER					{ std::cout<<"   str   "<<std::flush;std::cout<<*$1; $$ = new direct_declarator(($1)); }
+	: IDENTIFIER					{ $$ = new direct_declarator(($1)); }
 	| '(' declarator ')'				{ $$ = new direct_declarator(1, $2); }
 	| direct_declarator '[' constant_expression ']'	{ $$ = new direct_declarator(2, $1, $3); }
 	| direct_declarator '[' ']'			{ $$ = new direct_declarator(3, $1); }
@@ -430,6 +430,9 @@ jump_statement
 	| RETURN ';'		{ $$ = new jump_statement(3); }
 	| RETURN expression ';'	{ $$ = new jump_statement(4, $2); }
 	;
+
+top
+	: translation_unit { g_root=$1; }
 
 translation_unit
 	: external_declaration			{ $$ = new translation_unit($1); }

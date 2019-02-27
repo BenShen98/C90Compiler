@@ -3,7 +3,7 @@
 
 #include "_ast_abs.hpp"
 #include "assignment_operator.hpp"
-/*
+/*CHECKED
 assignment_expression
 0	: conditional_expression
 1	| unary_expression assignment_operator assignment_expression
@@ -12,9 +12,9 @@ assignment_expression
  */
 
 class assignment_expression: public ast_abs{
-    astPtr unary_expression;
-    enum_assignment assignment_operator;
-    astPtr expression=0; // this will be the conditional_expression in case 0, and assignment_expression in case 1
+    astPtr unary_expression=0;
+    enum_assignment assignment_operator=ASSIGN;
+    astPtr expression; // this will be the conditional_expression in case 0, and assignment_expression in case 1
 
 public:
     assignment_expression(astPtr conditional_expression):expression(conditional_expression){}

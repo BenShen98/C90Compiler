@@ -5,7 +5,10 @@ CPPFLAGS += -Wfatal-errors -ggdb
 
 
 all : clean ./bin/c_compiler
-	 ./bin/c_compiler < ./test.c
+	 ./bin/c_compiler --translate test.c -o x.py
+
+debug: clean ./bin/c_compiler
+	gdb ./bin/c_compiler -gb
 
 src/C90_parser.tab.cpp src/C90_parser.tab.hpp : src/C90.y
 	bison -v -d src/C90.y -o src/C90_parser.tab.cpp

@@ -3,7 +3,7 @@
 
 #include "_ast_abs.hpp"
 #include <iostream>
-/*
+/*CHECKED
 cast_expression
 	: unary_expression
 	| '(' type_name ')' cast_expression
@@ -25,7 +25,7 @@ public:
     }
 
     void py(std::string& dst) const override{
-        if(type!=NULL){
+        if(type==NULL){
             //unary_expression
             exp->py(dst);
         }else{
@@ -37,7 +37,7 @@ public:
 
     void mp() const override{
         notImplemented();
-        if(type!=NULL){
+        if(type==NULL){
             //unary_expression
 
 

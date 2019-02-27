@@ -1,3 +1,5 @@
 int main(){
-    return 55;
+    int x;
+    x=5;
+    return (56*7+1)-100;
 }

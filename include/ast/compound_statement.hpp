@@ -3,7 +3,7 @@
 
 #include "_ast_abs.hpp"
 #include <string>
-/*
+/*CHECKED
 compound_statement
 	: '{' '}'
 	| '{' statement_list '}'
@@ -34,7 +34,7 @@ public:
            statement_list->py(s);
        }
 
-       dst = d + '\n' + s;
+       dst = d + s;
     }
 
     void mp() const override{

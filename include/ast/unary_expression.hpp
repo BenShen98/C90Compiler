@@ -3,7 +3,7 @@
 
 #include "_ast_abs.hpp"
 #include <string>
-/*
+/*CHECKED
 unary_expression
 0	: postfix_expression
 1	| INC_OP unary_expression
@@ -26,7 +26,7 @@ special case for unary_operator:
 
 class unary_expression: public ast_abs{
     int type;
-    astPtr pt=0;
+    astPtr pt;
 
 public:
     unary_expression(int t, astPtr p):type(t),pt(p){}
@@ -41,7 +41,7 @@ public:
         pt->py(p);
 
         switch (type){
-            case 0: //primary_expression
+            case 0:
                 dst=p;
                 break;
 

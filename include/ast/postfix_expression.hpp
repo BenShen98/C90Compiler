@@ -28,9 +28,9 @@ class postfix_expression: public ast_abs{
 
 
 public:
-    postfix_expression(int t, astPtr p):type(t),pt(p){ std::cerr<< "primary_expression type0,2,6,7 | get"<< t<<"\n"; } //case 0,2,6,7
-    postfix_expression(int t, astPtr p, std::string * i):type(t),pt(p), id(i){ std::cerr<< "primary_expression type4,5 | get"<< t<<"\n"; } //case 4,5
-    postfix_expression(int t, astPtr p, astPtr o):type(t),pt(p), op(o){ std::cerr<< "primary_expression type1,3 | get"<< t<<"\n"; } //case 1,3
+    postfix_expression(int t, astPtr p):type(t),pt(p){} //case 0,2,6,7
+    postfix_expression(int t, astPtr p, std::string * i):type(t),pt(p), id(i){} //case 4,5
+    postfix_expression(int t, astPtr p, astPtr o):type(t),pt(p), op(o){} //case 1,3
 
 
     ~postfix_expression() override{

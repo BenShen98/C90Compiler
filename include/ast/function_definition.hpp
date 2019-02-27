@@ -21,8 +21,8 @@ class function_definition: public ast_abs{
 
 
 public:
-    function_definition(astPtr a, astPtr b, astPtr c):declaration_specifiers(a),declarator(b), compound_statement(c){std::cerr<<"function_definition 3 arg\n";}
-    function_definition(astPtr b, astPtr c):declarator(b), compound_statement(c){std::cerr<<"function_definition 2 arg\n";}
+    function_definition(astPtr a, astPtr b, astPtr c):declaration_specifiers(a),declarator(b), compound_statement(c){}
+    function_definition(astPtr b, astPtr c):declarator(b), compound_statement(c){}
 
 
     ~function_definition() override{
