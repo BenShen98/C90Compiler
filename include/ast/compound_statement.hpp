@@ -34,7 +34,7 @@ public:
            statement_list->py(s);
        }
 
-       dst = d + s;
+       dst = d + '\n' + s;
     }
 
     void mp() const override{

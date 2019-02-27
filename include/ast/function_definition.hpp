@@ -39,7 +39,7 @@ public:
         compound_statement->py(body);
         indent(body);
 
-        dst = "def " + func + ":\n" + body;
+        dst = "def " + func + ":\n" + body + "\n\n";
 
     }
 

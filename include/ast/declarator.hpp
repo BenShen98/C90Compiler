@@ -34,6 +34,10 @@ public:
         }
     }
 
+    enum_declarator_type query_declarator_type() const override{
+        return direct_declarator->query_declarator_type();
+    }
+
     void mp() const override{
         notImplemented();
         if(pointer==0){

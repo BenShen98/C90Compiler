@@ -28,11 +28,15 @@ public:
         declarator->py(d);
 
         if(initializer==NULL){
-            dst=d;
+            dst=d + "=0";
         }else{
             initializer->py(i);
             dst = d + '=' + i;
         }
+    }
+
+    enum_declarator_type query_declarator_type() const override{
+        return declarator->query_declarator_type();
     }
 
     void mp() const override{

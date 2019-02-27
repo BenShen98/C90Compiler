@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include "_query_enum.hpp"
 
 class ast_abs;
 
@@ -35,6 +36,11 @@ public:
 
     virtual void mp() const
     { notImplemented(); }
+
+
+    virtual enum_declarator_type query_declarator_type() const {
+        return OTHER;
+    }
 };
 
 

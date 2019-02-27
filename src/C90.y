@@ -35,11 +35,10 @@
 
 %start top
 
-// parameter_type_list parameter_list struct_or_union_specifier struct_or_union pointer struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list struct_declarator enum_specifier enumerator_list enumerator type_qualifier_list direct_abstract_declarator abstract_declarator type_name parameter_declaration
-%type <expr> primary_expression postfix_expression argument_expression_list unary_expression cast_expression multiplicative_expression additive_expression shift_expression
+%type <expr> parameter_declaration primary_expression postfix_expression argument_expression_list unary_expression cast_expression multiplicative_expression additive_expression shift_expression
 %type <expr> relational_expression equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
-%type <expr> conditional_expression assignment_expression expression constant_expression declaration declaration_specifiers init_declarator_list init_declarator
-%type <expr>storage_class_specifier type_specifier  declarator direct_declarator initializer initializer_list labeled_statement compound_statement declaration_list statement_list expression_statement selection_statement iteration_statement jump_statement statement translation_unit external_declaration function_definition
+%type <expr> parameter_list conditional_expression assignment_expression expression constant_expression declaration declaration_specifiers init_declarator_list init_declarator
+%type <expr> parameter_type_list  storage_class_specifier type_specifier  declarator direct_declarator initializer initializer_list labeled_statement compound_statement declaration_list statement_list expression_statement selection_statement iteration_statement jump_statement statement translation_unit external_declaration function_definition
 %type <str> IDENTIFIER CONSTANT STRING_LITERAL
 %type <i> unary_operator
 %type <en_ass> assignment_operator
@@ -296,11 +295,11 @@ declarator
 	;
 
 direct_declarator
-	: IDENTIFIER					{ $$ = new direct_declarator(($1)); }
+	: IDENTIFIER					{ $$ = new direct_declarator($1); }
 	| '(' declarator ')'				{ $$ = new direct_declarator(1, $2); }
 	| direct_declarator '[' constant_expression ']'	{ $$ = new direct_declarator(2, $1, $3); }
 	| direct_declarator '[' ']'			{ $$ = new direct_declarator(3, $1); }
-//	| direct_declarator '(' parameter_type_list ')'	{ $$ = new direct_declarator(4, $1, $3); }
+	| direct_declarator '(' parameter_type_list ')'	{ $$ = new direct_declarator(4, $1, $3); }
 //	| direct_declarator '(' identifier_list ')'	// OLD KR style
 	| direct_declarator '(' ')'			{ $$ = new direct_declarator(5, $1); }
 	;
@@ -318,22 +317,22 @@ direct_declarator
 //	;
 
 
-//parameter_type_list
-//	: parameter_list	{ $$=$1; }
+parameter_type_list
+	: parameter_list	{ $$=$1; }
 //	| parameter_list ',' ELLIPSIS {/*not in use*/}
 	;
 
-//parameter_list
-//	: parameter_declaration				{ $$ =new parameter_list($1); }
-//	| parameter_list ',' parameter_declaration	{ $$ =new parameter_list($1,$2); }
-//	;
+parameter_list
+	: parameter_declaration				{ $$ = new parameter_list($1); }
+	| parameter_list ',' parameter_declaration	{ $$ = new parameter_list($1, $3); }
+	;
 
-//parameter_declaration
-//	: declaration_specifiers declarator
+parameter_declaration
+	: declaration_specifiers declarator		{ $$ = new parameter_declaration(0, $1, $2); }
 //	| declaration_specifiers abstract_declarator
-//	| declaration_specifiers
-//	;
-//
+	| declaration_specifiers			{ $$ = new parameter_declaration($1); }
+	;
+
 ////identifier_list
 ////	: IDENTIFIER
 ////	| identifier_list ',' IDENTIFIER

@@ -68,6 +68,16 @@ public:
 
     }
 
+    enum_declarator_type query_declarator_type() const override{
+        if( type==2 || type==3 ){
+            return ARRAY;
+        } else if( type==4 || type==5 ){
+            return FUNC;
+        } else{
+            return OTHER;
+        }
+    }
+
     void mp() const override{
         switch (type){
 

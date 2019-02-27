@@ -32,14 +32,13 @@ int  main(int argc, char* argv[]){
     dd();
 
     if( strcmp(argv[1],"--translate")==0 ){
-        std::cout<<"X";
         //logic to translate to python
         std::string pyFile;
         root->py(pyFile);
         ffout<<pyFile;
 
         // add entry to the python file
-        ffout<<"\n# Invoke main as the starting point\n"
+        ffout<<"\n\n# Invoke main as the starting point\n"
                "if __name__ == \"__main__\":\n"
                "    import sys\n"
                "    ret=main()\n"
