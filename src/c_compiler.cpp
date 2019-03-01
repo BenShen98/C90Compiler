@@ -5,7 +5,7 @@
 #include <string>
 #include <string.h>
 
-std::ofstream ffout;
+extern std::ofstream ffout;
 extern FILE *yyin;
 
 
