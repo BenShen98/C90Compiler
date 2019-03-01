@@ -28,7 +28,7 @@ public:
     {}
 
     //! Tell and expression to print itself to the given stream
-//    virtual void print(std::ostream &dst) const =0;
+    virtual std::string c() const =0;
 
     //! convert ast to python
     virtual void py(std::string& dst) const

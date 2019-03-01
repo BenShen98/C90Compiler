@@ -39,13 +39,21 @@ public:
         notImplemented();
         if(type==NULL){
             //unary_expression
-
-
         }else{
             //'(' type_name ')' cast_expression
-
         }
     }
+
+    virtual std::string c(){
+      if (type!=NULL){
+        return exp->c();
+      }
+      else {
+        return "(" + type->c()+  ")";
+        // WHAT !
+      }
+    }
+
 
 };
 

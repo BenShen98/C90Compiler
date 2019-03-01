@@ -12,6 +12,7 @@ LIST
  */
 
 class right_list: public ast_abs{
+protected:
     astPtr element;
     astPtr list=0;
 
@@ -34,9 +35,14 @@ public:
         }else{
             dst=e;
         }
+    }
 
-
-
+    virtual std::string c() const override{
+      if(list!=NULL){
+        return element->c() + list->c();
+      }else{
+        return element->c();
+      }
     }
 
     virtual void mp() const override{
