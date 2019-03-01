@@ -26,9 +26,9 @@ class direct_declarator: public ast_abs{
     astPtr right;
 
 public:
-    direct_declarator(std::string * id):type(0),identifier(id){std::cerr<<"direct_declarator type0 | get0"<<*id<<"\n";}              //for case 0
-    direct_declarator(int t, astPtr declarator):type(t),left(declarator){ std::cerr<<"direct_declarator type1,3,5 | get"<<t<<"\n"; }        //for case 1,3,5
-    direct_declarator(int t, astPtr declarator, astPtr identifier_list):type(t), left(declarator),right(identifier_list){std::cerr<<"direct_declarator type2,4 | get"<<t<<"\n";}   //for case 2,4
+    direct_declarator(std::string * id):type(0),identifier(id){}              //for case 0
+    direct_declarator(int t, astPtr declarator):type(t),left(declarator){}        //for case 1,3,5
+    direct_declarator(int t, astPtr declarator, astPtr identifier_list):type(t), left(declarator),right(identifier_list){}   //for case 2,4
 
 
     ~direct_declarator() override{
@@ -66,6 +66,16 @@ public:
                 notImplemented();
         }
 
+    }
+
+    enum_declarator_type query_declarator_type() const override{
+        if( type==2 || type==3 ){
+            return ARRAY;
+        } else if( type==4 || type==5 ){
+            return FUNC;
+        } else{
+            return OTHER;
+        }
     }
 
     void mp() const override{

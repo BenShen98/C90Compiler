@@ -3,7 +3,7 @@
 
 #include "_ast_abs.hpp"
 
-/*
+/*CHECKED
 declaration
 	: declaration_specifiers ';'
 	| declaration_specifiers init_declarator_list ';'
@@ -26,7 +26,10 @@ public:
 
     void py(std::string& dst) const override{
         //ignore type check, by spec only requires int variable
-        init_declarator_list->py(dst);
+        if(init_declarator_list!=NULL){
+            init_declarator_list->py(dst);
+        }
+
     }
 
     void mp() const override{

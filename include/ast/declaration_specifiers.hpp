@@ -14,14 +14,14 @@ X	| type_qualifier declaration_specifiers
 	;
  */
 
-class declaration_specifiers: public left_list{
+class declaration_specifiers: public right_list{
 
 public:
-    declaration_specifiers(astPtr l, astPtr e)
-        :left_list(l,e){}
+    declaration_specifiers(astPtr e, astPtr l)
+        :right_list(e,l){}
 
     declaration_specifiers(astPtr e)
-        :left_list(e){}
+        :right_list(e){}
 
 };
 

@@ -3,7 +3,7 @@
 
 #include "_ast_abs.hpp"
 
-/*
+/*CHECKED
 conditional_expression
 	: logical_or_expression
 	| logical_or_expression '?' expression ':' conditional_expression

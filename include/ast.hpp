@@ -47,6 +47,7 @@
 #include "ast/type_specifier.hpp"
 #include "ast/unary_expression.hpp"
 #include "ast/unary_operator.hpp"
+#include "ast/parameter_declaration.hpp"
 
 
 

@@ -3,7 +3,7 @@
 
 #include "_ast_abs.hpp"
 #include <string>
-/*
+/*CHECKED
 compound_statement
 	: '{' '}'
 	| '{' statement_list '}'

@@ -23,7 +23,12 @@ public:
     }
 
     void py(std::string& dst) const override{
-        notImplemented();
+        if(type==0){
+            data->py(dst);
+        }else{
+            notImplemented();
+        }
+
     }
 
     void mp() const override{

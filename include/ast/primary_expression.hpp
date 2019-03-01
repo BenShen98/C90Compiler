@@ -25,8 +25,8 @@ class primary_expression: public ast_abs{
 
 
 public:
-    primary_expression(int t,std::string * s):type(t),str(s){ std::cerr<< "primary_expression type0,1,2 | get"<< t<<"\n"; }   //for type 0,1,2
-    primary_expression(int t, astPtr p):type(t),pt(p){ std::cerr<< "primary_expression type3 | get"<< t<<"\n"; }         //for type 3
+    primary_expression(int t,std::string * s):type(t),str(s){}   //for type 0,1,2
+    primary_expression(int t, astPtr p):type(t),pt(p){}         //for type 3
 
 
     ~primary_expression() override{

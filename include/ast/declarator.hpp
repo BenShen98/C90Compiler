@@ -15,8 +15,8 @@ class declarator: public ast_abs{
     astPtr direct_declarator;
 
 public:
-    declarator(astPtr t, astPtr d):pointer(t),direct_declarator(d){ std::cerr<<"declarator 2 arg\n"; }
-    declarator(astPtr d):pointer(0),direct_declarator(d){ std::cerr<<"declarator 1 arg\n"; }
+    declarator(astPtr t, astPtr d):pointer(t),direct_declarator(d){}
+    declarator(astPtr d):pointer(0),direct_declarator(d){}
 
     ~declarator() override{
         delete pointer;
@@ -32,6 +32,10 @@ public:
             std::cerr<<"Python does not support pointer\n";
             notImplemented();
         }
+    }
+
+    enum_declarator_type query_declarator_type() const override{
+        return direct_declarator->query_declarator_type();
     }
 
     void mp() const override{
