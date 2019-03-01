@@ -28,6 +28,8 @@
  * where relative_sp=0
  * the increment of ID correspond to the decrement of SP
  *
+ * USE BYTE as unit for size i.e. 1 word have size 4
+ *
  * MEANING OF TYPE FILED
  * each bit of type is used to store the different type info, let 0 be LSB, 31 be MSB
  * BIT  |       =1        |          =0          |
@@ -38,7 +40,7 @@
  *  4   |   is_empty      | not_empty
  *  5   |   is_RA      | not_RA
  *  31  |   is_type_filed | EXCEPTION
-
+ *
  */
 
 class Stack {
@@ -47,7 +49,7 @@ private:
 
 //data struct
     typedef struct _entry{
-        int size;
+        int size; //in term of byte
         int type;
         std::string name;
     } entry;

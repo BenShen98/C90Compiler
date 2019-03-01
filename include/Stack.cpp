@@ -54,7 +54,7 @@ std::string Stack::find(std::string n){
     //find matching name from top of the stack (itr backwards)
     int i =entries.size()-1;
 
-    while (entries[i].name!=n){
+    while (entries.at(i).name!=n){
         --i;
     }
 
