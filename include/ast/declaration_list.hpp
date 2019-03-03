@@ -19,6 +19,15 @@ public:
     declaration_list(astPtr e)
         :left_list(e){}
 
+    virtual std::string c()const override{
+      if(l!=NULL){
+        return l->c() + e->c();
+      }
+      else{
+        return e->c();
+      }
+    }
+
 };
 
 #endif

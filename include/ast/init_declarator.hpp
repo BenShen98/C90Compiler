@@ -35,6 +35,15 @@ public:
         }
     }
 
+    std::string c()const override{
+      if (initializer==NULL){
+        return declarator->c();
+      }
+      else{
+        return declarator->c() + '=' + initializer->c();
+      }
+    }
+
     enum_declarator_type query_declarator_type() const override{
         return declarator->query_declarator_type();
     }

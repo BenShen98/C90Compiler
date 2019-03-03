@@ -49,6 +49,17 @@ public:
 
     }
 
+    std::string c()const override{
+      switch (type) {
+        case 0:
+          return "while(" + condition->c() + ')'+ statement->c();
+        case 1:
+          return "do" + statement->c() + "while(" + condition->c() + ')';
+        case 2:
+          notImplemented();
+      }
+    }
+
     void mp() const override{
         notImplemented();
     }

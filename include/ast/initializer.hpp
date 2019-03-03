@@ -31,6 +31,16 @@ public:
 
     }
 
+    std::string c()const override{
+      if (type==0){
+        return data->c();
+      }
+      else{
+        return '{' + data->c() + '}';
+        // how to differentiate between ','
+      }
+    }
+
     void mp() const override{
         notImplemented();
 

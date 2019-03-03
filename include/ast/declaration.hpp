@@ -32,6 +32,15 @@ public:
 
     }
 
+    std::string c()const override{
+      if(init_declarator_list!=NULL){
+        return declaration_specifiers->c() + init_declarator_list->c() + ';';
+      }
+      else{
+        return declaration_specifiers->c() + ';';
+      }
+    }
+
     void mp() const override{
         notImplemented();
     }

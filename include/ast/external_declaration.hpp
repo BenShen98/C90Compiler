@@ -23,7 +23,10 @@ public:
 
     void py(std::string& dst) const override{
         data->py(dst);
+    }
 
+    std::string c()const override{
+      return data->c();
     }
 
     void mp() const override{

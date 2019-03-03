@@ -43,6 +43,15 @@ public:
 
     }
 
+    std::string c()const override{
+      if(declaration_specifiers!=NULL){
+        return declaration_specifiers->c() + declarator->c() + compound_statement->c();
+      }
+      else {
+        return declarator->c() + compound_statement->c();
+      }
+    }
+
     void mp() const override{
         notImplemented();
         if (declaration_specifiers==NULL){

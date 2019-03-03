@@ -6,23 +6,31 @@
 /*
 declaration_specifiers
 	: storage_class_specifier
-	| storage_class_specifier declaration_specifiers
-	| type_specifier
-	| type_specifier declaration_specifiers
-X	| type_qualifier
-X	| type_qualifier declaration_specifiers
-	;
- */
+  | storage_class_specifier declaration_specifiers
+  | type_specifier
+  | type_specifier declaration_specifiers
+  X	| type_qualifier
+  X	| type_qualifier declaration_specifiers
+  ;
+  */
 
-class declaration_specifiers: public right_list{
+  class declaration_specifiers: public right_list{
 
-public:
+  public:
     declaration_specifiers(astPtr e, astPtr l)
-        :right_list(e,l){}
+    :right_list(e,l){}
 
     declaration_specifiers(astPtr e)
-        :right_list(e){}
+    :right_list(e){}
 
-};
+    virtual std::string c()const override{
+      if(l!=NULL){
+        return e->c() + l->c();
+      }
+      else{
+        return e->c();
+      }
+    }
+  };
 
 #endif

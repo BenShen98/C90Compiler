@@ -27,7 +27,15 @@ public:
        if(exp!=NULL){
            exp->py(dst);
        }
+    }
 
+    std::string c()const override{
+      if(exp!=NULL){
+        return exp->c() + ';';
+      }
+      else {
+        return ";";
+      }
     }
 
     void mp() const override{

@@ -11,6 +11,9 @@ expression
  */
 
 class expression: public left_list{
+protected:
+  astPtr l;
+  astPtr e;
 
 public:
     expression(astPtr l, astPtr e)
@@ -18,6 +21,15 @@ public:
 
     expression(astPtr e)
         :left_list(e){}
+
+    std::string c()const override{
+      if(l!=NULL){
+        return l->c() + ',' + e->c();
+      }
+      else{
+        return e->c();
+      }
+    }
 
 };
 

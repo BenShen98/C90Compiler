@@ -22,7 +22,6 @@ class direct_declarator: public ast_abs{
     //only one of below is active, change to union (need  user-defineddestructors)
     std::string * identifier;
     astPtr left;
-
     astPtr right;
 
 public:
@@ -61,6 +60,27 @@ public:
                 dst = s + "()";
                 break;
 
+            default:
+                std::cerr<<"direct_declarator default case\n";
+                notImplemented();
+        }
+
+    }
+
+  std::string c() const override{
+        switch (type){
+            case 0: //variable deceleration
+                return *identifier;
+            case 1: //function deceleration WITHOUT prototype
+                return '(' + left->c() + ')';
+            case 2: //constant_expression []
+                return left->c() + '[' + right->c() + ']';
+            case 3: //[]
+                return left->c() + '[ '+ ' ]';
+            case 4: //parameter_type_list()
+                return left->c() + '(' + right->c() + ')';
+            case 5:
+                return left->c() + "()";
             default:
                 std::cerr<<"direct_declarator default case\n";
                 notImplemented();
