@@ -23,11 +23,11 @@ public:
   :left_list(e){}
 
   std::string c()const override{
-    if(l!=NULL){
-      return l->c() + ',' + e->c();
+    if(list!=NULL){
+      return list->c() + ',' + element->c();
     }
     else{
-      return e->c();
+      return element->c();
     }
   }
 };

@@ -57,7 +57,7 @@ public:
         return exp->c();
       }
       else {
-        return exp->c() + '?' + is_true->c() + ':' is_false->c();
+        return exp->c() + '?' + is_true->c() + ':' + is_false->c();
       }
     }
 

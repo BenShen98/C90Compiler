@@ -1,12 +1,19 @@
 #include "ast.hpp"
+// #include "Stack.hpp"
+// #include "TempReg.hpp"
 
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <string.h>
 
-std::ofstream ffout;
+extern std::ofstream ffout;
 extern FILE *yyin;
+// extern Stack stack;
+// extern TempReg tReg;
+
+std::ofstream ffout;
+
 
 
 //debug dummy
@@ -47,6 +54,10 @@ int  main(int argc, char* argv[]){
     }else if( strcmp(argv[1],"-S")==0 || strcmp(argv[1],"-s")==0 ){
         //logic for compile to MIPS I assembly
 
+    }else if( strcmp(argv[1],"-C")==0 || strcmp(argv[1],"-c")==0 ){
+      // print C
+      ffout<<root->c();
+
     }else{
         std::cerr<<argv[1]<<" is not a valid option, only support --translate for translate OR -S for compile\n";
         exit(-1);
@@ -61,4 +72,3 @@ int  main(int argc, char* argv[]){
 
     return 0;
 }
-

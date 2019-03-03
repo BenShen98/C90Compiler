@@ -70,6 +70,29 @@ public:
 
     }
 
+    std::string c() const override{
+        switch (type){
+            case 0:
+              return pt->c();
+            case '+':
+              return '+' + pt->c();
+
+            case '-':
+              return '-' + pt->c();
+
+            case '!':
+              return '!' + pt->c();
+
+            case '~':
+              return '~' + pt->c();
+
+            default:
+                notImplemented();
+                //ignore & * unary_operator
+                break;
+        }
+    }
+
     void mp() const override{
         switch (type){
 

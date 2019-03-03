@@ -65,6 +65,38 @@ public:
 
     }
 
+    std::string c() const override{
+        switch (type){
+            case 0: //primary_expression
+              return pt->c();
+
+            case 1: //postfix_expression '[' expression ']'
+              return pt->c() + "[" + op->c() + "]";
+
+            case 2: //postfix_expression '(' ')'
+              return pt->c() + "()";
+
+            case 3: //postfix_expression '(' argument_expression_list ')'
+              return pt->c() + '(' + op->c() + ')';
+
+            case 4://postfix_expression '.' IDENTIFIER
+              return pt->c() + "." + *id ;
+
+            case 5://postfix_expression PTR_OP IDENTIFIER
+              return pt->c() + "->" + *id;
+
+            case 6://postfix_expression INC_OP
+              return pt->c() + "++";
+
+            case 7://postfix_expression DEC_OP
+              return pt->c() + "--";
+
+            default:
+                notImplemented();
+                break;
+        }
+    }
+
     void mp() const override{
         switch (type){
 

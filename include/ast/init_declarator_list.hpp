@@ -14,7 +14,7 @@ class init_declarator_list: public left_list{
 protected:
   astPtr l;
   astPtr e;
-  
+
 public:
   init_declarator_list(astPtr l, astPtr e)
   :left_list(l,e){}
@@ -23,11 +23,11 @@ public:
   :left_list(e){}
 
   virtual std::string c()const override{
-    if(l!=NULL){
-      return l->c() + ',' + e->c();
+    if(list!=NULL){
+      return list->c() + ',' + element->c();
     }
     else{
-      return e->c();
+      return element->c();
     }
   }
 

@@ -16,13 +16,17 @@ class labeled_statement: public ast_abs{
     astPtr exp=0;
     astPtr st;
 
+    std::string * str;
+
 public:
-    labeled_statement(int t, astPtr s): type(t), st(s){}
+    labeled_statement(astPtr s): type(2), st(s){}
     labeled_statement(astPtr e, astPtr s): type(1), exp(e), st(s) {}
+    labeled_statement(std::string * s, astPtr sta): type(0), str(s), st(sta) {}
 
     ~labeled_statement() override{
         delete exp;
         delete st;
+        delete str;
     }
 
     void py(std::string& dst) const override{
@@ -32,6 +36,16 @@ public:
     void mp() const override{
         notImplemented();
 
+    }
+    std::string c()const override{
+      switch(type){
+        case 0:
+          return *str + ':' + st->c();
+        case 1:
+          return "case " + exp->c() + ':' + st->c();
+        case 2:
+          return "default:" + st->c();
+      }
     }
 
 };

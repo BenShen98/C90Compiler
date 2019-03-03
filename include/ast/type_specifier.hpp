@@ -37,7 +37,30 @@ public:
         notImplemented();
     }
 
-
+    std::string c()const override{
+      switch(type){
+        case 0:
+        return "void";
+        case 1:
+        return "char";
+        case 2:
+        return "short";
+        case 3:
+        return "int";
+        case 4:
+        return "long";
+        case 5:
+        return "float";
+        case 6:
+        return "double";
+        case 7:
+        return "signed";
+        case 8:
+        return "unsigned";
+        case 9:
+        return "struct";
+      }
+    }
 };
 
 #endif

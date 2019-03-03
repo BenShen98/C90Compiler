@@ -76,7 +76,7 @@ public:
             case 2: //constant_expression []
                 return left->c() + '[' + right->c() + ']';
             case 3: //[]
-                return left->c() + '[ '+ ' ]';
+                return left->c() + "[]";
             case 4: //parameter_type_list()
                 return left->c() + '(' + right->c() + ')';
             case 5:

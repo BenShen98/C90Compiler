@@ -43,7 +43,14 @@ public:
 //        _unit->mp();
 //        _declaration->mp();
 //    }
-
+std::string c()const override{
+  if(list!=NULL){
+    return list->c() + ',' + element->c();
+  }
+  else{
+    return element->c();
+  }
+}
 };
 
 #endif

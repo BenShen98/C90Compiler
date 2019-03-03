@@ -24,11 +24,11 @@ declaration_specifiers
     :right_list(e){}
 
     virtual std::string c()const override{
-      if(l!=NULL){
-        return e->c() + l->c();
+      if(list!=NULL){
+        return element->c() + list->c();
       }
       else{
-        return e->c();
+        return element->c();
       }
     }
   };

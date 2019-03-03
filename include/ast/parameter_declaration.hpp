@@ -49,6 +49,22 @@ public:
 
     }
 
+    std::string c() const override{
+        switch (type){
+            case 0:
+                return declaration_specifiers->c() + declarator->c();
+
+            case 1: //abstract_declarator
+                notImplemented();
+                break;
+            case 2: //only declared types
+                //DO NOTHING
+                return declaration_specifiers->c();
+
+        }
+
+    }
+
     void mp() const override{
         switch (type){
 

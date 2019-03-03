@@ -26,6 +26,21 @@ public:
         //python does not define type, skip
     }
 
+    std::string c()const override{
+      switch(type){
+        case 0:
+        return "typedef";
+        case 1:
+        return "extern";
+        case 2:
+        return "static";
+        case 3:
+        return "auto";
+        case 4:
+        return "register";
+      }
+    }
+
     void mp() const override{
         notImplemented();
     }

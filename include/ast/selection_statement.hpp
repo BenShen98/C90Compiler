@@ -53,6 +53,17 @@ public:
 
     }
 
+    std::string c() const override{
+        switch (type){
+            case 0:
+                return  std::string("if(") + exp->c() + ")" + s1->c();
+            case 1:
+                return  std::string("if(") + exp->c() + ")" + s1->c() + "\nelse\n" + s2->c();
+            case 2:
+                return std::string("switch") + "(" + exp->c() + ")" + s1->c();
+        }
+    }
+
     void mp() const override{
         notImplemented();
     }

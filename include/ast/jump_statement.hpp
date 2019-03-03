@@ -37,6 +37,17 @@ public:
         }
     }
 
+    std::string c() const override{
+        switch (type){
+            case 3: // RETURN ';'
+                return "return ;";
+            case 4: // RETURN expression ';'
+                return "return" + exp->c() + ";";
+            default:
+                notImplemented();
+        }
+    }
+
     void mp() const override{
         notImplemented();
 

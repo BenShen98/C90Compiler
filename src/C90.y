@@ -338,11 +338,11 @@ parameter_declaration
 ////	| identifier_list ',' IDENTIFIER
 ////	;
 //
-
-type_name
-	: specifier_qualifier_list
-	| specifier_qualifier_list abstract_declarator;
-
+//type_name
+//	: specifier_qualifier_list
+//	| specifier_qualifier_list abstract_declarator
+//	;
+//
 //abstract_declarator
 //	: pointer
 //	| direct_abstract_declarator
@@ -382,9 +382,9 @@ statement
 	;
 
 labeled_statement
-	: IDENTIFIER ':' statement			{ $$ = new labeled_statement(0, $3); }
+	: IDENTIFIER ':' statement			{ $$ = new labeled_statement($1,$3); }
 	| CASE constant_expression ':' statement	{ $$ = new labeled_statement($2, $4); }
-	| DEFAULT ':' statement				{ $$ = new labeled_statement(2, $3); }
+	| DEFAULT ':' statement				{ $$ = new labeled_statement($3); }
 	;
 
 compound_statement
@@ -451,9 +451,7 @@ function_definition
 	;
 
 %%
-
 const ast_abs * g_root;
-
 const ast_abs * parseAST(void)
 {
   g_root=0;

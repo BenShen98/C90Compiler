@@ -57,7 +57,7 @@ public:
           return '{' + statement_list->c() + '}';
         }
         else{
-          return '{' + '}';
+          return "{}";
         }
       }
     }
