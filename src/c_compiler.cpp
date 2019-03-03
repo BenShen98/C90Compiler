@@ -1,4 +1,6 @@
 #include "ast.hpp"
+#include "Stack.hpp"
+#include "TempReg.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -7,6 +9,11 @@
 
 extern std::ofstream ffout;
 extern FILE *yyin;
+extern Stack stack;
+extern TempReg tReg;
+
+
+
 
 
 //debug dummy
