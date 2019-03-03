@@ -56,7 +56,9 @@ public:
         case 1:
           return "do" + statement->c() + "while(" + condition->c() + ')';
         case 2:
-          notImplemented();
+          return "for(" + init->c() + condition->c() + ')' + statement->c();
+        case 3:
+          return "for(" + init->c() + condition->c() + increment->c() +')' + statement->c();
       }
     }
 
