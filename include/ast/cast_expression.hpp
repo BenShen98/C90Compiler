@@ -44,7 +44,7 @@ public:
         }
     }
 
-    virtual std::string c(){
+    virtual std::string c()const override{
       if (type!=NULL){
         return exp->c();
       }

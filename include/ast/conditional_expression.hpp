@@ -52,6 +52,15 @@ public:
         }
     }
 
+    virtual std::string c()const override{
+      if(is_true!=NULL){
+        return exp->c();
+      }
+      else {
+        return exp->c() + '?' + is_true->c() + ':' is_false->c();
+      }
+    }
+
 };
 
 #endif

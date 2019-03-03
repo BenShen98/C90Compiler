@@ -41,6 +41,27 @@ public:
         notImplemented();
     }
 
+    virtual std::string c() const override{
+      //case 3 4
+      if(declaration_list!=NULL){
+        if (statement_list!=NULL){
+          return '{' + declaration_list->c() + statement_list->c() + '}';
+        }
+        else{
+          return '{' + declaration_list->c() + '}';
+        }
+      }
+      //case 1 2
+      else{
+        if (statement_list!=NULL){
+          return '{' + statement_list->c() + '}';
+        }
+        else{
+          return '{' + '}';
+        }
+      }
+    }
+
 };
 
 #endif
