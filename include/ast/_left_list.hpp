@@ -12,6 +12,7 @@ LIST
  */
 
 class left_list: public ast_abs{
+protected:
     astPtr list=0;
     astPtr element;
 
@@ -34,9 +35,6 @@ public:
         }else{
             dst=e;
         }
-
-
-
     }
 
     virtual void mp() const override{

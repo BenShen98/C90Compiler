@@ -181,7 +181,8 @@ expression
 
 constant_expression
 	: conditional_expression	{ $$ = $1; }
-	;
+	| declaration {$$ = $1;}
+  ;
 
 declaration
 	: declaration_specifiers ';'				{ $$ = new declaration_specifiers($1); }
@@ -192,7 +193,7 @@ declaration_specifiers
 	: type_specifier					{ $$ = new declaration_specifiers($1); }
 	| type_specifier declaration_specifiers			{ $$ = new declaration_specifiers($1,$2); }
 	| storage_class_specifier				{ $$ = new declaration_specifiers($1); }
-//	| storage_class_specifier declaration_specifiers	{ $$ = new declaration_specifiers($1,$2); }
+	| storage_class_specifier declaration_specifiers	{ $$ = new declaration_specifiers($1,$2); }
 //	| type_qualifier					does not support type_qualifier
 //	| type_qualifier declaration_specifiers			does not support type_qualifier
 	;
@@ -219,7 +220,7 @@ type_specifier
 	: VOID				{ $$ = new type_specifier(0); }
 	| CHAR				{ $$ = new type_specifier(1); }
 	| SHORT  			{ $$ = new type_specifier(2); }
-	| INT				{ $$ = new type_specifier(3); }
+	| INT				  { $$ = new type_specifier(3); }
 	| LONG				{ $$ = new type_specifier(4); }
 	| FLOAT				{ $$ = new type_specifier(5); }
 	| DOUBLE			{ $$ = new type_specifier(5); }
