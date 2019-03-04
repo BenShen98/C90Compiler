@@ -1,15 +1,13 @@
 def f(x):
-	
-	return 10
-
+   if x>1:
+       return x*f(x-1)
+   else:
+       return x
 
 def main():
-	
-	return (f(11)+7)
+    return f(2)
 
-
-
-# Invoke main as the starting point
+# Boilerplate
 if __name__ == "__main__":
     import sys
     ret=main()

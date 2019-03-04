@@ -49,7 +49,7 @@ virtual void py(std::string& dst) const override{
 
     if(list!=NULL){
         list->py(l);
-        dst = e + '\n' + l;
+        dst = l + '\n' + e;
     }else{
         dst=e;
     }

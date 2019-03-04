@@ -1,9 +1,11 @@
+def f(x):
+	
+	return (x*x)
 
-x=0
+
 def main():
 	
-	x=1
-	return x
+	return f(2)
 
 
 
