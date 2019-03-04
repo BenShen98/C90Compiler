@@ -45,11 +45,11 @@ public:
     }
 
     virtual std::string c()const override{
-      if (type!=NULL){
+      if (type==NULL){
         return exp->c();
       }
       else {
-        return "(" + type->c()+  ")";
+        return "(" + type->c()+  ")" + exp->c();
         // WHAT !
       }
     }

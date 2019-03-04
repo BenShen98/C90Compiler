@@ -37,14 +37,6 @@ public:
         }
     }
 
-    virtual std::string c() const override{
-      if(list!=NULL){
-        return element->c() + list->c();
-      }else{
-        return element->c();
-      }
-    }
-
     virtual void mp() const override{
         notImplemented();
     }

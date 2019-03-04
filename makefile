@@ -5,11 +5,11 @@ CPPFLAGS += -I include -std=c++11
 
 
 all : clean ./bin/c_compiler
-	 ./bin/c_compiler --translate test.c -o x.py
-	 cat x.py
+	 ./bin/c_compiler -C test.c -o x.c
+	 cat x.c
 
 debug: clean ./bin/c_compiler
-	gdb --args ./bin/c_compiler --translate test.c -o x.py
+	gdb --args ./bin/c_compiler -C test.c -o x.py
 
 src/C90_parser.tab.cpp src/C90_parser.tab.hpp : src/C90.y
 	bison -v -d src/C90.y -o src/C90_parser.tab.cpp

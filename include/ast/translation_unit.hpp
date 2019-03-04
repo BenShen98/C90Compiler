@@ -45,7 +45,7 @@ public:
 //    }
 std::string c()const override{
   if(list!=NULL){
-    return list->c() + ',' + element->c();
+    return list->c() + "," + element->c();
   }
   else{
     return element->c();

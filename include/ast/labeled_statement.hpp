@@ -26,7 +26,6 @@ public:
     ~labeled_statement() override{
         delete exp;
         delete st;
-        delete str;
     }
 
     void py(std::string& dst) const override{

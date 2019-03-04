@@ -53,7 +53,7 @@ public:
     }
 
     virtual std::string c()const override{
-      if(is_true!=NULL){
+      if(is_true==NULL){
         return exp->c();
       }
       else {
