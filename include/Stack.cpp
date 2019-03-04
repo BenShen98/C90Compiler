@@ -38,6 +38,8 @@ int Stack::deleteFrame() {
     }
 
     need_flush=true;
+
+    return frames.back().top_id;
 }
 
 int Stack::push_back(int size, int type, std::string name){
@@ -53,12 +55,12 @@ int Stack::push_back(int size, int type, std::string name){
     checkSafeEntryInsert(type);
 
     //update frame info
-    entries.back().size = size;
-    entries.back().top_id += size;
+    frames.back().size += size;
+    frames.back().top_id += size;
 
     //push data to stack
     entries.push_back({size,
-                       entries.back().top_id,
+                       frames.back().top_id,
                        type,
                        name});
 
@@ -146,8 +148,22 @@ bool Stack::checkSafeEntryInsert(int newEntryType) const {
 //            // the new entry is not arg nor reg => is local data(variable)
 //
 //        }
+    return true;
 }
 
 void  Stack::debugFrame(){
-//        std::cerr<<"relative address"
+        std::cerr<<"\n# Frame dump\n#\tadd_top,\tsize(byte),\n";
+        for(std::vector<Frame>::reverse_iterator rit = frames.rbegin();rit!= frames.rend(); ++rit){
+            std::cerr<<"#\t"<< rit->top_id <<",\t\t"<< rit->size <<",\n";
+        }
+        std::cerr<<"\n";
+}
+
+void  Stack::debugEntry(){
+    std::cerr<<"\n# Entry dump\n#\tadd_top,\tsize(byte),\ttype(MSB -- LSB),\t\t\tvariable name\n";
+    for(std::vector<Entry>::reverse_iterator rit = entries.rbegin();rit!= entries.rend(); ++rit){
+        std::cerr<<"#\t"<< rit->top_id <<",\t\t"<< rit->size <<",\t\t"<< std::bitset<32>(rit->type)<< ",\t" <<rit->name <<",\n";
+    }
+    std::cerr<<"\n";
+
 }

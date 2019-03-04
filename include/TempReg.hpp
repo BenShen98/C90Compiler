@@ -9,6 +9,8 @@
 #include <string>
 #include <stdexcept>
 
+
+
 #define TREG_SIZE 8
 
 //if REG_DIRTY_MASK==1 means the current register need write back
@@ -35,6 +37,7 @@
 extern std::ofstream ffout;
 
 class TempReg {
+friend class Mp;
 
 private:
 
@@ -46,20 +49,23 @@ private:
     std::vector<Reg> tReg = std::vector<Reg>(TREG_SIZE,{0,-1});
 
     //get register name from regIdx
-    std::string MPname(int regIdx);
+    std::string regName(int regIdx);
 
     //returns regIdx, NOT stack ID, for INTERNAL ONLY
-    int findFreeReg();
+//    int getFreeReg();
 
     //returns regIdx, which contain data for id
-    int find(int id);
+    int findReg(int id);
+    int setReg(int regId, int id, int type);
+
+    bool isRegTaken(int regId);
 
     // manually free an register, NO WRITE BACK will be doen even if the reg is dirty
-    bool freeReg(int id);
-
+    bool freeRegById(int id);
     //called when stack FRAME get deallocated
     void freeRegHigherThan(int id);
 
+    void debugReg();
 
 
 public:

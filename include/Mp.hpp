@@ -36,9 +36,6 @@ private:
     Stack stack;
     TempReg reg;
 
-    //write data in regIdx back to STACK (normally called when need spill register)
-    void writeBack(int regIdx);
-
     //Load data from stack
     std::string loadFromStack(int id);
 
@@ -50,9 +47,21 @@ public:
     std::string readReg(int id);
     std::string writeReg(int id);
 
-    //write all dirty register to memory
-    void writeBackAll();
+    //return regId, not STACK ID
+    int findFreeReg();
 
+    void insertFrame();
+    void deleteFrame();
+
+    void writeBackAll();
+    void writeBack(int regIdx);
+
+    void debugStack();
+    void debugTReg();
+
+
+
+    // LIST OF MIPS I instructions
 
     static void add(std::string dst,std::string s, std::string t, std::string comment=""){
             ffout <<" ADD " << dst << ',' << s << ',' << t << " #" << comment << '\n';
@@ -60,6 +69,10 @@ public:
 
     static void addi(std::string dst,std::string s, std::string i, std::string comment=""){
         ffout <<" ADDI " << dst << ',' << s << ',' << i << " #" << comment << '\n';
+    }
+
+    static void sw_sp(std::string reg,std::string stack, std::string comment=""){
+        ffout <<" SW " << reg << ',' << stack << " #" << comment << '\n';
     }
 };
 

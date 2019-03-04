@@ -52,7 +52,7 @@ private:
         int top_id;
         int type;
         std::string name;
-    } entry;
+    } Entry;
 
     //use byte address
     typedef struct _frame{
@@ -62,11 +62,11 @@ private:
 
 //  meta_data
     int sp=0; // define $sp as 0 at start of program execution,decrease as stack grow
-    std::vector<Frame> frames;
+    std::vector<Frame> frames = std::vector<Frame>(1,{0,0});
     bool need_flush= false; // set to true, if data entry does not match meta_data, write assembly to file
 
 // data
-    std::vector<entry> entries;
+    std::vector<Entry> entries = std::vector<Entry>(1,{0,0,STACK_EMPTY_MASK,""});
 
 
 public:
@@ -76,7 +76,7 @@ public:
 
     //(INPUT)stack insertion
     void insertFrame();
-    int deleteFrame(); //return the new top_id after delete frame, (used to free register)
+    int deleteFrame(); //return the new top_id after delete frame, (can be use for free register)
     int push_back(int size, int type, std::string name ); // return stack id of insertion
 
     //(OUTPUT) flush() have be called before return data (given need_flush=true)
@@ -90,6 +90,11 @@ public:
 
     //debug tools
     void debugFrame();
+    void debugEntry();
+
+    int stackSize(){
+        return frames.back().top_id;
+    }
 
 //    inline bool isInt(int id){
 //        return (entries[id].type & STACK_INT_MASK);
