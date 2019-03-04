@@ -22,7 +22,18 @@ public:
 
     declaration_specifiers(astPtr e)
         :right_list(e){}
+    virtual void py(std::string& dst) const override{
+        std::string e, l;
+        element->py(e);
 
+        if(list!=NULL){
+            list->py(l);
+            dst = e + '\n' + l;
+        }else{
+            dst=e;
+        }
+
+    }
 };
 
 #endif

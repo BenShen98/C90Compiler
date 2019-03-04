@@ -1,11 +1,11 @@
-def f():
-	
-	return 10
-
-
 def main():
 	
 	return f()
+
+
+def f():
+	
+	return 10
 
 
 

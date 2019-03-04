@@ -1,5 +1,9 @@
-def function(a
-b):
+def main():
+	
+	return (((function(0,0)+function(1,2))+function(4,3))+function(6,7))
+
+
+def function(a,b):
 	
 	if (a<b):
 		
@@ -12,15 +16,6 @@ b):
 				return (a*b)
 		return b
 	return 13
-
-
-def main():
-	
-	return (((function(0
-	0)+function(1
-	2))+function(4
-	3))+function(6
-	7))
 
 
 

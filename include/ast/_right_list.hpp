@@ -12,6 +12,7 @@ LIST
  */
 
 class right_list: public ast_abs{
+protected:
     astPtr element;
     astPtr list=0;
 
@@ -30,7 +31,7 @@ public:
 
         if(list!=NULL){
             list->py(l);
-            dst = e + '\n' + l;
+            dst = e + ',' + l;
         }else{
             dst=e;
         }
