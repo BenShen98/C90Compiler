@@ -50,10 +50,16 @@ public:
     //return regId, not STACK ID
     int findFreeReg();
 
+    int make_space(int size, int type);
+    std::string initReg(int stackId, int type, std::string value);
+    std::string loadReg(int stackId);
+    std::string writeReg(int stackId);
+
     void insertFrame();
     void deleteFrame();
 
-    void writeBackAll();
+
+    void writeBackAll();//before function call, save all t register
     void writeBack(int regIdx);
 
     void debugStack();
@@ -64,15 +70,19 @@ public:
     // LIST OF MIPS I instructions
 
     static void add(std::string dst,std::string s, std::string t, std::string comment=""){
-            ffout <<" ADD " << dst << ',' << s << ',' << t << " #" << comment << '\n';
+            ffout <<" add " << dst << ',' << s << ',' << t << " #" << comment << '\n';
     }
 
     static void addi(std::string dst,std::string s, std::string i, std::string comment=""){
-        ffout <<" ADDI " << dst << ',' << s << ',' << i << " #" << comment << '\n';
+        ffout <<" addi " << dst << ',' << s << ',' << i << " #" << comment << '\n';
     }
 
     static void sw_sp(std::string reg,std::string stack, std::string comment=""){
-        ffout <<" SW " << reg << ',' << stack << " #" << comment << '\n';
+        ffout <<" sw " << reg << ',' << stack << " #" << comment << '\n';
+    }
+
+    static void li(std::string reg,std::string imm, std::string comment=""){
+        ffout <<" li " << reg << ',' << imm << " #" << comment << '\n';
     }
 };
 

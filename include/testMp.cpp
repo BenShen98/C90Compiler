@@ -17,8 +17,6 @@ int main(){
     Mp mp;
     ffout.open("MpOut.temp");
 
-
-
     mp.debugStack();
     mp.debugTReg();
 

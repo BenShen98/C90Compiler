@@ -44,6 +44,7 @@ private:
     typedef struct _reg{
         int type;
         int id; //negative id means it is free register
+        unsigned int freshness; // the higher the value, the more resent it had been used
     } Reg;
 
     std::vector<Reg> tReg = std::vector<Reg>(TREG_SIZE,{0,-1});
@@ -51,8 +52,13 @@ private:
     //get register name from regIdx
     std::string regName(int regIdx);
 
+    int fresh;
+
     //returns regIdx, NOT stack ID, for INTERNAL ONLY
 //    int getFreeReg();
+
+    //reset fresh counter & decrement freshness for each register
+    void reFresh();
 
     //returns regIdx, which contain data for id
     int findReg(int id);
@@ -64,6 +70,7 @@ private:
     bool freeRegById(int id);
     //called when stack FRAME get deallocated
     void freeRegHigherThan(int id);
+
 
     void debugReg();
 
