@@ -31,7 +31,7 @@ public:
 
         if(list!=NULL){
             list->py(l);
-            dst = e + '\n' + l;
+            dst = e + ',' + l;
         }else{
             dst=e;
         }

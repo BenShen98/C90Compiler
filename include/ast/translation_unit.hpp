@@ -43,7 +43,17 @@ public:
 //        _unit->mp();
 //        _declaration->mp();
 //    }
+virtual void py(std::string& dst) const override{
+    std::string e, l;
+    element->py(e);
 
+    if(list!=NULL){
+        list->py(l);
+        dst = l + '\n' + e;
+    }else{
+        dst=e;
+    }
+}
 };
 
 #endif

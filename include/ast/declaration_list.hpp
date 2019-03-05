@@ -19,6 +19,17 @@ public:
     declaration_list(astPtr e)
         :left_list(e){}
 
+    virtual void py(std::string& dst) const override{
+        std::string e, l;
+        element->py(e);
+
+        if(list!=NULL){
+            list->py(l);
+            dst = l + '\n' + e;
+        }else{
+            dst=e;
+        }
+    }
 };
 
 #endif

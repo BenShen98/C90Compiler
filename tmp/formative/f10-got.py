@@ -1,5 +1,13 @@
+def f(x):
+	
+	return (x*x)
 
-x=0
+
+def main():
+	
+	return f(2)
+
+
 
 # Invoke main as the starting point
 if __name__ == "__main__":
