@@ -1,0 +1,3 @@
+/Users/alan/Desktop/C90Compiler/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/alan/Desktop/C90Compiler/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/alan/Desktop/C90Compiler/cmake-build-debug/CMakeFiles/C90Compiler.dir

@@ -1,0 +1,73 @@
+cmake_minimum_required(VERSION 3.13)
+project(C90Compiler)
+
+set(CMAKE_CXX_STANDARD 14)
+
+include_directories(include)
+include_directories(include/ast)
+include_directories(src)
+
+add_executable(C90Compiler
+        include/ast/_ast_abs.hpp
+        include/ast/_left_list.hpp
+        include/ast/_query_enum.hpp
+        include/ast/_right_list.hpp
+        include/ast/algebra.hpp
+        include/ast/argument_expression_list.hpp
+        include/ast/assignment_expression.hpp
+        include/ast/assignment_operator.hpp
+        include/ast/cast_expression.hpp
+        include/ast/compound_statement.hpp
+        include/ast/conditional_expression.hpp
+        include/ast/constant_expression.hpp
+        include/ast/declaration.hpp
+        include/ast/declaration_list.hpp
+        include/ast/declaration_specifiers.hpp
+        include/ast/declarator.hpp
+        include/ast/direct_declarator.hpp
+        include/ast/expression.hpp
+        include/ast/expression_statement.hpp
+        include/ast/external_declaration.hpp
+        include/ast/function_definition.hpp
+        include/ast/init_declarator.hpp
+        include/ast/init_declarator_list.hpp
+        include/ast/initializer.hpp
+        include/ast/initializer_list.hpp
+        include/ast/iteration_statement.hpp
+        include/ast/jump_statement.hpp
+        include/ast/labeled_statement.hpp
+        include/ast/parameter_declaration.hpp
+        include/ast/parameter_list.hpp
+        include/ast/postfix_expression.hpp
+        include/ast/primary_expression.hpp
+        include/ast/selection_statement.hpp
+        include/ast/statement.hpp
+        include/ast/statement_list.hpp
+        include/ast/storage_class_specifier.hpp
+        include/ast/translation_unit.hpp
+        include/ast/type_specifier.hpp
+        include/ast/unary_expression.hpp
+        include/ast/unary_operator.hpp
+        include/ast.hpp
+        include/testTree.cpp
+        requirement/debugging_exercise/example-backtrace-3.cpp
+        requirement/debugging_exercise/example-leak.c
+        src/C90.flex
+        src/C90.y
+        src/C90_lexer.yy.cpp
+        src/C90_parser.tab.cpp
+        src/C90_parser.tab.hpp
+        src/c_compiler.cpp
+        test/c_translator/formative/f0.c
+        test/c_translator/formative/f1.c
+        test/c_translator/formative/f2.c
+        test/c_translator/formative/f3.c
+        test/c_translator/formative/f4.c
+        test/c_translator/formative/f5.c
+        test/c_translator/formative/f6.c
+        test/c_translator/formative/f7.c
+        test/c_translator/formative/f8.c
+        test/c_translator/formative/f9.c
+        test.c
+        tt.c
+        x.c)

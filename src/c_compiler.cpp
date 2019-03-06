@@ -7,6 +7,7 @@
 
 std::ofstream ffout;
 extern FILE *yyin;
+std::vector<std::string> globalvar;
 
 
 //debug dummy
@@ -61,4 +62,3 @@ int  main(int argc, char* argv[]){
 
     return 0;
 }
-

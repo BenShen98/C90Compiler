@@ -7,6 +7,8 @@
 #include "_query_enum.hpp"
 
 class ast_abs;
+extern std::vector<std::string> globalvar;
+
 
 typedef const ast_abs * astPtr;
 
