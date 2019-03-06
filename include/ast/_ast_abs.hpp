@@ -2,6 +2,7 @@
 #define ast_abs_hpp
 
 #include <string>
+#include <vector>
 #include <iostream>
 #include <sstream>
 #include "_query_enum.hpp"

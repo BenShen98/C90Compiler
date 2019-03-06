@@ -135,7 +135,7 @@ public:
                     break;
 
                 case ORA:
-                    return unary_expression->c() + "|=" + e;
+                    return unary_expression->c() + "|=" + expression->c();
                     break;
 
             }

@@ -91,75 +91,75 @@ public:
     switch (type){
       //brackets are redundant but just in case
       case MUL:
-      return  '(' +  l + '*' + ri ')';
+      dst = '(' +  l + '*' + r + ')';
       break;
 
       case DIV:
-      return  '(' +  l + '/' + ri ')';
+      dst = '(' +  l + '/' + r + ')';
       break;
 
       case MOD:
-      return  '(' +  l + '%' + ri ')';
+      dst = '(' +  l + '%' + r + ')';
       break;
 
       case ADD:
-      return  '(' +  l + '+' + ri ')';
+      dst = '(' +  l + '+' + r + ')';
       break;
 
       case SUB:
-      return  '(' +  l + '-' + ri ')';
+      dst = '(' +  l + '-' + r + ')';
       break;
 
       case LEFT_:
-      return  '(' +  l + "<<" + r + ')';
+      dst = '(' +  l + "<<" + r + ')';
       break;
 
       case RIGHT_:
-      return  '(' +  l + ">>" + r + ')';
+      dst = '(' +  l + ">>" + r + ')';
       break;
 
       case SMALLER:
-      return  '(' +  l + '<' + r + ')';
+      dst = '(' +  l + '<' + r + ')';
       break;
 
       case GREATER:
-      return  '(' +  l + '>' + r + ')';
+      dst = '(' +  l + '>' + r + ')';
       break;
 
       case LE_:
-      return  '(' +  l + "<=" + r + ')';
+      dst = '(' +  l + "<=" + r + ')';
       break;
 
       case GE_:
-      return  '(' +  l + ">=" + r + ')';
+      dst = '(' +  l + ">=" + r + ')';
       break;
 
       case EQ_:
-      return  '(' +  l + "==" + r + ')';
+      dst = '(' +  l + "==" + r + ')';
       break;
 
       case NE_:
-      return  '(' +  l + "!=" + r + ')';
+      dst = '(' +  l + "!=" + r + ')';
       break;
 
       case AND:
-      return  '(' +  l + '&' + r +  ')';
+      dst = '(' +  l + '&' + r +  ')';
       break;
 
       case XOR:
-      return  '(' +  l + '^' + r + ')';
+      dst = '(' +  l + '^' + r + ')';
       break;
 
       case OR:
-      return  '(' +  l + '|' + r + ')';
+      dst = '(' +  l + '|' + r + ')';
       break;
 
       case AND_:
-      return  '(' +  l + "and" + r + ')';
+      dst = '(' +  l + "and" + r + ')';
       break;
 
       case OR_:
-      return  '(' +  l + "or" + r + ')';
+      dst = '(' +  l + "or" + r + ')';
       break;
     }
 
@@ -194,7 +194,7 @@ public:
 
       case RIGHT_:
       return  '(' +  left->c()+ ">>" + right->c()+ ')';
-      break;virtual
+      break;
 
       case SMALLER:
       return  '(' +  left->c()+ '<' + right->c()+ ')';
@@ -242,7 +242,7 @@ public:
     }
   }
 
-  virtual void mp() virtualconst override{
+  virtual void mp() const override{
     notImplemented();
 
     switch (type){
