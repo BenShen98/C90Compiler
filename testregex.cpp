@@ -1,72 +1,72 @@
+// // Example program
+// #include <iostream>
+// #include <string>
+// #include <regex>
+//
+// std::string get_global_variable(std::string str);
+//
+// int main()
+// {
+//  std::string temp = get_global_variable("x=9");
+//  std::cout<<"OUTPUT"<<temp<<std::endl;
+//  return 0;
+// }
+//
+// std::string get_global_variable(std::string str){
+// std::regex word (".*(().*())");
+// std::string equal("=");
+// std::size_t foundequal = str.find(equal);
+// std::cout<<foundequal;
+// if (!std::regex_match(str,word)){
+//   if (foundequal!=std::string::npos){
+//     std::cout<<std::endl;
+//     return str.substr(0,foundequal);
+//   }
+//   else{
+//     return str;
+//   }
+// }
+//   else{
+//     return "";
+//   }
+// }
+
+
+
 // Example program
 #include <iostream>
 #include <string>
 #include <regex>
 
-std::string get_global_variable(std::string str);
+
+ inline void get_global_variable(std::string& str){
+    std::regex func_def (".*[(].*[)].*");
+    if (std::regex_match(str,func_def)){
+        // when is function defination
+     std::cout << "get func " << str<<"\n";
+    str= "";
+
+    }else{
+        // when is NOT function defination
+        int equal_idx=str.find("=");
+        if(equal_idx!=std::string::npos){
+            str.erase(equal_idx,str.size());
+        }
+         std::cout << "global var pushback, " << str<<"\n";
+        // globalvar.push_back(str);
+
+    }
+  }
+
 
 int main()
 {
- std::string temp = get_global_variable("hiuh==das");
- std::cout<<"OUTPUT"<<temp<<std::endl;
- return 0;
-}
+    std::string tst="foo()=0";
+    get_global_variable(tst);
+    std::cout << tst<<"\n";
 
-std::string get_global_variable(std::string str){
-std::regex word (".*(().*())");
-std::string equal("=");
-std::size_t foundequal = str.find(equal);
-if (std::regex_match(word,str)){
-  if (foundequal!=std::string::npos){
-    return str.substr(0,foundequal);
-  }
-}
-  else{
-    return "";
-  }
-}
+    tst="x";
+    get_global_variable(tst);
+    std::cout<< tst<<"\n";
 
-// regex_match example
-// #include <iostream>
-// #include <string>
-// #include <regex>
-//
-// int main ()
-// {
-//
-//   if (std::regex_match ("sub", std::regex(".*(().*())") ))
-//   std::cout << "string literal matched\n";
-//
-//   const char cstr[] = "subject";
-//   std::string s ("subject");
-//   std::regex e ("(sub)(.*)");
-//
-//   if (std::regex_match (s,e))
-//     std::cout << "string object matched\n";
-//
-//   if ( std::regex_match ( s.begin(), s.end(), e ) )
-//     std::cout << "range matched\n";
-//
-//   std::cmatch cm;    // same as std::match_results<const char*> cm;
-//   std::regex_match (cstr,cm,e);
-//   std::cout << "string literal with " << cm.size() << " matches\n";
-//
-//   std::smatch sm;    // same as std::match_results<string::const_iterator> sm;
-//   std::regex_match (s,sm,e);
-//   std::cout << "string object with " << sm.size() << " matches\n";
-//
-//   std::regex_match ( s.cbegin(), s.cend(), sm, e);
-//   std::cout << "range with " << sm.size() << " matches\n";
-//
-//   // using explicit flags:
-//   std::regex_match ( cstr, cm, e, std::regex_constants::match_default );
-//
-//   std::cout << "the matches were: ";
-//   for (unsigned i=0; i<cm.size(); ++i) {
-//     std::cout << "[" << cm[i] << "] ";
-//   }
-//
-//   std::cout << std::endl;
-//
-//   return 0;
-// }
+}

@@ -31,7 +31,7 @@ public:
       }
       case 1:
       data->py(dst);
-      dst = get_global_variable(dst);
+      get_global_variable(dst);
   }
 }
 
@@ -44,20 +44,24 @@ public:
     }
   }
 
-  inline std::string get_global_variable(std::string str){
-    std::regex word (".*(().*())");
-    std::string equal("=");
-    std::size_t foundequal = str.find(equal);
-    if (!std::regex_match(str,word)){
-      if (foundequal!=std::string::npos){
+  inline void get_global_variable(std::string& str)const{
+     std::regex func_def (".*[(].*[)].*");
+     if (std::regex_match(str,func_def)){
+         // when is function defination
+         //std::cout << "get func " << str<<"\n";
+     str= "";
+
+     }else{
+         // when is NOT function defination
+         int equal_idx=str.find("=");
+         if(equal_idx!=std::string::npos){
+             str.erase(equal_idx,str.size());
+         }
+        //std::cout << "global var pushback, " << str<<"\n";
         globalvar.push_back(str);
-        return str.substr(0,foundequal);
-      }
-    }
-    else{
-      return "";
-    }
-  }
+     }
+   }
+
 
 
 };

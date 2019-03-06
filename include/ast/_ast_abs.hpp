@@ -44,6 +44,8 @@ public:
     virtual enum_declarator_type query_declarator_type() const {
         return OTHER;
     }
+
+
 };
 
 
