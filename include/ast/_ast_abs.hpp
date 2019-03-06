@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include "_query_enum.hpp"
+#include "../Type_mask.hpp"
 
 class ast_abs;
 
@@ -27,14 +28,34 @@ public:
     virtual ~ast_abs()
     {}
 
+    typedef struct _result{
+
+        union{
+            int id;     // used for operation which have dst register
+            Type type; //used for declaration_specifiers
+        };
+        
+        bool freeable=false;
+    } Result;
+
     //! Tell and expression to print itself to the given stream
 //    virtual void print(std::ostream &dst) const =0;
 
-    //! convert ast to python
+    /* convert ast to python
+     *
+     * dst should ONLY be used as return data
+     */
     virtual void py(std::string& dst) const
     { notImplemented(); }
 
-    virtual void mp() const
+    /*
+     * convert ast to MIPS
+     *
+     * result is used to pass back data
+     * in SPECIAL CIRCUMSTANCE, it may also use as input variable.
+     * However, it should be transparent to other class
+     */
+    virtual void mp(Result& result) const
     { notImplemented(); }
 
 
