@@ -30,11 +30,15 @@ public:
 
     typedef struct _result{
 
-        union{
-            int id;     // used for operation which have dst register
-            Type type; //used for declaration_specifiers
-        };
-        
+//        union{
+//            int id;     // used for operation which have dst register
+//            Type type; //used for declaration_specifiers
+//        };
+
+        int id;     // used for operation which have dst register
+        Type type; //used for declaration_specifiers
+        std::string str; //use for
+
         bool freeable=false;
     } Result;
 

@@ -15,6 +15,83 @@
 extern std::ofstream ffout;
 
 /*
+ * constructor & destructor for frame, clear register
+ */
+
+void Mp::newFrame(std::string name) {
+    /*
+     * reset all information except the functions's mapping
+     */
+
+    //reset buffer
+    stack_size=0;
+    buffer.clear();
+    postEditPtr.clear();
+
+    //reset temporary reg
+    freshCounter=0;
+    tGeneralReg = std::vector<Reg>(T_GENERAL_REG_SIZE,{TYPE_SINGED_INT,-1,0});
+//    tFloatReg = std::vector<Reg>(T_FLOAT_REG_SIZE,{0,-1});
+
+    //reset stack
+    top_id=0;
+    entries = std::vector<Entry>(1,{0,0,TYPE_SINGED_INT,""});
+
+    //reset function name
+    funcName=name;
+    args.clear();
+    arg_top_id=0;
+
+}
+
+/*
+ * flush data
+ */
+void Mp::endFrame() {
+
+    //calculate zone for `local and temporaries` and `args`
+    arg_top_id=16; //assume no arguement
+    stack_size = 4 + top_id + arg_top_id; // space for {local},$RA, {opt_place_holder}, {arg_list}
+
+    if(stack_size&0x4){
+        stack_size+=4; //make stack frame 8 byte aligned
+    }
+
+
+    // frame setup
+    ffout<<"addiu $sp, $sp, -"<<(stack_size+4)<<'\n'; // allocate stack
+    ffout<<"sw $31, "<<stack_size<<"($sp)"<<'\n';
+
+    //flush content
+    std::regex edit("_-?[0-9]*_");
+    std::smatch m;
+    int editIdx=0;
+    for(int bufIdx=0;bufIdx<buffer.size();++bufIdx){
+        if(postEditPtr[editIdx]==bufIdx){
+            //change offset
+            std::regex_search(buffer[bufIdx], m, edit);
+            ffout<<m.prefix()<<calOffest(m[0])<<m.suffiex();
+
+            //increment id
+            ++editIdx;
+        }else{
+            ffout<<buffer[bufIdx];
+        }
+    }
+
+    //write back dirty register
+
+    //arguement
+
+    //frame delete
+    ffout<<"lw $31, "<<stack_size<<"($sp)"<<'\n';
+    ffout<<"addiu $sp, $sp, "<<(stack_size+4)<<'\n'; // deallocate stack
+    ffout<<"j $31\n"
+
+
+}
+
+/*
  * General register
  */
     std::string Mp::tGenRegName(int regIdx) {
@@ -65,38 +142,30 @@ extern std::ofstream ffout;
  * Buffers for output assembly
  */
 
-std::string Mp::calOffset(const std::string &str) {
+std::string Mp::calOffset(const std::string &str) {//not finished
     int pos=atoi(str.substr(1, str.size()-1).c_str());
+    return std::to_string(stack_size-pos); // see my (Ben's) drawing
 
 }
 
-void Mp::flush() {//not finished
-    std::regex edit("_[0-9]*_");
-    std::smatch m;
-
-    //TODO 8 byte alignment not considered, ADD LR
-
-    // frame setup
-    ffout<<"addi $sp, $sp, -"<<(top_id+4); // allocate stack
-
-    //flush content
-    int editIdx=0;
-    for(int bufIdx=0;bufIdx<buffer.size();++bufIdx){
-        if(postEditPtr[editIdx]==bufIdx){
-            //change offset
-            std::regex_search(buffer[bufIdx], m, edit);
-            ffout<<m.prefix()<<calOffest(m[0])<<m.suffiex();
-
-
-        }else{
-            ffout<<buffer[bufIdx];
-        }
-    }
-
-    //frame delete
-    ffout<<"addi $sp, $sp, "<<(top_id+4); // deallocate stack
-
-}
+/*
+ * Arg passing
+ */
+//void Mp::addArg(int id) {
+//    args.push_back({BY_ID,id,""});
+//}
+//
+//void Mp::addArg_cpArray(int id){
+//    throw std::runtime_error("not implemented");
+//
+//    args.push_back({BY_CP_ARRAY,id,""});
+//}
+//
+//void Mp::addArg_Imm(std::string data){
+//    throw std::runtime_error("not implemented");
+//
+//    args.push_back({BY_IMM,0,data});
+//}
 
 
 
@@ -127,7 +196,7 @@ void Mp::flush() {//not finished
         return entries[i].top_id;
     }
 
-    const Mp::Entry * const Mp::getInfo(id) {
+    EntryPtr Mp::getInfo(id) {
 
         for(int i=0; id>entries[i].size; ++i){
             id=entries[i].size;
@@ -150,7 +219,7 @@ void Mp::flush() {//not finished
         // if not in register, load from stack
 
         //load context
-        const Mp::Entry * const entryPtr;
+        EntryPtr entryPtr;
         entryPtr=getInfo(id);
 
         //check context
@@ -185,9 +254,11 @@ void Mp::flush() {//not finished
             }
         }
 
-        //spill reg
-        std::string regName=tGenRegName(spill_regId);
-        sw_sp(regName,tGeneralReg[spill_regId].id, "spill reg");
+        //spill reg if is dirty
+        if(tGeneralReg[spill_regId].type & MASK_IS_DIRTY){
+            // only write back when is dirty
+            sw_sp(tGenRegName(spill_regId),tGeneralReg[spill_regId].id, "spill reg");
+        }
         return spill_regId;
     }
 

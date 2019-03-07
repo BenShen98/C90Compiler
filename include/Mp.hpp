@@ -17,7 +17,11 @@
 class Mp {
 
 private:
-/*
+
+    //funcName of current function
+    std::string funcName;
+
+    /*
  * internal struct
  */
     typedef struct _reg{
@@ -33,24 +37,51 @@ private:
         std::string name;
     } Entry;
 
+    typedef const Entry * const EntryPtr;
+
+    //function prototype
+    typedef struct _prototype{
+        int size;
+        std::vector<Entry>;//first is return type, after is argument
+        std::string name;
+    } Prototype;
+
+    //argument passing
+    typedef enum _argType{
+        BY_ID,
+        BY_IMM,
+        BY_CP_ARRAY
+    } ArgType;
+
+    typedef struct _arg{
+        ArgType type;
+        int id, //for arg by id AND arg by copy array
+        std::string imm, //for arg by imm
+
+    } Arg;
+
+
+
+
 /*
  * Buffers for output assembly
  */
+    int stack_size;
+
     std::vector<std::string> buffer;
     std::vector<int> postEditPtr; //line need to replace index _[0-9]_ to top_id-$$
 
     //write current buffer to ffout
-    void flush();
     std::string calOffset(const std::string& str);
 
 
 /*
  * temporary register mapping
  */
-    int freshCounter=0;
+    int freshCounter;
 
     // temporary reg for non floating point
-    std::vector<Reg> tGeneralReg = std::vector<Reg>(T_GENERAL_REG_SIZE,{TYPE_SINGED_INT,-1,0});
+    std::vector<Reg> tGeneralReg;
     std::string tGenRegName(int regIdx);
 
 //    //temporary reg for floating point
@@ -61,17 +92,35 @@ private:
  */
     int top_id;
 
-    std::vector<Entry> entries = std::vector<Entry>(1,{0,0,TYPE_SINGED_INT,""});
+    std::vector<Entry> entries;
 
-    void sw_sp(std::string reg,int id, std::string comment=""){
+    void sw_sp_local(std::string reg,int id, std::string comment=""){
         postEditPtr.push_back(buffer.size());//push_back idx of next line
         buffer.push_back("sw " + reg + ',_' + std::to_string(id) + "_ #" + comment + '\n');
     }
 
-    void lw_sp(std::string reg,int id, std::string comment=""){
+    void lw_sp_local(std::string reg,int id, std::string comment=""){
         postEditPtr.push_back(buffer.size());//push_back idx of next line
         buffer.push_back("lw " + reg + ',_' + std::to_string(id) + "_ #" + comment + '\n');
     }
+
+    void sw_sp_local(std::string reg,int id, std::string comment=""){
+        postEditPtr.push_back(buffer.size());//push_back idx of next line
+        buffer.push_back("sw " + reg + ',¬' + std::to_string(id) + "¬ #" + comment + '\n');
+    }
+
+
+/*
+ * function call
+ */
+
+// TODO START WITH FUNCTION WITHOUT ARGUMENT
+
+    std::vector<Arg> args;
+    int arg_top_id;
+
+    void
+
 
 /*
  * Internal General Functions
@@ -89,13 +138,15 @@ public:
 /*
  * constructor & destructor for frame, clear register
  */
-    void insertFrame();
-    void deleteFrame(); //call flush
+    std::map<const std::string name, std::vector<Entry>> functions;
+
+    void newFrame(std::string name);
+    void endFrame(); //call flush
 
 
 
 /*
- * insertion of new variable/arguement
+ * insertion of new variable/argument
  */
 
     // reserve space in `local` part of STACK, put data register (DOES not write data to stack)
@@ -103,8 +154,26 @@ public:
     int push_back(int size,std::string data, Type type, std::string identifier="" );
 //    int push_back_array();
 
-    //append the id to arg list
-    void addArg(int id);
+
+/*
+ * function call
+ */
+
+
+
+//    //take CONTENT in id as agreement, COPY the whole size in stack
+//    //(use for int; single/double float; ptr; struct) NOT FOR ARRAY e.g. void foo(int* x)
+//    void addArg(int id);
+//
+//    //USE THIS for copy the whole array i.e. void foo(int[] x) ,
+//    void addArg_cpArray(int id);
+//
+//    //take the imm as data
+//    //derive its size and type from function declaration
+//    void addArg_Imm(std::string data);//const argument
+
+    void commit
+
     
 
 /*
@@ -115,7 +184,7 @@ public:
     int getId(std::string identifier, int offset=0);
 
     // get info about the id
-    const Entry * const getInfo(id);
+    EntryPtr getInfo(id);
 
     //read/write reg (auto LOAD and SPILL from/to stack)
     // difference : write will set dirty flag
@@ -125,8 +194,12 @@ public:
     //discard reg without saving its value
     bool discardGenReg(int id);
 
-    void writeBackAll();//before function call, save all t register
-    void writeBack(int regIdx);
+//    no longer needed
+//    void writeBackAll();//before function call, save all t register
+//    void writeBack(int regIdx);
+
+    //given a id, copy its data, and return the copies id
+    int copyStack(int id);
 
 
 /*
