@@ -6,9 +6,11 @@
 #include <fstream>
 #include <string>
 #include <string.h>
+#include <vector>
 
 extern std::ofstream ffout;
 extern FILE *yyin;
+std::vector<std::string> globalvar;
 // extern Stack stack;
 // extern TempReg tReg;
 

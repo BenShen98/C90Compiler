@@ -4,11 +4,14 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <vector>
 #include "_query_enum.hpp"
 
 class ast_abs;
 
 typedef const ast_abs * astPtr;
+
+extern std::vector<std::string> globalvar;
 
 inline void notImplemented(){ throw std::runtime_error("Not implemented."); }
 
