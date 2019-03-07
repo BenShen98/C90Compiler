@@ -26,12 +26,12 @@ public:
     switch (type) {
       case 0:
       data->py(dst);
-      for (int i = 0; i<globalvar.size();i++){
-        dst += "global " + globalvar[i] + '\n';
-      }
+      break;
       case 1:
       data->py(dst);
+      std::cerr<<"WARNING THIS IS PRINTING"<<dst<<std::endl;
       get_global_variable(dst);
+      break;
   }
 }
 

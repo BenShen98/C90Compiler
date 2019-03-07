@@ -33,8 +33,9 @@ public:
        if(statement_list!=NULL){
            statement_list->py(s);
        }
-
+       
        dst = d + '\n' + s;
+       //std::cerr<<"entered compound statement"<<std::endl;
     }
 
     void mp() const override{
