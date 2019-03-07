@@ -1,11 +1,8 @@
 
-x=0
+x
 def main():
 	
-	x=1
-	return x
-
-
+	x
 
 # Invoke main as the starting point
 if __name__ == "__main__":

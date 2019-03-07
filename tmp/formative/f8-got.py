@@ -1,11 +1,8 @@
 
-x=0
+x
 def f():
 	
-	x=(x+1)
-	return x
-
-
+	x
 def main():
 	
 	return (f()+f())

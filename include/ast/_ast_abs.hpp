@@ -31,7 +31,7 @@ public:
     {}
 
     //! Tell and expression to print itself to the given stream
-    virtual std::string c() const =0;
+    virtual std::string c() const{};
 
     //! convert ast to python
     virtual void py(std::string& dst) const
