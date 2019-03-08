@@ -12,6 +12,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <iostream>
 
 
 #include "Mp_Type.hpp"
@@ -74,12 +75,12 @@ private:
 
     void sw_sp(std::string reg,int id, std::string comment=""){
         postEditPtr.push_back(buffer.size());//push_back idx of next line
-        buffer.push_back("sw " + reg + ",_" + std::to_string(id) + "_ #" + comment + '\n');
+        buffer.push_back("sw " + reg + ",_" + std::to_string(id) + "_($sp) #" + comment + '\n');
     }
 
     void lw_sp(std::string reg,int id, std::string comment=""){
         postEditPtr.push_back(buffer.size());//push_back idx of next line
-        buffer.push_back("lw " + reg + ",_" + std::to_string(id) + "_ #" + comment + '\n');
+        buffer.push_back("lw " + reg + ",_" + std::to_string(id) + "_($sp) #" + comment + '\n');
     }
 
 
@@ -125,6 +126,8 @@ public:
     void newFrame(std::string name);
     void endFrame(); //call flush
 
+    void dump(std::ostream& s);
+
 
 
 /*
@@ -134,6 +137,8 @@ public:
     // reserve space in `local` part of STACK, put data register (DOES not write data to stack)
     // type CANNOT be modified once push_back
     int push_back(int size,std::string data, Type type, std::string identifier="" );
+//    int push_back(enum_algebra op, int rhs, int lhs, std::string identifier="" );
+
 //    int push_back_array();
 
 
@@ -196,7 +201,7 @@ public:
 /*
  * size of
  */
-//    std::string sizeOf(Type type);
+    int sizeOf(Type type);
 //    std::string sizeOf() // for expression
 
 /*

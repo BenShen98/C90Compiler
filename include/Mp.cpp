@@ -20,78 +20,93 @@ extern std::ofstream ffout;
  * constructor & destructor for frame, clear register
  */
 
-void Mp::newFrame(std::string name) {
+    void Mp::newFrame(std::string name) {
+        /*
+         * reset all information except the functions's mapping
+         */
+
+        //reset buffer
+        stack_size=0;
+        buffer.clear();
+        postEditPtr.clear();
+
+        //reset temporary reg
+        freshCounter=0;
+        tGeneralReg = std::vector<Reg>(T_GENERAL_REG_SIZE,{MASK_IS_FREE,0,0});
+    //    tFloatReg = std::vector<Reg>(T_FLOAT_REG_SIZE,{MASK_IS_FREE,0,0});
+
+        //reset stack
+        top_id=0;
+        entries = std::vector<Entry>(1,{0,0,TYPE_SINGED_INT,""});
+
+    //    //reset function name
+    //    arg_top_id=0;
+    //    funcName=name;
+    //    args.clear();
+    //    arg_top_id=0;
+
+    }
+
     /*
-     * reset all information except the functions's mapping
+     * flush data
      */
+    void Mp::endFrame() {
 
-    //reset buffer
-    stack_size=0;
-    buffer.clear();
-    postEditPtr.clear();
+        //calculate zone for `local and temporaries` and `args`
+        arg_top_id=16; //assume no arguement
+        stack_size = top_id + 4 + arg_top_id; // space for {local},$RA, {opt_place_holder}, {arg_list}
 
-    //reset temporary reg
-    freshCounter=0;
-    tGeneralReg = std::vector<Reg>(T_GENERAL_REG_SIZE,{TYPE_SINGED_INT,-1,0});
-//    tFloatReg = std::vector<Reg>(T_FLOAT_REG_SIZE,{0,-1});
-
-    //reset stack
-    top_id=0;
-    entries = std::vector<Entry>(1,{0,0,TYPE_SINGED_INT,""});
-
-//    //reset function name
-//    arg_top_id=0;
-//    funcName=name;
-//    args.clear();
-//    arg_top_id=0;
-
-}
-
-/*
- * flush data
- */
-void Mp::endFrame() {
-
-    //calculate zone for `local and temporaries` and `args`
-    arg_top_id=16; //assume no arguement
-    stack_size = 4 + top_id + arg_top_id; // space for {local},$RA, {opt_place_holder}, {arg_list}
-
-    if(stack_size&0x4){
-        stack_size+=4; //make stack frame 8 byte aligned
-    }
-
-
-    // frame setup
-    ffout<<"addiu $sp, $sp, -"<<(stack_size+4)<<'\n'; // allocate stack
-    ffout<<"sw $31, "<<stack_size<<"($sp)"<<'\n';
-
-    //flush content
-    std::regex edit("_-?[0-9]*_");
-    std::smatch m;
-    int editIdx=0;
-    for(int bufIdx=0;bufIdx<buffer.size();++bufIdx){
-        if(postEditPtr[editIdx]==bufIdx){
-            //change offset
-            std::regex_search(buffer[bufIdx], m, edit);
-            ffout<<m.prefix()<<calOffset(m[0])<<m.suffix();
-
-            //increment id
-            ++editIdx;
-        }else{
-            ffout<<buffer[bufIdx];
+        if(stack_size&0x4){
+            stack_size+=4; //make stack frame 8 byte aligned
         }
+
+
+        // frame setup
+        ffout<<"addiu $sp, $sp, -"<<stack_size<<'\n'; // allocate stack
+        ffout<<"sw $31, "<<arg_top_id<<"($sp)"<<'\n';
+
+        //flush content
+        std::regex edit("_-?[0-9]*_");
+        std::smatch m;
+        int editIdx=0;
+        for(unsigned bufIdx=0;bufIdx<buffer.size();++bufIdx){
+            if(postEditPtr[editIdx]==bufIdx){
+                //change offset
+                std::regex_search(buffer[bufIdx], m, edit);
+                ffout<<m.prefix()<<calOffset(m[0])<<m.suffix();
+
+                //increment id
+                ++editIdx;
+            }else{
+                ffout<<buffer[bufIdx];
+            }
+        }
+
+        //write back dirty register
+        writeBackAll();
+
+        //frame delete
+        ffout<<"lw $31, "<<arg_top_id<<"($sp)"<<'\n';
+        ffout<<"addiu $sp, $sp, "<<stack_size<<'\n'; // deallocate stack
+        ffout<<"j $31\n";
+
+
     }
 
-    //write back dirty register
-    writeBackAll();
+    void Mp::dump(std::ostream& s) {
 
-    //frame delete
-    ffout<<"lw $31, "<<stack_size<<"($sp)"<<'\n';
-    ffout<<"addiu $sp, $sp, "<<(stack_size+4)<<'\n'; // deallocate stack
-    ffout<<"j $31\n";
+        s<<"\n#############################\n# Dump for function "<< funcName <<" #\n#############################\n";
+        s<<"# Entry dump\n#\tadd_top,\tsize(byte),\ttype(MSB -- LSB),\t\t\tvariable name\n";
+        for(std::vector<Entry>::reverse_iterator rit = entries.rbegin();rit!= entries.rend(); ++rit){
+            s<<"#\t"<< rit->top_id <<",\t\t"<< rit->size <<",\t\t"<< std::bitset<32>(rit->type)<< ",\t" <<rit->name <<",\n";
+        }
+        s<<"\n# TGenReg dump\n#\tregName,\tStackID,\ttype(MSB -- LSB)\n";
+        for(unsigned i=0;i<T_GENERAL_REG_SIZE;++i){
+            s<<"#\t"<< tGenRegName(i) <<",\t\t"<< tGeneralReg[i].id <<",\t\t"<< std::bitset<32>(tGeneralReg[i].type) <<",\n";
+        }
+        s<<"\n";
 
-
-}
+    }
 
 /*
  * General register
@@ -107,7 +122,7 @@ void Mp::endFrame() {
     bool Mp::discardGenReg(int id) {
         for(int i=0;i<T_GENERAL_REG_SIZE;++i){
             if(tGeneralReg[i].id==id){
-                tGeneralReg[i].id = -1; //free register without check if need write back
+                tGeneralReg[i].type = MASK_IS_FREE; //free register without check if need write back
                 return true;
             }
         }
@@ -258,7 +273,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         int least_fresh=freshCounter;
         int spill_regId;
         for (int regId=0; regId<T_GENERAL_REG_SIZE; ++regId) {
-            if(tGeneralReg[regId].id<0){
+            if(tGeneralReg[regId].type & MASK_IS_FREE){
                 return regId;
 
             }else if(tGeneralReg[regId].freshness<least_fresh){
@@ -286,3 +301,12 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         return tGenRegName(regId);
     }
 
+    int Mp::sizeOf(Type type) {
+        if( type & TYPE_DOUBLE_FLOAT ){
+            //only double is 8 byte
+            return 8;
+        }else{
+            //all other is 4 byte wide (ptr, int, float, etc
+            return 4;
+        }
+    }

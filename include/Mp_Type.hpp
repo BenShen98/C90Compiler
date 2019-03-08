@@ -6,6 +6,7 @@
 #define C90_MP_TYPE_HPP
 
 
+
 /*
 # Least two significant bit
 | BIT 1 | BIT 0 | MEANING      |
@@ -25,17 +26,18 @@
 // type register
 typedef enum _type{
     //type code
-    TYPE_SINGLE_FLOAT=0x0,
-    TYPE_DOUBLE_FLOAT=0x1,
-    TYPE_SINGED_INT=0x2,
-    TYPE_UNSIGNED_INT=0x3,
+    TYPE_SINGLE_FLOAT=  0x0,
+    TYPE_DOUBLE_FLOAT=  0x1,
+    TYPE_SINGED_INT=    0x2,
+    TYPE_UNSIGNED_INT=  0x3,
 
 
     //type mask
     //use by mask & {type}, only return true when {type} confirms to mask
-    MASK_IS_FLOAT=0x2,
-    MASK_IS_ARRAY=0x4,
-    MASK_IS_DIRTY=0x80000000,
+    MASK_IS_FLOAT=  0x2,
+    MASK_IS_ARRAY=  0x4,
+    MASK_IS_DIRTY=  0x80000000,
+    MASK_IS_FREE=   0x40000000
 
 
 } Type;
@@ -62,7 +64,7 @@ inline Type& operator&(Type a, const Type& b)
 typedef struct _reg{
     Type type;
     int id; //negative id means it is free register
-    unsigned int freshness; // the higher the value, the more resent it had been used
+    int freshness; // the higher the value, the more resent it had been used
 } Reg;
 
 typedef struct _entry{
