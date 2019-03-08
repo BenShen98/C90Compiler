@@ -1997,13 +1997,13 @@ yyreduce:
 
   case 74:
 #line 188 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new declaration_specifiers((yyvsp[-1].expr)); }
+    { (yyval.expr) = new declaration((yyvsp[-1].expr)); }
 #line 2002 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 75:
 #line 189 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new declaration_specifiers((yyvsp[-2].expr), (yyvsp[-1].expr)); }
+    { (yyval.expr) = new declaration((yyvsp[-2].expr), (yyvsp[-1].expr)); }
 #line 2008 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 

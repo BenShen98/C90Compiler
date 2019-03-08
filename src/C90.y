@@ -185,8 +185,8 @@ constant_expression
   ;
 
 declaration
-	: declaration_specifiers ';'				{ $$ = new declaration_specifiers($1); }
-	| declaration_specifiers init_declarator_list ';'	{ $$ = new declaration_specifiers($1, $2); }
+	: declaration_specifiers ';'				{ $$ = new declaration($1); }
+	| declaration_specifiers init_declarator_list ';'	{ $$ = new declaration($1, $2); }
 	;
 
 declaration_specifiers

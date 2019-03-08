@@ -37,14 +37,15 @@ public:
         declarator->py(func);
 
         compound_statement->py(body);
+        for(int i = 0; i<globalvar.size();i++){
+          global += "global " + globalvar[i] + '\n';
+          //std::cerr<<globalvar[i]<<std::endl;
+        }
+        body=global+body;
         indent(body);
-        // for(int i = 0; i<globalvar.size();i++){
-        //   //global += "global " + globalvar[i] + '\n';
-        //   std::cerr<<globalvar[i]<<std::endl;
-        // }
-        
-        dst = "def " + func + ":\n" + global + body + "\n\n";
-        std::cerr<<"WARNING THIS IS PRINTING"<<dst<<std::endl;
+
+        dst = "def " + func + ":\n" + body + "\n\n";
+        //std::cerr<<"WARNING THIS IS PRINTING"<<dst<<std::endl;
 
     }
 

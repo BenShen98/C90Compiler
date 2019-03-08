@@ -1,5 +1,4 @@
 def main():
-	
 	x=0
 	x=5
 	x=(x*x)

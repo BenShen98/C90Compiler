@@ -30,9 +30,9 @@ public:
       break;
       case 1:
       data->py(dst);
-      std::cerr<<"WARNING THIS IS PRINTING definition "<<dst<<std::endl;
+      //std::cerr<<"WARNING THIS IS PRINTING declaration "<<dst<<std::endl;
       get_global_variable(dst);
-      std::cout<<globalvar.size();
+      //std::cout<<globalvar.size();
       break;
   }
 }
@@ -56,11 +56,10 @@ public:
      }else{
          // when is NOT function defination
          int equal_idx=str.find("=");
-         if(equal_idx!=std::string::npos){
-             str.erase(equal_idx,str.size());
-         }
-        //std::cout << "global var pushback, " << str<<"\n";
-        globalvar.push_back(str);
+             //str.erase(equal_idx,str.size());
+         std::string tempstr(str,0,equal_idx);
+        //std::cout << "global var pushback, " << tempstr<<"\n";
+        globalvar.push_back(tempstr);
      }
    }
 

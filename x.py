@@ -1,11 +1,9 @@
 
-foo()
-
-x
-
-y
+x=0
+y=0
 def main():
-	
+	global x
+	global y
 	x=0
 	return 0
 

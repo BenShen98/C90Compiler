@@ -45,12 +45,13 @@ public:
 //    }
 virtual void py(std::string& dst) const override{
     std::string e, l;
-    element->py(e);
 
     if(list!=NULL){
         list->py(l);
+        element->py(e);
         dst = l + '\n' + e;
     }else{
+        element->py(e);
         dst=e;
     }
 }
