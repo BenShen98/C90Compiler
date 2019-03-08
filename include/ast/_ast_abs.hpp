@@ -5,7 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include "_query_enum.hpp"
-#include "../Type_mask.hpp"
+#include "../Mp_Type.hpp"
 
 class ast_abs;
 

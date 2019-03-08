@@ -10,6 +10,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <regex>
+#include <fstream>
+
 
 
 extern std::ofstream ffout;
@@ -37,10 +39,11 @@ void Mp::newFrame(std::string name) {
     top_id=0;
     entries = std::vector<Entry>(1,{0,0,TYPE_SINGED_INT,""});
 
-    //reset function name
-    funcName=name;
-    args.clear();
-    arg_top_id=0;
+//    //reset function name
+//    arg_top_id=0;
+//    funcName=name;
+//    args.clear();
+//    arg_top_id=0;
 
 }
 
@@ -70,7 +73,7 @@ void Mp::endFrame() {
         if(postEditPtr[editIdx]==bufIdx){
             //change offset
             std::regex_search(buffer[bufIdx], m, edit);
-            ffout<<m.prefix()<<calOffest(m[0])<<m.suffiex();
+            ffout<<m.prefix()<<calOffset(m[0])<<m.suffix();
 
             //increment id
             ++editIdx;
@@ -80,13 +83,12 @@ void Mp::endFrame() {
     }
 
     //write back dirty register
-
-    //arguement
+    writeBackAll();
 
     //frame delete
     ffout<<"lw $31, "<<stack_size<<"($sp)"<<'\n';
     ffout<<"addiu $sp, $sp, "<<(stack_size+4)<<'\n'; // deallocate stack
-    ffout<<"j $31\n"
+    ffout<<"j $31\n";
 
 
 }
@@ -104,8 +106,8 @@ void Mp::endFrame() {
 
     bool Mp::discardGenReg(int id) {
         for(int i=0;i<T_GENERAL_REG_SIZE;++i){
-            if(tReg[i].id==id){
-                tReg[i].id=-1; //free register without check if need write back
+            if(tGeneralReg[i].id==id){
+                tGeneralReg[i].id = -1; //free register without check if need write back
                 return true;
             }
         }
@@ -128,8 +130,8 @@ void Mp::endFrame() {
         }else{
             //use general register
             int regId=findFreeGenReg();
-            tGeneralReg[regId].id=id;
-            tGeneralReg[regId].type=entryPtr->type;
+            tGeneralReg[regId].id=top_id;
+            tGeneralReg[regId].type=type;
             tGeneralReg[regId].freshness=freshCounter;
             freshCounter++;
             li(tGenRegName(regId), data, "init variable "+identifier);
@@ -173,22 +175,34 @@ std::string Mp::calOffset(const std::string &str) {//not finished
  * data modification
  */
 
+    void Mp::writeBackAll() {
+        //wire back all general register
+        for(int i=0; i<T_GENERAL_REG_SIZE; ++i){
+            if( tGeneralReg[i].type & MASK_IS_DIRTY ){
+                sw_sp(tGenRegName(i),tGeneralReg[i].id,"write back");
+            }
+        }
+
+
+        //TODO write back all FP register
+    }
+
     int Mp::getId(std::string identifier, int offset) {
         //find matching name from top of the stack (itr backwards)
         int i =entries.size()-1;
 
         // whill throw out of rang exception if not found
-        while (entries.at(i).name!=name){
+        while (entries.at(i).name!=identifier){
             --i;
         }
 
-        if(offsetByte!=0){
-            if( (entries[i].type & MASK_IS_ARRAY) && (entries[i].size>offsetByte) ){
+        if(offset!=0){
+            if( (entries[i].type & MASK_IS_ARRAY) && (entries[i].size>offset) ){
                 //is array
-                return entries[i].top_id - offsetByte; //SUB here
+                return entries[i].top_id - offset; //SUB here
             } else{
                 // is not array OR index out of range
-                throw std::runtime_error(name+"is not an array, or index out of range");
+                throw std::runtime_error(identifier+" is not an array, or index out of range");
             }
         }
 
@@ -196,10 +210,11 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         return entries[i].top_id;
     }
 
-    EntryPtr Mp::getInfo(id) {
+    EntryPtr Mp::getInfo(int id) const {
+        int i=0;
 
-        for(int i=0; id>entries[i].size; ++i){
-            id=entries[i].size;
+        for( ;id>entries[i].size; ++i){
+            id-=entries[i].size;
         }
 
         return &entries[i];
@@ -219,8 +234,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         // if not in register, load from stack
 
         //load context
-        EntryPtr entryPtr;
-        entryPtr=getInfo(id);
+        EntryPtr entryPtr=getInfo(id);
 
         //check context
         if( entryPtr->type & MASK_IS_FLOAT ){
@@ -235,7 +249,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         tGeneralReg[regId].type=entryPtr->type;
         tGeneralReg[regId].freshness=freshCounter;
         freshCounter++;
-        lw_sp(tGenRegName(regId), id, "load "+entryPtr->name)
+        lw_sp(tGenRegName(regId), id, "load "+entryPtr->name);
         return regId;
 
     }
@@ -263,12 +277,12 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     }
 
     std::string Mp::readGenReg(int id) {
-        return loadGenReg(id);
+        return tGenRegName(loadGenReg(id));
     }
 
     std::string Mp::writeGenReg(int id) {
         int regId=loadGenReg(id);
-        tGeneralReg[regId].type =| MASK_IS_DIRTY;
-        return regId;
+        tGeneralReg[regId].type |= MASK_IS_DIRTY;
+        return tGenRegName(regId);
     }
 
