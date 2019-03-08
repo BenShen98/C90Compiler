@@ -39,9 +39,9 @@ extern std::ofstream ffout;
         top_id=0;
         entries = std::vector<Entry>(1,{0,0,TYPE_SINGED_INT,""});
 
-    //    //reset function name
-    //    arg_top_id=0;
-    //    funcName=name;
+        //reset function name
+        arg_top_id=0;
+        funcName=name;
     //    args.clear();
     //    arg_top_id=0;
 
@@ -60,7 +60,12 @@ extern std::ofstream ffout;
             stack_size+=4; //make stack frame 8 byte aligned
         }
 
+        //write back dirty register (not needed, for test only)
+        writeBackAll();
 
+/*
+ * flush buffer
+ */
         // frame setup
         ffout<<"addiu $sp, $sp, -"<<stack_size<<'\n'; // allocate stack
         ffout<<"sw $31, "<<arg_top_id<<"($sp)"<<'\n';
@@ -69,7 +74,11 @@ extern std::ofstream ffout;
         std::regex edit("_-?[0-9]*_");
         std::smatch m;
         int editIdx=0;
-        for(unsigned bufIdx=0;bufIdx<buffer.size();++bufIdx){
+        unsigned bufIdx=0;
+
+
+        //iteration while not reached end of postEditPtr
+        for( ; editIdx<postEditPtr.size() && bufIdx<buffer.size();++bufIdx){
             if(postEditPtr[editIdx]==bufIdx){
                 //change offset
                 std::regex_search(buffer[bufIdx], m, edit);
@@ -82,8 +91,11 @@ extern std::ofstream ffout;
             }
         }
 
-        //write back dirty register
-        writeBackAll();
+        //iteration when reached end of postEditPtr
+        for( ; bufIdx<buffer.size();++bufIdx){
+                ffout<<buffer[bufIdx];
+        }
+
 
         //frame delete
         ffout<<"lw $31, "<<arg_top_id<<"($sp)"<<'\n';
@@ -93,18 +105,18 @@ extern std::ofstream ffout;
 
     }
 
-    void Mp::dump(std::ostream& s) {
+    void Mp::dump() {
 
-        s<<"\n#############################\n# Dump for function "<< funcName <<" #\n#############################\n";
-        s<<"# Entry dump\n#\tadd_top,\tsize(byte),\ttype(MSB -- LSB),\t\t\tvariable name\n";
+        std::cerr<<"\n#############################\n# Dump for function "<< funcName <<" #\n#############################\n";
+        std::cerr<<"# # Entry dump #\n#\t# add_top #,\t# size(byte) #,\t# type(MSB -- LSB) #,\t\t\t# variable name #\n";
         for(std::vector<Entry>::reverse_iterator rit = entries.rbegin();rit!= entries.rend(); ++rit){
-            s<<"#\t"<< rit->top_id <<",\t\t"<< rit->size <<",\t\t"<< std::bitset<32>(rit->type)<< ",\t" <<rit->name <<",\n";
+            std::cerr<<"#\t"<< rit->top_id <<",\t\t"<< rit->size <<",\t\t"<< std::bitset<32>(rit->type)<< ",\t" <<rit->name <<",\n";
         }
-        s<<"\n# TGenReg dump\n#\tregName,\tStackID,\ttype(MSB -- LSB)\n";
+        std::cerr<<"\n# # TGenReg dump #\n#\t# regName #,\t# StackID #,\t# type(MSB -- LSB) #\n";
         for(unsigned i=0;i<T_GENERAL_REG_SIZE;++i){
-            s<<"#\t"<< tGenRegName(i) <<",\t\t"<< tGeneralReg[i].id <<",\t\t"<< std::bitset<32>(tGeneralReg[i].type) <<",\n";
+            std::cerr<<"#\t"<< tGenRegName(i) <<",\t\t"<< tGeneralReg[i].id <<",\t\t"<< std::bitset<32>(tGeneralReg[i].type) <<",\n";
         }
-        s<<"\n";
+        std::cerr<<"\n";
 
     }
 
@@ -146,10 +158,10 @@ extern std::ofstream ffout;
             //use general register
             int regId=findFreeGenReg();
             tGeneralReg[regId].id=top_id;
-            tGeneralReg[regId].type=type;
+            tGeneralReg[regId].type=type|MASK_IS_DIRTY;
             tGeneralReg[regId].freshness=freshCounter;
             freshCounter++;
-            li(tGenRegName(regId), data, "init variable "+identifier);
+            _li(tGenRegName(regId), data, "init variable "+identifier);
 
         }
         return top_id;

@@ -28,20 +28,6 @@ public:
     virtual ~ast_abs()
     {}
 
-    typedef struct _result{
-
-//        union{
-//            int id;     // used for operation which have dst register
-//            Type type; //used for declaration_specifiers
-//        };
-
-        int id;     // used for operation which have dst register
-        Type type; //used for declaration_specifiers
-        std::string str; //use for
-
-        bool freeable=false;
-    } Result;
-
     //! Tell and expression to print itself to the given stream
 //    virtual void print(std::ostream &dst) const =0;
 

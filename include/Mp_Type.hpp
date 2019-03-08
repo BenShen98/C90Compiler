@@ -11,10 +11,10 @@
 # Least two significant bit
 | BIT 1 | BIT 0 | MEANING      |
 |-------|-------|--------------|
-| 0     | 0     | SINGLE FLOAT |
-| 0     | 1     | DOUBLE FLOAT |
-| 1     | 0     |  SIGNED INT |
-| 1     | 1     | UNSIGNED INT   |
+| 0     | 0     |  SIGNED INT |
+| 0   | 1     | UNSIGNED INT   |
+ | 1     | 0     | SINGLE FLOAT |
+| 1     | 1     | DOUBLE FLOAT |
 
  BIT
  3      ARRAY FLAG
@@ -26,11 +26,11 @@
 // type register
 typedef enum _type{
     //type code
-    TYPE_SINGLE_FLOAT=  0x0,
-    TYPE_DOUBLE_FLOAT=  0x1,
-    TYPE_SINGED_INT=    0x2,
-    TYPE_UNSIGNED_INT=  0x3,
 
+    TYPE_SINGED_INT=    0x0,
+    TYPE_UNSIGNED_INT=  0x1,
+    TYPE_SINGLE_FLOAT=  0x2,
+    TYPE_DOUBLE_FLOAT=  0x3,
 
     //type mask
     //use by mask & {type}, only return true when {type} confirms to mask
@@ -75,6 +75,20 @@ typedef struct _entry{
 } Entry;
 
 typedef const Entry * const EntryPtr;
+
+typedef struct _result{
+
+//        union{
+//            int id;     // used for operation which have dst register
+//            Type type; //used for declaration_specifiers
+//        };
+
+    int id;     // used for operation which have dst register
+    Type type; //used for declaration_specifiers
+    std::string str;
+
+    bool freeable=false;
+} Result;
 
 
 #endif //C90_MP_MASK_HPP

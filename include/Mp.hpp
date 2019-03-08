@@ -74,15 +74,17 @@ private:
     std::vector<Entry> entries;
 
     void sw_sp(std::string reg,int id, std::string comment=""){
+
         postEditPtr.push_back(buffer.size());//push_back idx of next line
         buffer.push_back("sw " + reg + ",_" + std::to_string(id) + "_($sp) #" + comment + '\n');
+
     }
 
     void lw_sp(std::string reg,int id, std::string comment=""){
         postEditPtr.push_back(buffer.size());//push_back idx of next line
         buffer.push_back("lw " + reg + ",_" + std::to_string(id) + "_($sp) #" + comment + '\n');
-    }
 
+    }
 
 /*
  * make function call
@@ -116,6 +118,40 @@ private:
     int loadGenReg(int id);
     int findFreeGenReg();
 
+/*
+ * MIPS function
+ */
+    void _li(std::string reg,std::string imm, std::string comment=""){
+        buffer.push_back("li " + reg + ',' + imm + " #" + comment + '\n');
+    }
+
+    void _add(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("add " + d + ',' + s + ',' + t +" #" + comment + '\n');
+    }
+
+    void _addi(std::string t,std::string s,std::string imm, std::string comment=""){
+        buffer.push_back("addi " + t + ',' + s + ',' + imm +" #" + comment + '\n');
+    }
+
+    void _addiu(std::string t,std::string s,std::string imm, std::string comment=""){
+        buffer.push_back("addiu " + t + ',' + s + ',' + imm +" #" + comment + '\n');
+    }
+
+    void _addu(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("addu " + d + ',' + s + ',' + t +" #" + comment + '\n');
+    }
+
+    void _and(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("and " + d + ',' + s + ',' + t +" #" + comment + '\n');
+    }
+
+    void _andi(std::string t,std::string s,std::string imm, std::string comment=""){
+        buffer.push_back("andi " + t + ',' + s + ',' + imm +" #" + comment + '\n');
+    }
+
+    /* ... */
+
+
 
 public:
 
@@ -126,7 +162,7 @@ public:
     void newFrame(std::string name);
     void endFrame(); //call flush
 
-    void dump(std::ostream& s);
+    void dump();
 
 
 
@@ -205,11 +241,23 @@ public:
 //    std::string sizeOf() // for expression
 
 /*
- * MIPS instruction
+ * C instruction
  */
-    void li(std::string reg,std::string imm, std::string comment=""){
-        buffer.push_back("li " + reg + ',' + imm + " #" + comment + '\n');
-    }
+
+//    enum enum_algebra {MUL,DIV,MOD ,ADD,SUB, LEFT_,RIGHT_, SMALLER,GREATER, LE_,GE_,EQ_,NE_, AND,XOR,OR, AND_,OR_, };
+//    Result add(id r, id l, std::string comment=""){
+//
+//        // TODO: type promotion
+//        type=TYPE_SINGED_INT;
+//
+//        switch (type&0x3){
+//            case TYPE_UNSIGNED_INT:
+//
+//            case TYPE_SINGED_INT:
+//
+//                break;
+//        }
+//    }
 
 };
 

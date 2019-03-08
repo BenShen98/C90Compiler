@@ -19,18 +19,12 @@ int main(){
     Mp mp;
     ffout.open("MpOut.temp");
 
-    std::cout<<"test type\n";
-    Type t1=TYPE_UNSIGNED_INT|MASK_IS_DIRTY;
-    Type t2=TYPE_DOUBLE_FLOAT;
-    Type t3=t1&t2;//give 01
-    std::cout<<"\texpect 0....01, get \t"<<std::bitset<32>(t3)<<'\n';
-    t2&=t1;
-    std::cout<<"\texpect 1....11, get \t"<<std::bitset<32>(t1)<<'\n';
-    std::cout<<"\texpect 0....01, get \t"<<std::bitset<32>(t2)<<'\n';
+    mp.newFrame("test");
+    mp.push_back(4,"123456",TYPE_SINGED_INT,"int");
+    mp.push_back(8,"5.3",TYPE_UNSIGNED_INT,"a double pretend as unsigned");
+    mp.endFrame();
+    mp.dump();
 
-
-    mp.newFrame("x");
-    mp.dump(std::cout);
 
 
     ffout.close();
