@@ -2,7 +2,10 @@
 x
 def f():
 	
-	x
+	x=(x+1)
+	return x
+
+
 def main():
 	
 	return (f()+f())

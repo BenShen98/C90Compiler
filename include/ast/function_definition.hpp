@@ -33,13 +33,18 @@ public:
     }
 
     void py(std::string& dst) const override{
-        std::string func,body;
+        std::string func,body,global;
         declarator->py(func);
 
         compound_statement->py(body);
         indent(body);
-
-        dst = "def " + func + ":\n" + body + "\n\n";
+        // for(int i = 0; i<globalvar.size();i++){
+        //   //global += "global " + globalvar[i] + '\n';
+        //   std::cerr<<globalvar[i]<<std::endl;
+        // }
+        
+        dst = "def " + func + ":\n" + global + body + "\n\n";
+        std::cerr<<"WARNING THIS IS PRINTING"<<dst<<std::endl;
 
     }
 

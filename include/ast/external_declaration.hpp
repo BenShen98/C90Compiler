@@ -26,11 +26,13 @@ public:
     switch (type) {
       case 0:
       data->py(dst);
+      //std::cerr<<"WARNING THIS IS PRINTING"<<dst<<std::endl;
       break;
       case 1:
       data->py(dst);
-      std::cerr<<"WARNING THIS IS PRINTING"<<dst<<std::endl;
+      std::cerr<<"WARNING THIS IS PRINTING definition "<<dst<<std::endl;
       get_global_variable(dst);
+      std::cout<<globalvar.size();
       break;
   }
 }
