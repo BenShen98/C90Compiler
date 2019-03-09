@@ -1,5 +1,7 @@
 #!/bin/bash
 
+make
+
 if [[ "$1" != "" ]] ; then
     compiler="$1"
 else
@@ -15,6 +17,7 @@ fi
 input_dir="test/c_translator/formative"
 
 working="tmp/formative"
+rm -rf {working}
 mkdir -p ${working}
 PASSED=0
 CHECKED=0
