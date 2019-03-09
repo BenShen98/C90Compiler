@@ -5,9 +5,5 @@ _playground
 *.out
 *.temp
 *.o
-<<<<<<< HEAD
 output
 tmp
-=======
-output
->>>>>>> tools

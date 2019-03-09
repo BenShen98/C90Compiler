@@ -65,7 +65,7 @@ postfix_expression
 	;
 
 argument_expression_list
-	: assignment_expression					{ $$ = new argument_expression_list($1); }
+	: assignment_expression					{ $$ = $1; }
 	| argument_expression_list ',' assignment_expression	{ $$ = new argument_expression_list($1, $3); }
 	;
 
@@ -175,7 +175,7 @@ assignment_operator
 	;
 
 expression
-	: assignment_expression			{ $$ = new expression($1); }
+	: assignment_expression			{ $$ = $1; }
 	| expression ',' assignment_expression	{ $$ = new expression($1, $3); }
 	;
 
@@ -199,7 +199,7 @@ declaration_specifiers
 	;
 
 init_declarator_list
-	: init_declarator				{ $$ = new init_declarator_list($1); }
+	: init_declarator				{ $$ = $1; }
 	| init_declarator_list ',' init_declarator	{ $$ = new init_declarator_list($1, $3); }
 	;
 
@@ -324,7 +324,7 @@ parameter_type_list
 	;
 
 parameter_list
-	: parameter_declaration				{ $$ = new parameter_list($1); }
+	: parameter_declaration				{ $$ = $1; }
 	| parameter_list ',' parameter_declaration	{ $$ = new parameter_list($1, $3); }
 	;
 
@@ -369,7 +369,7 @@ initializer
 	;
 
 initializer_list
-	: initializer				{ $$ = new initializer_list($1); }
+	: initializer				{ $$ = $1; }
 	| initializer_list ',' initializer	{ $$ = new initializer_list($1, $3); }
 	;
 
@@ -396,12 +396,12 @@ compound_statement
 	;
 
 declaration_list
-	: declaration			{ $$ = new declaration_list($1); }
+	: declaration			{ $$ = $1; }
 	| declaration_list declaration	{ $$ = new declaration_list($1, $2); }
 	;
 
 statement_list
-	: statement			{ $$ = new statement_list($1); }
+	: statement			{ $$ = $1; }
 	| statement_list statement	{ $$ = new statement_list($1, $2); }
 	;
 
@@ -435,7 +435,7 @@ top
 	: translation_unit { g_root=$1; }
 
 translation_unit
-	: external_declaration			{ $$ = new translation_unit($1); }
+	: external_declaration			{ $$ = $1; }
 	| translation_unit external_declaration	{ $$ = new translation_unit($1, $2); }
 	;
 
