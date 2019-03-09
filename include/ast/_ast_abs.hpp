@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include "_query_enum.hpp"
+#include "../Mp_Type.hpp"
 
 class ast_abs;
 extern std::vector<std::string> globalvar;
@@ -33,11 +34,21 @@ public:
     //! Tell and expression to print itself to the given stream
     virtual std::string c() const{};
 
-    //! convert ast to python
+    /* convert ast to python
+     *
+     * dst should ONLY be used as return data
+     */
     virtual void py(std::string& dst) const
     { notImplemented(); }
 
-    virtual void mp() const
+    /*
+     * convert ast to MIPS
+     *
+     * result is used to pass back data
+     * in SPECIAL CIRCUMSTANCE, it may also use as input variable.
+     * However, it should be transparent to other class
+     */
+    virtual void mp(Result& result) const
     { notImplemented(); }
 
 

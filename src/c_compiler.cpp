@@ -1,11 +1,13 @@
 #include "ast.hpp"
+#include "Stack.hpp"
+#include "TempReg.hpp"
 
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <string.h>
 
-std::ofstream ffout;
+extern std::ofstream ffout;
 extern FILE *yyin;
 std::vector<std::string> globalvar;
 

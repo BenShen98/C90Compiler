@@ -68,7 +68,6 @@ logical_or_expression
 
 */
 
-enum enum_algebra {MUL,DIV,MOD ,ADD,SUB, LEFT_,RIGHT_, SMALLER,GREATER, LE_,GE_,EQ_,NE_, AND,XOR,OR, AND_,OR_, };
 
 class algebra: public ast_abs{
   enum_algebra type;
