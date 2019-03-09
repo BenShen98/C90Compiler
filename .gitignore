@@ -1,3 +1,9 @@
 working
 bin
 .idea
+_playground
+*.out
+*.temp
+*.o
+output
+tmp
