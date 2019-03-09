@@ -48,7 +48,7 @@ typedef enum _type{
     /*
      * for register only (only [31:30] bit matter)
      */
-    CHECK_REG=0x3,
+    CHECK_REG=0xC0000000,
     CHECK_REG_N=~CHECK_REG,
 
     REG_EMPTY=  0x00000000,
@@ -74,6 +74,15 @@ inline Type& operator&=(Type& a,const Type& b)
 inline Type& operator&(Type a, const Type& b)
 {return a&=b;}
 
+// ==
+inline bool isEqual(Type a,Type b){
+    return (static_cast<int>(a) == static_cast<int>(b));
+}
+//inline bool operator==(const Type& a,const Type& b)
+//{return (static_cast<int>(a) == static_cast<int>(b));}
+
+//inline bool operator!=(const Type& a,const Type& b)
+//{return !(a==b);}
 
 /*
  * basic data type (int, float)
@@ -81,11 +90,11 @@ inline Type& operator&(Type a, const Type& b)
 
 //check
 inline bool isDoubleFloat(Type t){
-    return (t&CHECK_TYPE_BASIC)==TYPE_DOUBLE_FLOAT;
+    return isEqual( (t&CHECK_TYPE_BASIC) , TYPE_DOUBLE_FLOAT );
 }
 
 inline bool isSingleFloat(Type t){
-    return (t&CHECK_TYPE_BASIC)==TYPE_SINGLE_FLOAT;
+    return isEqual( (t&CHECK_TYPE_BASIC) , TYPE_SINGLE_FLOAT );
 }
 
 inline bool isFloat(Type t){
@@ -94,11 +103,11 @@ inline bool isFloat(Type t){
 
 //int
 inline bool isSignedInt(Type t){
-    return (t&CHECK_TYPE_BASIC)==TYPE_SIGNED_INT;
+    return isEqual( (t&CHECK_TYPE_BASIC) , TYPE_SIGNED_INT );
 }
 
 inline bool isUnsignedInt(Type t){
-    return (t&CHECK_TYPE_BASIC)==TYPE_UNSIGNED_INT;
+    return isEqual( (t&CHECK_TYPE_BASIC) , TYPE_UNSIGNED_INT );
 }
 
 inline bool isInt(Type t){
@@ -131,19 +140,19 @@ inline void setUnsignedInt(Type& t){
 
 //check
 inline bool isRegDirty(Type t){
-    return (t&CHECK_REG)==REG_DIRTY;
+    return isEqual( (t&CHECK_REG) , REG_DIRTY );
 }
 
 inline bool isRegEmpty(Type t){
-    return (t&CHECK_REG)==REG_EMPTY;
+    return isEqual( (t&CHECK_REG) , REG_EMPTY );
 }
 
 inline bool isRegUnkown(Type t){
-    return (t&CHECK_REG)==REG_UNKNOWN;
+    return isEqual( (t&CHECK_REG) , REG_UNKNOWN );
 }
 
 inline bool isRegSync(Type t){
-    return (t&CHECK_REG)==REG_SYNC;
+    return isEqual( (t&CHECK_REG) , REG_SYNC );
 }
 
 //set
