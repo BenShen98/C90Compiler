@@ -7,6 +7,7 @@
 #include <sstream>
 #include "_query_enum.hpp"
 #include "../Mp_Type.hpp"
+extern std::ofstream ffout;
 
 class ast_abs;
 extern std::vector<std::string> globalvar;
@@ -48,8 +49,11 @@ public:
      * in SPECIAL CIRCUMSTANCE, it may also use as input variable.
      * However, it should be transparent to other class
      */
-    virtual void mp(Result& result) const
+    virtual void mp() const
     { notImplemented(); }
+
+    // virtual void mp(Result& result) const
+    // { notImplemented(); }
 
 
     virtual enum_declarator_type query_declarator_type() const {

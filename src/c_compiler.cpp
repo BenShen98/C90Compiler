@@ -7,7 +7,7 @@
 #include <string>
 #include <string.h>
 
-extern std::ofstream ffout;
+std::ofstream ffout;
 extern FILE *yyin;
 std::vector<std::string> globalvar;
 

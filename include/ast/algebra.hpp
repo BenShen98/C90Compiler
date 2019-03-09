@@ -2,6 +2,8 @@
 #define ast_algebra
 
 #include "_ast_abs.hpp"
+#include "algebra_enum.hpp"
+
 #include <string>
 /*
 * When there is only signal element in the tree, that element get promoted
