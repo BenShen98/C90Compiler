@@ -5,6 +5,7 @@ def main():
 	global x
 	global y
 	x=0
+	y=6
 	return 0
 
 

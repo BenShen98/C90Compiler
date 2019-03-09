@@ -45,7 +45,7 @@ public:
       }
     }
 
-    virtual void mp() const override{
+    virtual void mp(Result& result) const override{
         notImplemented();
     }
 

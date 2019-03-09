@@ -37,13 +37,8 @@ public:
   }
 }
 
-  void mp() const override{
-    switch (type){
-
-
-      default:
-      notImplemented();
-    }
+  void mp(Result& result) const override{
+      data->mp(_dummy_);
   }
 
   inline void get_global_variable(std::string& str)const{

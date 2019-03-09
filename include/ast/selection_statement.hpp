@@ -53,7 +53,7 @@ public:
 
     }
 
-    void mp() const override{
+    void mp(Result& result) const override{
         notImplemented();
     }
 

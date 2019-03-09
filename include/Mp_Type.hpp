@@ -214,5 +214,4 @@ typedef struct _result{
     bool freeable=false;
 } Result;
 
-
 #endif //C90_MP_MASK_HPP

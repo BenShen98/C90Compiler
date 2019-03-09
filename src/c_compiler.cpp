@@ -1,6 +1,5 @@
 #include "ast.hpp"
-#include "Stack.hpp"
-#include "TempReg.hpp"
+#include "Mp.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -11,6 +10,7 @@ std::ofstream ffout;
 extern FILE *yyin;
 std::vector<std::string> globalvar;
 
+Mp mp;
 
 //debug dummy
 void dd(){

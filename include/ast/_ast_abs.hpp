@@ -6,14 +6,16 @@
 #include <iostream>
 #include <sstream>
 #include "_query_enum.hpp"
-#include "../Mp_Type.hpp"
-extern std::ofstream ffout;
+#include "../Mp.hpp"
 
 class ast_abs;
-extern std::vector<std::string> globalvar;
-
-
 typedef const ast_abs * astPtr;
+
+static Result _dummy_;
+
+extern Mp mp;
+extern std::ofstream ffout;
+extern std::vector<std::string> globalvar;
 
 inline void notImplemented(){ throw std::runtime_error("Not implemented."); }
 
@@ -49,11 +51,11 @@ public:
      * in SPECIAL CIRCUMSTANCE, it may also use as input variable.
      * However, it should be transparent to other class
      */
-    virtual void mp() const
-    { notImplemented(); }
+//    virtual void mp(Result& result) const
+//    { notImplemented(); }
 
-    // virtual void mp(Result& result) const
-    // { notImplemented(); }
+     virtual void mp(Result& result) const
+     { notImplemented(); }
 
 
     virtual enum_declarator_type query_declarator_type() const {

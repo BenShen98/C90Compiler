@@ -39,7 +39,7 @@ public:
         return declarator->query_declarator_type();
     }
 
-    void mp() const override{
+    void mp(Result& result) const override{
         notImplemented();
     }
 

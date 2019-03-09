@@ -38,8 +38,14 @@ public:
        //std::cerr<<"entered compound statement"<<std::endl;
     }
 
-    void mp() const override{
-        notImplemented();
+    void mp(Result& result) const override{
+        if(declaration_list!=NULL){
+            declaration_list->mp(_dummy_);
+        }
+
+        if(statement_list!=NULL){
+            statement_list->mp(_dummy_);
+        }
     }
 
 };

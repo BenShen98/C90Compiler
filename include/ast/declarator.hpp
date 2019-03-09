@@ -38,7 +38,7 @@ public:
         return direct_declarator->query_declarator_type();
     }
 
-    void mp() const override{
+    void mp(Result& result) const override{
         notImplemented();
         if(pointer==0){
             //case 1, direct_declarator

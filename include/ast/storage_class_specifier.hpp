@@ -26,7 +26,7 @@ public:
         //python does not define type, skip
     }
 
-    void mp() const override{
+    void mp(Result& result) const override{
         notImplemented();
     }
 

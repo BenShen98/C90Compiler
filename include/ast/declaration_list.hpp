@@ -5,7 +5,7 @@
 
 /*
 declaration_list
-	: declaration
+X 	: declaration ($$=$1 in yacc)
 	| declaration_list declaration
 	;
  */
@@ -21,14 +21,16 @@ public:
 
     virtual void py(std::string& dst) const override{
         std::string e, l;
-        element->py(e);
+        list->py(l);
 
-        if(list!=NULL){
-            list->py(l);
-            dst = l + '\n' + e;
-        }else{
-            dst=e;
-        }
+        element->py(e);
+        dst = l + '\n' + e;
+
+    }
+
+    void mp(Result& result) const override{
+        list->mp(_dummy_);
+        element->mp(_dummy_);
     }
 };
 
