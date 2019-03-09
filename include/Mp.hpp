@@ -115,7 +115,7 @@ private:
     //  return REG INDEX if already in register
     // load id from stack to general register, return REG INDEX
     // spill least fresh register to stack if necessary
-    int loadGenReg(int id);
+    int loadGenReg(int id, bool load=true);
     int findFreeGenReg();
 
 /*
@@ -172,8 +172,11 @@ public:
 
     // reserve space in `local` part of STACK, put data register (DOES not write data to stack)
     // type CANNOT be modified once push_back
+    /*
+     * when data field is not empty => move from empty state to dirty (with li)
+     * when data field is empty => move from empty state to unknow state (no li)
+     */
     int push_back(int size,std::string data, Type type, std::string identifier="" );
-//    int push_back(enum_algebra op, int rhs, int lhs, std::string identifier="" );
 
 //    int push_back_array();
 
@@ -214,6 +217,10 @@ public:
 
     //read/write reg (auto LOAD and SPILL from/to stack)
     // difference : write will set dirty flag
+    /*
+     * IF CODE requires both read and write:
+     * Call readGenReg THEN writeGenReg, otherwise
+     */
     std::string readGenReg(int id);
     std::string writeGenReg(int id);
 

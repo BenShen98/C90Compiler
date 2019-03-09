@@ -32,12 +32,12 @@ extern std::ofstream ffout;
 
         //reset temporary reg
         freshCounter=0;
-        tGeneralReg = std::vector<Reg>(T_GENERAL_REG_SIZE,{MASK_IS_FREE,0,0});
+        tGeneralReg = std::vector<Reg>(T_GENERAL_REG_SIZE,{REG_EMPTY,0,0});
     //    tFloatReg = std::vector<Reg>(T_FLOAT_REG_SIZE,{MASK_IS_FREE,0,0});
 
         //reset stack
         top_id=0;
-        entries = std::vector<Entry>(1,{0,0,TYPE_SINGED_INT,""});
+        entries = std::vector<Entry>(1,{0,0,TYPE_SIGNED_INT,""});
 
         //reset function name
         arg_top_id=0;
@@ -134,7 +134,7 @@ extern std::ofstream ffout;
     bool Mp::discardGenReg(int id) {
         for(int i=0;i<T_GENERAL_REG_SIZE;++i){
             if(tGeneralReg[i].id==id){
-                tGeneralReg[i].type = MASK_IS_FREE; //free register without check if need write back
+                setRegEmpty(tGeneralReg[i].type);
                 return true;
             }
         }
@@ -151,18 +151,23 @@ extern std::ofstream ffout;
         entries.push_back({size,top_id,type,identifier});
 
         //init value
-        if(type & MASK_IS_FLOAT){
+        if(isFloat(type)){
             //type is single/double float
             throw std::runtime_error("single/double float not supported");
         }else{
             //use general register
             int regId=findFreeGenReg();
             tGeneralReg[regId].id=top_id;
-            tGeneralReg[regId].type=type|MASK_IS_DIRTY;
             tGeneralReg[regId].freshness=freshCounter;
             freshCounter++;
-            _li(tGenRegName(regId), data, "init variable "+identifier);
 
+            if(data==""){
+                //empty -> unknown
+                setRegUnkown(tGeneralReg[regId].type);
+            }else {
+                setRegDirty(tGeneralReg[regId].type);
+                _li(tGenRegName(regId), data, "init variable " + identifier);
+            }
         }
         return top_id;
     }
@@ -205,7 +210,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     void Mp::writeBackAll() {
         //wire back all general register
         for(int i=0; i<T_GENERAL_REG_SIZE; ++i){
-            if( tGeneralReg[i].type & MASK_IS_DIRTY ){
+            if( isRegDirty(tGeneralReg[i].type) ){
                 sw_sp(tGenRegName(i),tGeneralReg[i].id,"write back");
             }
         }
@@ -224,7 +229,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         }
 
         if(offset!=0){
-            if( (entries[i].type & MASK_IS_ARRAY) && (entries[i].size>offset) ){
+            if( isArray(entries[i].type) && (entries[i].size>offset) ){
                 //is array
                 return entries[i].top_id - offset; //SUB here
             } else{
@@ -248,7 +253,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
     }
 
-    int Mp::loadGenReg(int id) {
+    int Mp::loadGenReg(int id, bool load) {
         int regId=0;
 
         // check if is already in register
@@ -264,7 +269,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         EntryPtr entryPtr=getInfo(id);
 
         //check context
-        if( entryPtr->type & MASK_IS_FLOAT ){
+        if( isFloat(entryPtr->type) ){
             throw std::runtime_error(entryPtr->name+" an single/double float, can not be load to general register");
         }
 
@@ -276,7 +281,13 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         tGeneralReg[regId].type=entryPtr->type;
         tGeneralReg[regId].freshness=freshCounter;
         freshCounter++;
-        lw_sp(tGenRegName(regId), id, "load "+entryPtr->name);
+        // only load data from stack to register when required to
+        if(load){
+            lw_sp(tGenRegName(regId), id, "load "+entryPtr->name);
+            setRegSync(tGeneralReg[regId].type);
+        }else{
+            setRegUnkown(tGeneralReg[regId].type);
+        }
         return regId;
 
     }
@@ -284,19 +295,21 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     int Mp::findFreeGenReg() {
         int least_fresh=freshCounter;
         int spill_regId;
+
+        // for loop: find empty reg, decide which reg to spill
         for (int regId=0; regId<T_GENERAL_REG_SIZE; ++regId) {
-            if(tGeneralReg[regId].type & MASK_IS_FREE){
+            if( isRegEmpty(tGeneralReg[regId].type) ){
                 return regId;
 
-            }else if(tGeneralReg[regId].freshness<least_fresh){
-                //prepare if need spill
+            }else if( !isRegUnkown(tGeneralReg[regId].type) && tGeneralReg[regId].freshness<least_fresh){
+                //prepare if need spill (register in UNKNOW state will not be considered)
                 least_fresh=tGeneralReg[regId].freshness;
                 spill_regId=regId;
             }
         }
 
-        //spill reg if is dirty
-        if(tGeneralReg[spill_regId].type & MASK_IS_DIRTY){
+        //write back if is dirty
+        if( isRegDirty(tGeneralReg[spill_regId].type) ){
             // only write back when is dirty
             sw_sp(tGenRegName(spill_regId),tGeneralReg[spill_regId].id, "spill reg");
         }
@@ -304,17 +317,17 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     }
 
     std::string Mp::readGenReg(int id) {
-        return tGenRegName(loadGenReg(id));
+        return tGenRegName(loadGenReg(id,true));
     }
 
     std::string Mp::writeGenReg(int id) {
-        int regId=loadGenReg(id);
-        tGeneralReg[regId].type |= MASK_IS_DIRTY;
+        int regId=loadGenReg(id, false);
+        setRegDirty(tGeneralReg[regId].type); // unknown/dirty/sync state --> dirty state
         return tGenRegName(regId);
     }
 
     int Mp::sizeOf(Type type) {
-        if( type & TYPE_DOUBLE_FLOAT ){
+        if( isDoubleFloat(type) ){
             //only double is 8 byte
             return 8;
         }else{
