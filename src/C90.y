@@ -190,9 +190,9 @@ declaration
 	;
 
 declaration_specifiers
-	: type_specifier					{ $$ = new declaration_specifiers($1); }
+	: type_specifier					{ $$ = $1; }
 	| type_specifier declaration_specifiers			{ $$ = new declaration_specifiers($1,$2); }
-	| storage_class_specifier				{ $$ = new declaration_specifiers($1); }
+	| storage_class_specifier				{ $$ = $1; }
 	| storage_class_specifier declaration_specifiers	{ $$ = new declaration_specifiers($1,$2); }
 //	| type_qualifier					does not support type_qualifier
 //	| type_qualifier declaration_specifiers			does not support type_qualifier

@@ -39,11 +39,12 @@ public:
     }
 
     void mp(Result& result) const override{
-        notImplemented();
-        if(pointer==0){
+        if(pointer==NULL){
             //case 1, direct_declarator
+            direct_declarator(result);
 
         }else{
+            notImplemented();
             //case 0, pointer direct_declarator
 
         }

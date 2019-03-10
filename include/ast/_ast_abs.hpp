@@ -54,8 +54,11 @@ public:
 //    virtual void mp(Result& result) const
 //    { notImplemented(); }
 
-     virtual void mp(Result& result=_dummy_) const
+     virtual void mp(Result& result) const
      { notImplemented(); }
+
+    virtual void mp() const
+    { notImplemented(); }
 
 
     virtual enum_declarator_type query_declarator_type() const {

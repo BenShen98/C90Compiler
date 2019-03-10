@@ -80,6 +80,9 @@ public:
 
     void mp(Result& result) const override{
         switch (type){
+            case 0:
+                result.str= *identifier;
+                break;
 
             default:
                 notImplemented();

@@ -33,7 +33,32 @@ public:
 
     void mp(Result& result) const override{
         switch (type){
+            //void
             case 0:
+                setVoid(result.type);
+                break;
+
+            //int
+            case 3:
+                if( !isUnsignedInt(result.type) ){
+                    //avoid overwrite unsigned int
+                    setSignedInt(result.type);
+                }
+                break;
+            case 7:
+                setSignedInt(result.type);
+                break;
+            case 8:
+                setUnsignedInt(result.type);
+                break;
+
+            //float
+            case 5:
+                setSingleFloat(result.type);
+                break;
+            case 6:
+                setDoubleFloat(result.type);
+                break;
 
             default:
                 notImplemented();

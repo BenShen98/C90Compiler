@@ -34,11 +34,13 @@ public:
 
     void mp(Result& result) const override{
         //get type
-        Result getType;
-        declaration_specifiers->mp(getType);
+        Result declareType;
+        declaration_specifiers->mp(declareType);
+        result=declareType;
 
-
-        //
+        if(init_declarator_list!=NULL){
+            init_declarator_list->mp(declareType);
+        }
 
 
     }

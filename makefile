@@ -1,6 +1,7 @@
-CPPFLAGS += -std=c++11 -W -Wall -g -Wno-unused-parameter
+CPPFLAGS += -std=c++11 -g
+# CPPFLAGS += -W -Wall  -Wno-unused-parameter
 CPPFLAGS += -I include -std=c++11
-CPPFLAGS += -Wfatal-errors -ggdb
+CPPFLAGS += -fmax-errors=5 -ggdb
 
 
 

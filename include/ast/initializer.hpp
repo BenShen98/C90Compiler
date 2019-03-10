@@ -32,7 +32,11 @@ public:
     }
 
     void mp(Result& result) const override{
-        notImplemented();
+       if(type==0){
+            data->mp(result);
+       }else{
+           notImplemented();
+       }
 
     }
 

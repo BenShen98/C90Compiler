@@ -40,7 +40,22 @@ public:
     }
 
     void mp(Result& result) const override{
-        notImplemented();
+        Result declareName;
+        declarator->mp(declareName);
+
+        Type type=result.type;
+        int size = isDoubleFloat(type) ? 8 : 4;
+
+        if(initializer==NULL){
+        //zero init value
+        mp.immediate(size, "0", type, declareName);
+
+        }else{
+            std::string initValue;
+            initializer->mp(initValue);
+            mp.immediate(size, initValue, type, declareName);
+
+        }
     }
 
 };

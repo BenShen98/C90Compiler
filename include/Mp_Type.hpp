@@ -29,7 +29,7 @@ typedef enum _type{
     /*
      * basic data type
      */
-    CHECK_TYPE_BASIC=0x3,
+    CHECK_TYPE_BASIC=0x7,
     CHECK_TYPE_BASIC_N=~CHECK_TYPE_BASIC,
 
     TYPE_SIGNED_INT=    0x0,
@@ -37,12 +37,15 @@ typedef enum _type{
     TYPE_SINGLE_FLOAT=  0x2,
     TYPE_DOUBLE_FLOAT=  0x3,
 
+    TYPE_VOID=0x4,
+
     MASK_IS_FLOAT=  0x2,
+    MASK_IS_VOID=TYPE_VOID,
 
     /*
      * advanced data type
      */
-    MASK_IS_ARRAY=  0x4,
+    MASK_IS_ARRAY=  0x8,
 
 
     /*
@@ -93,6 +96,10 @@ inline bool isDoubleFloat(Type t){
     return isEqual( (t&CHECK_TYPE_BASIC) , TYPE_DOUBLE_FLOAT );
 }
 
+inline bool isVoid(Type t){
+    return t&MASK_IS_VOID;
+}
+
 inline bool isSingleFloat(Type t){
     return isEqual( (t&CHECK_TYPE_BASIC) , TYPE_SINGLE_FLOAT );
 }
@@ -101,7 +108,6 @@ inline bool isFloat(Type t){
     return t&MASK_IS_FLOAT;
 }
 
-//int
 inline bool isSignedInt(Type t){
     return isEqual( (t&CHECK_TYPE_BASIC) , TYPE_SIGNED_INT );
 }
@@ -116,6 +122,9 @@ inline bool isInt(Type t){
 }
 
 //set
+inline void setVoid(Type &t){
+    t=(t&CHECK_TYPE_BASIC_N)|TYPE_VOID;
+}
 
 inline void setDoubleFloat(Type& t){
     t= (t&CHECK_TYPE_BASIC_N)|TYPE_DOUBLE_FLOAT;
