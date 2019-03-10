@@ -63,7 +63,7 @@ public:
 //        declarator->mp(_dummy_);
 
         // compile function
-        compound_statement->mp(_dummy_);
+        compound_statement->mp();
 
 
     }

@@ -54,7 +54,7 @@ public:
 //    virtual void mp(Result& result) const
 //    { notImplemented(); }
 
-     virtual void mp(Result& result) const
+     virtual void mp(Result& result=_dummy_) const
      { notImplemented(); }
 
 

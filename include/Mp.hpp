@@ -16,6 +16,7 @@
 
 
 #include "Mp_Type.hpp"
+#include "ast/algebra_enum.hpp"
 
 class Mp {
 
@@ -59,9 +60,15 @@ private:
  */
     int freshCounter;
 
+    /*
+     * TODO: non-float must in genReg, float may be in genReg & floatReg
+     * CHECK genReg when handling float
+     */
+
     // temporary reg for non floating point
     std::vector<Reg> tGeneralReg;
     std::string tGenRegName(int regIdx);
+//    std::string tGenRegName(const RegItr& itr);
 
 //    //temporary reg for floating point
 //    std::vector<Reg> tFloatReg = std::vector<Reg>(T_FLOAT_REG_SIZE,{0,-1});
@@ -86,7 +93,11 @@ private:
 
     }
 
-/*
+    //ptr will be invalide if element is inserted to the vector
+    EntryPtr getInfo(int id) const;
+
+
+    /*
  * make function call
  */
     int arg_top_id;
@@ -115,14 +126,14 @@ private:
     //  return REG INDEX if already in register
     // load id from stack to general register, return REG INDEX
     // spill least fresh register to stack if necessary
-    int loadGenReg(int id, bool load=true);
-    int findFreeGenReg();
+    RegItr loadGenReg(int id, bool load=true);
+    RegItr findFreeGenReg( );
 
 /*
  * MIPS function
  */
     void _li(std::string reg,std::string imm, std::string comment=""){
-        buffer.push_back("li " + reg + ',' + imm + " #" + comment + '\n');
+        buffer.push_back("li "+ reg + ',' + imm + " #" + comment + '\n');
     }
 
     void _add(std::string d,std::string s,std::string t, std::string comment=""){
@@ -151,6 +162,10 @@ private:
 
     /* ... */
 
+    /*
+     * C instruction
+     */
+    void algebra(enum_algebra algebra, int result,Type resultType, int op1, int op2, bool free1, bool free2, std::string comment);
 
 
 public:
@@ -170,13 +185,13 @@ public:
  * insertion of new variable/argument
  */
 
-    // reserve space in `local` part of STACK, put data register (DOES not write data to stack)
     // type CANNOT be modified once push_back
     /*
-     * when data field is not empty => move from empty state to dirty (with li)
-     * when data field is empty => move from empty state to unknow state (no li)
+     *  reserved data can only be used as result filed for assignment
+     *  immediate is the replacement of original push_back
      */
-    int push_back(int size,std::string data, Type type, std::string identifier="" );
+    int reserveId(int size, Type type, std::string identifier="" );
+    int immediate(int size, std::string data, Type type, std::string identifier="" );
 
 //    int push_back_array();
 
@@ -213,7 +228,6 @@ public:
     int getId(std::string identifier, int offset=0);
 
     // get info about the id
-    EntryPtr getInfo(int id) const;
 
     //read/write reg (auto LOAD and SPILL from/to stack)
     // difference : write will set dirty flag
@@ -221,8 +235,8 @@ public:
      * IF CODE requires both read and write:
      * Call readGenReg THEN writeGenReg, otherwise
      */
-    std::string readGenReg(int id);
-    std::string writeGenReg(int id);
+//    std::string readGenReg(int id);
+//    std::string writeGenReg(int id);
 
     //discard reg without saving its value
     bool discardGenReg(int id);
@@ -251,8 +265,13 @@ public:
  * C instruction
  */
 
-//    enum enum_algebra {MUL,DIV,MOD ,ADD,SUB, LEFT_,RIGHT_, SMALLER,GREATER, LE_,GE_,EQ_,NE_, AND,XOR,OR, AND_,OR_, };
-//    Result add(id r, id l, std::string comment=""){
+//    //TODO::  {MUL,DIV,MOD ,ADD,SUB, LEFT_,RIGHT_, SMALLER,GREATER, LE_,GE_,EQ_,NE_, AND,XOR,OR, AND_,OR_, };
+
+    void add(int result, Type resultType, int op1, int op2, bool free1=false, bool free2=false, std::string comment="");
+
+
+
+
 //
 //        // TODO: type promotion
 //        type=TYPE_SINGED_INT;

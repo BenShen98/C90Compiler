@@ -40,11 +40,11 @@ public:
 
     void mp(Result& result) const override{
         if(declaration_list!=NULL){
-            declaration_list->mp(_dummy_);
+            declaration_list->mp();
         }
 
         if(statement_list!=NULL){
-            statement_list->mp(_dummy_);
+            statement_list->mp();
         }
     }
 

@@ -38,7 +38,7 @@ public:
 }
 
   void mp(Result& result) const override{
-      data->mp(_dummy_);
+      data->mp();
   }
 
   inline void get_global_variable(std::string& str)const{

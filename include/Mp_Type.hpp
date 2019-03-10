@@ -191,6 +191,9 @@ typedef struct _reg{
     int freshness; // the higher the value, the more resent it had been used
 } Reg;
 
+typedef std::vector<Reg>::iterator RegItr;
+
+
 typedef struct _entry{
     int size; //in term of byte
     int top_id;
@@ -213,5 +216,11 @@ typedef struct _result{
 
     bool freeable=false;
 } Result;
+
+//typedef struct _msg {
+//    int id;
+//    int reg;
+//    Type type;
+//} Msg;
 
 #endif //C90_MP_MASK_HPP

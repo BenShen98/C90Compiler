@@ -33,7 +33,14 @@ public:
     }
 
     void mp(Result& result) const override{
-        notImplemented();
+        //get type
+        Result getType;
+        declaration_specifiers->mp(getType);
+
+
+        //
+
+
     }
 
 };

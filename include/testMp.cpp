@@ -61,8 +61,14 @@ int main(){
     ffout.open("MpOut.temp");
 
     mp.newFrame("test");
-    mp.push_back(4,"123456",TYPE_SIGNED_INT,"int");
-    mp.push_back(8,"5.3",TYPE_UNSIGNED_INT,"a double pretend as unsigned");
+
+    int r,o1,o2;
+    r=mp.reserveId(4,TYPE_SIGNED_INT,"result");
+    o1=mp.immediate(4,"123456",TYPE_SIGNED_INT,"op1");
+    o2=mp.immediate(4,"4564",TYPE_SIGNED_INT,"op2");
+
+    mp.add(r,TYPE_SIGNED_INT,o1,o2,false, true);//wb r,o1, discard o2
+
     mp.endFrame();
     mp.dump();
 

@@ -29,12 +29,15 @@ public:
     ~type_specifier()override{}
 
 
-    void py(std::string& dst) const override{
-        //python does not define type, skip
-    }
+    //python does not define type, skip
 
     void mp(Result& result) const override{
-        notImplemented();
+        switch (type){
+            case 0:
+
+            default:
+                notImplemented();
+        }
     }
 
 

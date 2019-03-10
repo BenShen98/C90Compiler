@@ -53,9 +53,9 @@ public:
     }
 
     void mp(Result& result) const override{
-        list->mp(_dummy_);
+        list->mp();
 
-        element->mp(_dummy_);
+        element->mp();
     }
 };
 
