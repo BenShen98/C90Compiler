@@ -26,3 +26,7 @@ clean :
 	rm -f bin/*
 	rm -f src/*.tab.cpp
 	rm -f src/*.yy.cpp
+	rm -f tmp/*.py
+
+.PHONY test:testbench.sh
+	./testbench.sh
