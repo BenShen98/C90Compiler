@@ -81,6 +81,10 @@ inline Type& operator&(Type a, const Type& b)
 inline bool isEqual(Type a,Type b){
     return (static_cast<int>(a) == static_cast<int>(b));
 }
+
+inline bool isBasicTypeEqual(Type a,Type b){
+    return (static_cast<int>(a&CHECK_TYPE_BASIC) == static_cast<int>(b&CHECK_TYPE_BASIC));
+}
 //inline bool operator==(const Type& a,const Type& b)
 //{return (static_cast<int>(a) == static_cast<int>(b));}
 
@@ -221,7 +225,6 @@ typedef struct _result{
 
     int id;     // used for operation which have dst register
     Type type; //used for declaration_specifiers
-    std::string str;
 
     bool freeable=false;
 } Result;

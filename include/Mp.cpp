@@ -12,7 +12,7 @@
 #include <regex>
 #include <fstream>
 
-
+#define RETURN_LABEL "EXIT_"+funcName
 
 extern std::ofstream ffout;
 
@@ -96,11 +96,13 @@ extern std::ofstream ffout;
                 ffout<<buffer[bufIdx];
         }
 
-
         //frame delete
+        ffout<<std::string(RETURN_LABEL)<<":\n";
         ffout<<"lw $31, "<<arg_top_id<<"($sp)"<<'\n';
         ffout<<"addiu $sp, $sp, "<<stack_size<<'\n'; // deallocate stack
         ffout<<"j $31\n";
+
+        funcName="";
 
 
     }
@@ -132,11 +134,10 @@ extern std::ofstream ffout;
         }
     }
 
-//    std::string Mp::tGenRegName(const RegItr& itr) {
-//        std::cout<<"#################"<<itr - tGeneralReg.begin();
-//        int regIdx=itr - tGeneralReg.begin();
-//        tGenRegName( regIdx );
-//    }
+    std::string Mp::tGenRegName(const RegItr& itr) {
+        int regIdx=itr - tGeneralReg.begin();
+        tGenRegName( regIdx );
+    }
 
     bool Mp::discardGenReg(int id) {
         for(int i=0;i<T_GENERAL_REG_SIZE;++i){
@@ -151,6 +152,7 @@ extern std::ofstream ffout;
 /*
  * insertion of new variable/arguement
  */
+
 int Mp::immediate(int size, std::string data, Type type, std::string identifier) {
     int id = reserveId(size, type, identifier);
 
@@ -166,11 +168,10 @@ int Mp::immediate(int size, std::string data, Type type, std::string identifier)
         freshCounter++;
 
         setRegDirty(regId->type);
-        _li( tGenRegName(regId-tGeneralReg.begin()), data, "immediate " + identifier);
+        _li( tGenRegName(regId-tGeneralReg.begin() ), data, "immediate " + identifier);
     }
 
     return id;
-
 }
 
 int Mp::reserveId(int size, Type type, std::string identifier){
@@ -356,41 +357,65 @@ std::string Mp::calOffset(const std::string &str) {//not finished
      * C instruction
      */
 
-    void Mp::add(int result,Type resultType, int op1, int op2, bool free1, bool free2, std::string comment) {
+    std::pair<RegItr, RegItr> Mp::typePromotion(int op1, int op2) {
+        EntryPtr e1=getInfo(op1);
+        EntryPtr e2=getInfo(op2);
 
-        algebra(ADD,result,resultType,op1,op2,free1,free2,comment);
+
+        if( !isBasicTypeEqual(e1->type, e2->type) ){
+            //type promotion
+            //..../
+            throw std::runtime_error("type promotion not done");
+
+        }else{
+
+            //no type promotion
+            if( isFloat(e1->type) ){
+                throw std::runtime_error("single/double float not supported");
+
+            }else{
+                return std::make_pair( loadGenReg(op1), loadGenReg(op2) );
+            }
+        }
 
     }
 
-    void Mp::algebra(enum_algebra algebra,
-            int result, Type resultType, int op1, int op2, bool free1, bool free2, std::string comment) {
 
-        RegItr o1, o2, re;
+    int Mp::algebra(enum_algebra algebra,int op1, int op2, bool free1, bool free2, std::string comment) {
 
-        /* non-float can be converted to float
-         * float CANNOT be converted to non-float
-         */
-        if(isFloat(resultType)){
-            //single double/flaot
-            throw std::runtime_error("single/double float not supported");
+        RegItr r1, r2,rResult;
+        std::pair<RegItr, RegItr> afterPromotion = typePromotion(op1,op2);
+        r1=afterPromotion.first;
+        r2=afterPromotion.second;
+
+
+        if(isDoubleFloat(r1->type)){
 
         }else{
-            //op1,op2 cant be float
-            o1=loadGenReg(op1,true);
-            o2=loadGenReg(op2, true);
-            re=loadGenReg(result, false); //does not load from stack
-
-            switch (algebra){
-                case ADD:
-                    _add(tGenRegName(re-tGeneralReg.begin()), tGenRegName(o1-tGeneralReg.begin()), tGenRegName(o2-tGeneralReg.begin()),comment);
-                    break;
-                default:
-                    throw std::runtime_error("Not implemented.");
-            }
-
-            setRegDirty(re->type);
+            int i=reserveId(4,r1->type,comment);
+            rResult=loadGenReg(i, false);
         }
 
+        switch (algebra){
+            case ADD:
+                _addu(tGenRegName(rResult-tGeneralReg.begin()), tGenRegName(r1-tGeneralReg.begin()), tGenRegName(r2-tGeneralReg.begin()),comment);
+                break;
+            default:
+                throw std::runtime_error("Not implemented.");
+        }
+
+        setRegDirty(rResult->type);
+
+        //free extra register caused by promotion
+        if( r1->id != op1 ){
+            discardGenReg(r1->id);
+        }
+
+        if( r2->id != op1 ){
+            discardGenReg(r2->id);
+        }
+
+        //free op register
         if(free1){
             discardGenReg(op1);
         }
@@ -399,4 +424,24 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             discardGenReg(op2);
         }
 
+    }
+
+    /*
+     * make function calls
+     */
+
+
+
+    /*
+     * current function
+     */
+    std::string Mp::mkLable(const std::string &name) {
+        std::string label = name + "_"+std::to_string(uniqueCounter)+"_"+funcName;
+        buffer.push_back(label + ":\n");
+        ++uniqueCounter;
+        return label;
+    }
+
+    void Mp::Return(){
+        _b(RETURN_LABEL);
     }

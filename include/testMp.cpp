@@ -60,14 +60,14 @@ int main(){
 
     ffout.open("MpOut.temp");
 
-    mp.newFrame("test");
+    mp.newFrame("para");
 
     int r,o1,o2;
     r=mp.reserveId(4,TYPE_SIGNED_INT,"result");
     o1=mp.immediate(4,"123456",TYPE_SIGNED_INT,"op1");
     o2=mp.immediate(4,"4564",TYPE_SIGNED_INT,"op2");
 
-    mp.add(r,TYPE_SIGNED_INT,o1,o2,false, true);//wb r,o1, discard o2
+    mp.algebra(ADD,o1,o2,false, true);//wb r,o1, discard o2
 
     mp.endFrame();
     mp.dump();

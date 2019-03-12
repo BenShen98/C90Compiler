@@ -52,7 +52,7 @@ public:
 
     }
 
-    void mp(Result& result) const override{
+    void mp() const override{
         list->mp();
 
         element->mp();

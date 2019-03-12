@@ -31,7 +31,11 @@ public:
     }
 
     void mp(Result& result) const override{
-        notImplemented();
+        if(exp!=NULL) {
+            //HAVE TO CALL mp(), not mp(Result&)
+            //see wiki for detail
+            exp->mp();
+        }
     }
 
 };

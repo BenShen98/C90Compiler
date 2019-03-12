@@ -39,21 +39,23 @@ public:
         return declarator->query_declarator_type();
     }
 
-    void mp(Result& result) const override{
+    void mp(Result& para) const override{
         Result declareName;
         declarator->mp(declareName);
 
-        Type type=result.type;
-        int size = isDoubleFloat(type) ? 8 : 4;
+        int size = isDoubleFloat(para.type) ? 8 : 4;
 
         if(initializer==NULL){
-        //zero init value
-        mp.immediate(size, "0", type, declareName);
+            //zero init value
+            mp.immediate(size, "0", type, declareName.str);
 
         }else{
-            std::string initValue;
-            initializer->mp(initValue);
-            mp.immediate(size, initValue, type, declareName);
+            Result declaredInfo;
+            declaredInfo.type=para.type;
+            declaredInfo.id=declareName.str;
+
+            int declaredId=mp.reserveId(size, para.type, declareName.str);
+            initializer->mp(declaredInfo);
 
         }
     }

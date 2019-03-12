@@ -13,6 +13,8 @@
 #include <map>
 #include <vector>
 #include <iostream>
+#include <utility>
+
 
 
 #include "Mp_Type.hpp"
@@ -23,7 +25,8 @@ class Mp {
 private:
 
     //funcName of current function
-    std::string funcName;
+    std::string funcName="";
+    int uniqueCounter;
 
     /*
  * internal struct
@@ -68,7 +71,7 @@ private:
     // temporary reg for non floating point
     std::vector<Reg> tGeneralReg;
     std::string tGenRegName(int regIdx);
-//    std::string tGenRegName(const RegItr& itr);
+    std::string tGenRegName(const RegItr& itr);
 
 //    //temporary reg for floating point
 //    std::vector<Reg> tFloatReg = std::vector<Reg>(T_FLOAT_REG_SIZE,{0,-1});
@@ -115,8 +118,11 @@ private:
 // TODO START WITH FUNCTION WITHOUT ARGUMENT
 
 /*
- * get param of current function call
+ * current function call
  */
+    void Return();
+
+
 
 
 /*
@@ -160,12 +166,18 @@ private:
         buffer.push_back("andi " + t + ',' + s + ',' + imm +" #" + comment + '\n');
     }
 
+    void _b(std::string label){
+        buffer.push_back("b " + label + '\n');
+    }
+
     /* ... */
 
     /*
      * C instruction
      */
-    void algebra(enum_algebra algebra, int result,Type resultType, int op1, int op2, bool free1, bool free2, std::string comment);
+    //give op1,op2 (id) returns new op1,op2 (regItr) after type promotion,
+    //new id may be different
+    std::pair<RegItr, RegItr> typePromotion(int op1,int op2);
 
 
 public:
@@ -191,6 +203,7 @@ public:
      *  immediate is the replacement of original push_back
      */
     int reserveId(int size, Type type, std::string identifier="" );
+//    void assignImmediate(int id, Type type, std::string data);
     int immediate(int size, std::string data, Type type, std::string identifier="" );
 
 //    int push_back_array();
@@ -217,6 +230,8 @@ public:
     //check if all argument had been filled, and issue jal instruction
     //write back all register
     void commitFunc();
+
+    std::string mkLable(const std::string& name);
 
     
 
@@ -267,7 +282,7 @@ public:
 
 //    //TODO::  {MUL,DIV,MOD ,ADD,SUB, LEFT_,RIGHT_, SMALLER,GREATER, LE_,GE_,EQ_,NE_, AND,XOR,OR, AND_,OR_, };
 
-    void add(int result, Type resultType, int op1, int op2, bool free1=false, bool free2=false, std::string comment="");
+    int algebra(enum_algebra algebra,int op1, int op2, bool free1=false, bool free2=false, std::string comment="");
 
 
 

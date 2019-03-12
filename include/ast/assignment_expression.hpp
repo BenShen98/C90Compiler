@@ -143,8 +143,27 @@ public:
         }
     }
 
-    void mp(Result& result) const override{
-        notImplemented();
+    void mp() const override{
+        //parent node are expression
+        if(unary_expression==NULL){
+            // case like {1+2}
+            // HAVE TO ignore
+        }else{
+            // case like {x=1+2}
+            // call function below
+            Result dummy; //not actually used
+            mp(dummy);
+        }
+    }
+
+    void mp(Result& para) const override{
+        //parent node are assignment_expression
+        if(unary_expression==NULL){
+            //base case
+            expression->mp(para);
+        } else{
+            notImplemented();
+        }
 
     }
 

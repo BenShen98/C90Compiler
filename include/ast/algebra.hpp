@@ -243,8 +243,9 @@ public:
     }
   }
 
-  virtual void mp(Result& result) const override{
-    notImplemented();
+  virtual void mp(Result& para) const override{
+    int resultId=para.id;
+    int resultType=para.type;
 
     switch (type){
       case MUL:
