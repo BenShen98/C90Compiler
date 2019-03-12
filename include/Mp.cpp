@@ -32,7 +32,7 @@ extern std::ofstream ffout;
 
         //reset temporary reg
         freshCounter=0;
-        tGeneralReg = std::vector<Reg>(T_GENERAL_REG_SIZE,{REG_EMPTY,0,0});
+        tGeneralReg = new Reg[T_GENERAL_REG_SIZE]; // init
     //    tFloatReg = std::vector<Reg>(T_FLOAT_REG_SIZE,{MASK_IS_FREE,0,0});
 
         //reset stack
@@ -50,7 +50,7 @@ extern std::ofstream ffout;
     /*
      * flush data
      */
-    void Mp::endFrame() {
+    void Mp::endFrame(bool logging) {
 
         //calculate zone for `local and temporaries` and `args`
         arg_top_id=16; //assume no arguement
@@ -102,7 +102,12 @@ extern std::ofstream ffout;
         ffout<<"addiu $sp, $sp, "<<stack_size<<'\n'; // deallocate stack
         ffout<<"j $31\n";
 
+        //logging and exit
+        if(logging)
+            dump();
+
         funcName="";
+        delete[] tGeneralReg;
 
 
     }
@@ -115,7 +120,7 @@ extern std::ofstream ffout;
             std::cerr<<"#\t"<< rit->top_id <<",\t\t"<< rit->size <<",\t\t"<< std::bitset<32>(rit->type)<< ",\t" <<rit->name <<",\n";
         }
         std::cerr<<"\n# # TGenReg dump #\n#\t# regName #,\t# StackID #,\t# type(MSB -- LSB) #\n";
-        for(unsigned i=0;i<T_GENERAL_REG_SIZE;++i){
+        for(int i=0;i<T_GENERAL_REG_SIZE;++i){
             std::cerr<<"#\t"<< tGenRegName(i) <<",\t\t"<< tGeneralReg[i].id <<",\t\t"<< std::bitset<32>(tGeneralReg[i].type) <<",\n";
         }
         std::cerr<<"\n";
@@ -123,7 +128,7 @@ extern std::ofstream ffout;
     }
 
 /*
- * General register
+ *  register
  */
     std::string Mp::tGenRegName(int regIdx) {
 
@@ -134,10 +139,21 @@ extern std::ofstream ffout;
         }
     }
 
-    std::string Mp::tGenRegName(const RegItr& itr) {
-        int regIdx=itr - tGeneralReg.begin();
-        tGenRegName( regIdx );
+    std::string Mp::tRegName(const RegPtr ptr) {
+        int idx; //idx in register file
+
+        // see if idx is general register
+        idx=ptr-tGeneralReg;
+        if(0<=idx && idx<T_GENERAL_REG_SIZE){
+            //is general register
+            return tGenRegName(idx);
+        }
+
+        // is from co-processor 1 (floating point)
+//        idx=ptr-
+        throw std::runtime_error("can't find register from ptr");
     }
+
 
     bool Mp::discardGenReg(int id) {
         for(int i=0;i<T_GENERAL_REG_SIZE;++i){
@@ -162,13 +178,13 @@ int Mp::immediate(int size, std::string data, Type type, std::string identifier)
         throw std::runtime_error("single/double float not supported");
     }else{
         //use general register
-        RegItr regId=findFreeGenReg();
+        RegPtr regId=findFreeGenReg();
         regId->id=top_id;
         regId->freshness=freshCounter;
         freshCounter++;
 
         setRegDirty(regId->type);
-        _li( tGenRegName(regId-tGeneralReg.begin() ), data, "immediate " + identifier);
+        _li( tRegName(regId ), data, "immediate " + identifier);
     }
 
     return id;
@@ -265,11 +281,12 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
     }
 
-    RegItr Mp::loadGenReg(int id, bool load) {
-        RegItr regItr=tGeneralReg.begin();
+    RegPtr Mp::loadGenReg(int id, bool load) {
+        RegPtr regItr=tGeneralReg;
+
 
         // check if is already in register
-        for (; regItr!=tGeneralReg.end(); ++regItr) {
+        for (int idx=0; idx<T_GENERAL_REG_SIZE; ++regItr, ++idx ) {
             if (regItr->id == id) {
 
                 //should not be dirty
@@ -300,7 +317,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         freshCounter++;
         // only load data from stack to register when required to
         if(load){
-            lw_sp(tGenRegName( regItr-tGeneralReg.begin() ), id, "load "+entryPtr->name);
+            lw_sp(tRegName( regItr ), id, "load "+entryPtr->name);
             setRegSync(regItr->type);
         }else{
             setRegUnkown(regItr->type);
@@ -309,12 +326,13 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
     }
 
-    RegItr Mp::findFreeGenReg() {
+    RegPtr Mp::findFreeGenReg() {
         int least_fresh=freshCounter;
-        RegItr spill_regId;
+        RegPtr spill_regId;
 
         // for loop: find empty reg, decide which reg to spill
-        for (RegItr regId=tGeneralReg.begin() ; regId!=tGeneralReg.end(); ++regId) {
+        RegPtr regId=tGeneralReg;
+        for ( int idx=0 ; idx<T_GENERAL_REG_SIZE; ++idx, ++regId) {
             if( isRegEmpty(regId->type) ){
                 return regId;
 
@@ -328,7 +346,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         //write back if is dirty
         if( isRegDirty(spill_regId->type) ){
             // only write back when is dirty
-            sw_sp(tGenRegName( spill_regId-tGeneralReg.begin() ),spill_regId->id, "spill reg");
+            sw_sp(tRegName( spill_regId ),spill_regId->id, "spill reg");
         }
         return spill_regId;
     }
@@ -357,7 +375,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
      * C instruction
      */
 
-    std::pair<RegItr, RegItr> Mp::typePromotion(int op1, int op2) {
+    std::pair<RegPtr , RegPtr> Mp::typePromotion(int op1, int op2) {
         EntryPtr e1=getInfo(op1);
         EntryPtr e2=getInfo(op2);
 
@@ -383,8 +401,8 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
     int Mp::algebra(enum_algebra algebra,int op1, int op2, bool free1, bool free2, std::string comment) {
 
-        RegItr r1, r2,rResult;
-        std::pair<RegItr, RegItr> afterPromotion = typePromotion(op1,op2);
+        RegPtr r1, r2,rResult;
+        std::pair<RegPtr, RegPtr> afterPromotion = typePromotion(op1,op2);
         r1=afterPromotion.first;
         r2=afterPromotion.second;
 
@@ -398,7 +416,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
         switch (algebra){
             case ADD:
-                _addu(tGenRegName(rResult-tGeneralReg.begin()), tGenRegName(r1-tGeneralReg.begin()), tGenRegName(r2-tGeneralReg.begin()),comment);
+                _addu(tRegName(rResult), tRegName(r1), tRegName(r2),comment);
                 break;
             default:
                 throw std::runtime_error("Not implemented.");

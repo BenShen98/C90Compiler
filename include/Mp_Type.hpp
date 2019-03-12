@@ -204,7 +204,7 @@ typedef struct _reg{
     int freshness; // the higher the value, the more resent it had been used
 } Reg;
 
-typedef std::vector<Reg>::iterator RegItr;
+typedef Reg* RegPtr;
 
 
 typedef struct _entry{

@@ -69,9 +69,10 @@ private:
      */
 
     // temporary reg for non floating point
-    std::vector<Reg> tGeneralReg;
+    RegPtr tGeneralReg;
     std::string tGenRegName(int regIdx);
-    std::string tGenRegName(const RegItr& itr);
+
+    std::string tRegName(const RegPtr itr);
 
 //    //temporary reg for floating point
 //    std::vector<Reg> tFloatReg = std::vector<Reg>(T_FLOAT_REG_SIZE,{0,-1});
@@ -132,8 +133,8 @@ private:
     //  return REG INDEX if already in register
     // load id from stack to general register, return REG INDEX
     // spill least fresh register to stack if necessary
-    RegItr loadGenReg(int id, bool load=true);
-    RegItr findFreeGenReg( );
+    RegPtr loadGenReg(int id, bool load=true);
+    RegPtr findFreeGenReg( );
 
 /*
  * MIPS function
@@ -175,9 +176,9 @@ private:
     /*
      * C instruction
      */
-    //give op1,op2 (id) returns new op1,op2 (regItr) after type promotion,
+    //give op1,op2 (id) returns new op1,op2 (RegPtr) after type promotion,
     //new id may be different
-    std::pair<RegItr, RegItr> typePromotion(int op1,int op2);
+    std::pair<RegPtr, RegPtr> typePromotion(int op1,int op2);
 
 
 public:
@@ -187,9 +188,9 @@ public:
  */
 
     void newFrame(std::string name);
-    void endFrame(); //call flush
+    void endFrame(bool logging=true); //call flush
 
-    void dump();
+    void dump();//SHOULD be private
 
 
 
