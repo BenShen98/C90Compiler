@@ -376,14 +376,20 @@ std::string Mp::calOffset(const std::string &str) {//not finished
      * C instruction
      */
     //
-    RegPtr Mp::typeDuplicate(int dst, int op1){
+    void Mp::copyAssign(int dst, int op1, bool free1) {
+        typeDuplicate(dst,op1,free1);
+    }
+
+    RegPtr Mp::typeDuplicate(int dst, int op1, bool free1){
         EntryPtr e1=getInfo(op1);
         EntryPtr eDst=getInfo(dst);
 
         //TODO: BUT, the  line below will NOT work for floating
         RegPtr r1= loadGenReg(op1); //TODO, this line need fix
+        discardGenReg(dst); //discard dst id even if it is dirty (have not effect for reserved id)
 
-        if( isRegDirty(r1->type) ){
+        //only write back if value is not freeable AND is dirty
+        if( !free1 && isRegDirty(r1->type) ){
             sw_sp(tRegName(r1), r1->id, "save dirty register "+std::to_string(r1->id)+" before duplicate");
             setRegSync(r1->type);
         }
@@ -393,7 +399,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             //cast type from op1 to dst
             throw std::runtime_error("type enforcement not done");
 
-            if()
+//            if()
 
         }else{
             //same type, override id
@@ -558,14 +564,14 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         return resultId;
     }
 
-    int Mp::makeCopy(int id) {
+    int Mp::makeCopy(int id, bool free1) {
         EntryPtr info=getInfo(id);
         int resultId;
 
         int size = isDoubleFloat(info->type) ? 8 : 4 ;
         resultId=reserveId(size,info->type,"was copy of "+std::to_string(id));
 
-        typeDuplicate(resultId,id;)
+        typeDuplicate(resultId,id,free1);
 
         return resultId;
     }

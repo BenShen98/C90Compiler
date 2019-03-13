@@ -51,7 +51,6 @@ public:
 
         }else{
             Result declaredInfo;
-            declaredInfo.type=para.type;
             declaredInfo.id=declareName.str;
 
             int declaredId=mp.reserveId(size, para.type, declareName.str);

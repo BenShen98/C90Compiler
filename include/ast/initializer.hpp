@@ -31,9 +31,11 @@ public:
 
     }
 
-    void mp(Result& result) const override{
+    void mp(Result& para) const override{
        if(type==0){
-            data->mp(result);
+           Result op1;
+            data->mp(op1);
+            mp->copyAssign(para.id, op1.id, op1.freeable);
        }else{
            notImplemented();
        }

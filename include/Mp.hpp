@@ -186,7 +186,7 @@ private:
     // if free1=false => convert type in ONE register
     // dst1 != op1 at all time, type can not be changed
 
-    RegPtr typeDuplicate(int dst, int op1);
+    RegPtr typeDuplicate(int dst, int op1, bool free1);
 
 
 
@@ -298,7 +298,8 @@ public:
     int addi(bool selfAssign, int op1, std::string integer,bool free1=false std::string comment="");
 
     //overwrite regist
-    int makeCopy(int id);
+    int makeCopy(int id, bool free1=true);
+    void copyAssign(int dst, int op1, bool free1=true);
 
 
 

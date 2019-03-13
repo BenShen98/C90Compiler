@@ -38,7 +38,7 @@ public:
        //std::cerr<<"entered compound statement"<<std::endl;
     }
 
-    void mp(Result& result) const override{
+    void mp() const override{
         if(declaration_list!=NULL){
             declaration_list->mp();
         }

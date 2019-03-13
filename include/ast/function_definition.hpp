@@ -48,7 +48,7 @@ public:
 
     }
 
-    void mp(Result& result) const override{
+    void mp() const override{
 
         //todo: log this's return type function
 //        if (declaration_specifiers==NULL){

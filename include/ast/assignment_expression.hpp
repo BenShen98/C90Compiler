@@ -156,11 +156,11 @@ public:
 //        }
 //    }
 
-    void mp(Result& para) const override{
+    void mp(Result& result) const override{
         //parent node are assignment_expression
         if(unary_expression==NULL){
             //base case
-            expression->mp(para);
+            expression->mp(result);
         } else{
             notImplemented();
         }

@@ -1,7 +1,7 @@
 #ifndef ast_declaration_list
 #define ast_declaration_list
 
-#include "_right_list.hpp"
+#include "_left_list.hpp"
 
 /*
 declaration_list
@@ -28,10 +28,6 @@ public:
 
     }
 
-    void mp(Result& result) const override{
-        list->mp();
-        element->mp();
-    }
 };
 
 #endif
