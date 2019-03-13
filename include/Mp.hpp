@@ -136,6 +136,8 @@ private:
     RegPtr loadGenReg(int id, bool load=true);
     RegPtr findFreeGenReg( );
 
+    int
+
 /*
  * MIPS function
  */
@@ -180,6 +182,13 @@ private:
     //new id may be different
     std::pair<RegPtr, RegPtr> typePromotion(int op1,int op2);
 
+    // if free1=true => convert type in ONE register
+    // if free1=false => convert type in ONE register
+    // dst1 != op1 at all time, type can not be changed
+
+    RegPtr typeDuplicate(int dst, int op1);
+
+
 
 public:
 
@@ -200,7 +209,7 @@ public:
 
     // type CANNOT be modified once push_back
     /*
-     *  reserved data can only be used as result filed for assignment
+     *  reserved data can only be used as RESULT filed for assignment
      *  immediate is the replacement of original push_back
      */
     int reserveId(int size, Type type, std::string identifier="" );
@@ -241,6 +250,7 @@ public:
  */
 
     //find id (offset used for array ONLY)
+    //todo IF offset is 0, AND is array, DO SOMETHING (return ptr?)
     int getId(std::string identifier, int offset=0);
 
     // get info about the id
@@ -285,6 +295,10 @@ public:
 
     int algebra(enum_algebra algebra,int op1, int op2, bool free1=false, bool free2=false, std::string comment="");
 
+    int addi(bool selfAssign, int op1, std::string integer,bool free1=false std::string comment="");
+
+    //overwrite regist
+    int makeCopy(int id);
 
 
 

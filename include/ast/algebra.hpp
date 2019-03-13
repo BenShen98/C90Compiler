@@ -243,67 +243,16 @@ public:
     }
   }
 
-  virtual void mp(Result& para) const override{
-    int resultId=para.id;
-    int resultType=para.type;
+  virtual void mp(Result& result) const override{
 
-    switch (type){
-      case MUL:
-      break;
+    Result op1,op2;
+    left->mp(op1);
+    right->mp(op2);
 
-      case DIV:
-      break;
+    result.id = mp.algebra(type, op1.id, op2.id, op1.freeable, op2.freeable);
+    result.freeable= true; //this is indeterminate result, no need to store
 
-      case MOD:
-      break;
 
-      case ADD:
-      break;
-
-      case SUB:
-      break;
-
-      case LEFT_:
-      break;
-
-      case RIGHT_:
-      break;
-
-      case SMALLER:
-      break;
-
-      case GREATER:
-      break;
-
-      case LE_:
-      break;
-
-      case GE_:
-      break;
-
-      case EQ_:
-      break;
-
-      case NE_:
-      break;
-
-      case AND:
-      break;
-
-      case XOR:
-      break;
-
-      case OR:
-      break;
-
-      case AND_:
-      //short circuit
-      break;
-
-      case OR_:
-      //short circuit
-      break;
-    }
   }
 
 };

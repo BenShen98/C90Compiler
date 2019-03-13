@@ -16,12 +16,16 @@ primary_expression      (IDENTIFIER does not contain "", but STRING_LITERAL does
 inline bool isDec(char c) { return (c>='0' && c<='9'); }
 inline std::string cConst2pyConst(std::string cConst);
 
+
 class primary_expression: public ast_abs{
+private:
     int type;
 
     // make a union for two type below
     astPtr pt=0;
     std::string * str;
+
+    int cConst2Mp(std::string cConst);
 
 
 public:
@@ -58,10 +62,36 @@ public:
     }
 
     void mp(Result& result) const override{
-        switch (type){
 
-            default:
+        switch (type){
+            case 0:
+                // load variable, may be referenced latter
+                result.id = mp->getId(*str);
+                result.freeable = false;
+                break;
+
+            case 1: //char, int, float
+                result.id = cConst2Mp(*str);
+
+                //its a letral
+                result.freeable = true;
+                break;
+
+            case 2://string literal
                 notImplemented();
+                break;
+
+            case 3:
+                //evaluate the expression
+                pt->mp(result);
+
+                // make temporary duplicate,
+                result.id=mp->makeCopy(result.id);
+                result.freeable=true;
+
+                //pass on to parents
+                break;
+
         }
     }
 
@@ -84,6 +114,65 @@ inline std::string cConst2pyConst(std::string cConst){
 
     return cConst;
 
+}
+
+int primary_expression::cConst2Mp(std::string cConst){
+    // convert string to what ever
+
+    //default type
+
+    switch (cConst[0]){
+        case ',': //char literal
+            notImplemented();
+            break;
+        case 'f': //false
+            notImplemented();
+            break;
+        case 't':
+            notImplemented();
+            break;
+
+        case '0':
+            // input is either oct(0467), hex(0x2af), binary(0b0101)
+            if( cConst.back()=='U' || cConst.back()='u' ) {
+                cConst.pop_back(); //remove postfix
+                return ( Mp->immediate(4, cConst, TYPE_UNSIGNED_INT ) );
+            }else{
+                return ( Mp->immediate(4, cConst, TYPE_UNSIGNED_INT ) );
+            }
+
+
+        default:
+            //integer/ floating point decimal literal
+            // possible postfix : u,U ,f,F
+        {
+            int dot, exp;
+            dot=cConst.find('.');
+            exp=cConst.find('e');
+
+            if( dot==std::string::npos && dot==std::string::npos) {
+                // input does not contain . nor e
+                if( cConst.back()=='U' || cConst.back()='u' ) {
+                    cConst.pop_back(); //remove postfix
+                    return ( Mp->immediate(4, cConst, TYPE_UNSIGNED_INT ) );
+                }else{
+                    return ( Mp->immediate(4, cConst, TYPE_UNSIGNED_INT ) );
+                }
+
+            } else{
+                //floating point
+                notImplemented();
+//                type=TYPE_DOUBLE_FLOAT;
+//                if( cConst.back()=='F' || cConst.back()='f' ) {
+//                    setUnsignedInt(type);
+//                    cConst.pop_back(); //remove postfix
+//                }
+            }
+
+
+            break;
+        }
+    }
 }
 
 

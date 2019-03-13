@@ -63,7 +63,7 @@ int main(){
     mp.newFrame("para");
 
     int r,o1,o2;
-//    r=mp.reserveId(4,TYPE_SIGNED_INT,"result");
+    r=mp.reserveId(4,TYPE_SIGNED_INT,"result");
     o1=mp.immediate(4,"123456",TYPE_SIGNED_INT,"op1");
     o2=mp.immediate(4,"4564",TYPE_SIGNED_INT,"op2");
 

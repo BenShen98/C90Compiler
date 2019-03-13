@@ -115,7 +115,7 @@ extern std::ofstream ffout;
     void Mp::dump() {
 
         std::cerr<<"\n#############################\n# Dump for function "<< funcName <<" #\n#############################\n";
-        std::cerr<<"# # Entry dump #\n#\t# add_top #,\t# size(byte) #,\t# type(MSB -- LSB) #,\t\t\t# variable name #\n";
+        std::cerr<<"# # Entry dump #\n#\t# top_id #,\t# size(byte) #,\t# type(MSB -- LSB) #,\t\t\t# variable name #\n";
         for(std::vector<Entry>::reverse_iterator rit = entries.rbegin();rit!= entries.rend(); ++rit){
             std::cerr<<"#\t"<< rit->top_id <<",\t\t"<< rit->size <<",\t\t"<< std::bitset<32>(rit->type)<< ",\t" <<rit->name <<",\n";
         }
@@ -239,7 +239,8 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         //wire back all general register
         for(int i=0; i<T_GENERAL_REG_SIZE; ++i){
             if( isRegDirty(tGeneralReg[i].type) ){
-                sw_sp(tGenRegName(i),tGeneralReg[i].id,"write back");
+                sw_sp(tGenRegName(i),tGeneralReg[i].id,"write back id "+std::to_string(tGeneralReg[i].id));
+                setRegDirty(tGeneralReg[i].type);
             }
         }
 
@@ -374,6 +375,35 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     /*
      * C instruction
      */
+    //
+    RegPtr Mp::typeDuplicate(int dst, int op1){
+        EntryPtr e1=getInfo(op1);
+        EntryPtr eDst=getInfo(dst);
+
+        //TODO: BUT, the  line below will NOT work for floating
+        RegPtr r1= loadGenReg(op1); //TODO, this line need fix
+
+        if( isRegDirty(r1->type) ){
+            sw_sp(tRegName(r1), r1->id, "save dirty register "+std::to_string(r1->id)+" before duplicate");
+            setRegSync(r1->type);
+        }
+
+        if (!isBasicTypeEqual(op1->type, dst->type)){
+            //type enforcement
+            //cast type from op1 to dst
+            throw std::runtime_error("type enforcement not done");
+
+            if()
+
+        }else{
+            //same type, override id
+            r1->id=dst;
+        }
+
+
+        return r1;//now r1 is dst
+
+    }
 
     std::pair<RegPtr , RegPtr> Mp::typePromotion(int op1, int op2) {
         EntryPtr e1=getInfo(op1);
@@ -406,18 +436,73 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         r1=afterPromotion.first;
         r2=afterPromotion.second;
 
+        int resultId;
+
 
         if(isDoubleFloat(r1->type)){
 
         }else{
-            int i=reserveId(4,r1->type,comment);
-            rResult=loadGenReg(i, false);
+            int resultId=reserveId(4,r1->type,comment);
+            rResult=loadGenReg(resultId, false);
         }
 
         switch (algebra){
             case ADD:
                 _addu(tRegName(rResult), tRegName(r1), tRegName(r2),comment);
                 break;
+//            case MUL:
+//                break;
+//
+//            case DIV:
+//                break;
+//
+//            case MOD:
+//                break;
+//
+//            case SUB:
+//                break;
+//
+//            case LEFT_:
+//                break;
+//
+//            case RIGHT_:
+//                break;
+//
+//            case SMALLER:
+//                break;
+//
+//            case GREATER:
+//                break;
+//
+//            case LE_:
+//                break;
+//
+//            case GE_:
+//                break;
+//
+//            case EQ_:
+//                break;
+//
+//            case NE_:
+//                break;
+//
+//            case AND:
+//                break;
+//
+//            case XOR:
+//                break;
+//
+//            case OR:
+//                break;
+//
+//            case AND_:
+//                //short circuit
+//                break;
+//
+//            case OR_:
+//                //short circuit
+//                break;
+//
             default:
                 throw std::runtime_error("Not implemented.");
         }
@@ -442,7 +527,49 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             discardGenReg(op2);
         }
 
+        return resultId;
+
     }
+
+    int Mp::addi(bool selfAssign, int op1, std::string integer,bool free1, std::string comment) {
+        RegPtr r1,rResult;
+        r1=loadGenReg(op1);
+
+        int resultId;
+
+        if(selfAssign){
+            rResult=r1;
+            resultId=op1;
+        } else{
+            int resultId=reserveId(4,op1->type,comment);
+            rResult=loadGenReg(resultId, false);
+        }
+
+
+        _addiu(tRegName(rResult), tRegName(r1), integer, comment);
+
+        setRegDirty(rResult->type);
+
+        if( !selfAssign && free1){
+            //ignore free flag if is self assign
+            discardGenReg(op1);
+        }
+
+        return resultId;
+    }
+
+    int Mp::makeCopy(int id) {
+        EntryPtr info=getInfo(id);
+        int resultId;
+
+        int size = isDoubleFloat(info->type) ? 8 : 4 ;
+        resultId=reserveId(size,info->type,"was copy of "+std::to_string(id));
+
+        typeDuplicate(resultId,id;)
+
+        return resultId;
+    }
+
 
     /*
      * make function calls
