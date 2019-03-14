@@ -62,6 +62,9 @@ for i in ${TESTDIRECTORY}/*.c; do
     let "PASS++"
     echo "=>PASS TEST ${base}.c"
     printf "\n\n"
+  else
+    echo "=>FAIL TEST ${base}.c"
+    printf "\n\n"
   fi
   let "COUNT++"
 done
@@ -74,6 +77,13 @@ for i in ${OUTPUT}/*.s; do
   ${MIPS_OBJDUMP} -j .text -D ${DUMP}/${base}.elf > ${DUMP}/${base}.mips.s
 
   echo "********************TEST ${base}.c********************"
+  echo "C Input: "
+  cat ${TESTDIRECTORY}/${base}.c
+  printf "\n"
+  echo "C Driver: "
+  cat ${TESTDRIVER}/${base}.c
+  printf "\n"
+  echo "Assembly Output:"
   cat ${DUMP}/${base}.mips.s
   echo "********************END ${base}.c********************"
   printf "\n\n"
