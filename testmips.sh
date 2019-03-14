@@ -1,9 +1,13 @@
 #!/bin/bash
-MIPSFLAG="-march=mips1"
+MIPSFLAG="mips-linux-gnu-gcc -mfp32"
 TESTDIRECTORY="test/c_test"
 TESTDRIVER="test/c_driver_test"
 OUTPUT="test/C_output"
+EXEC="test/C_driver_exec"
 mkdir -p ${OUTPUT}
+mkdir -p ${EXEC}
+PASS=0
+COUNT=0
 
 if [[ "$1" != "" ]] ; then
     compiler="$1"
@@ -31,21 +35,27 @@ if [ ! -d "$TESTDRIVER" ]; then
   exit
 fi
 
-for i in ${TESTDRIVER}/*.c ; do
-    #What does this line do ???
-    base=$(echo $i | sed -E -e "s|${TESTDRIVER}/([^.]+)[.]c|\1|g");
-    # Compile driver file into MIPS object
-    gcc $i ${MIPSFLAG} -o $OUTPUT/$base
-done
-
 for i in ${TESTDIRECTORY}/*.c; do
-  base=$(echo $i | sed -E -e "s|${TESTDIRECTORY}/([^.]+)[.]c|\1|g");
+  base=$(basename $i)
   #Run compiler on test case
-  ${compiler} -S $i -o ${OUTPUT}/$base.s
-  gcc $OUTPUT/$base.o $OUTPUT/$base.s
+  ${compiler} -S $i -o ${OUTPUT}/${base}.s
+  #GCC assemble .s to object file
+  ${MIPSFLAG} -o ${OUTPUT}/${base}.o -c ${OUTPUT}/${base}.s
+  #Link object file with test driver using gcc MIPS FLAG on
+  ${MIPSFLAG} -static -o ${EXEC}/${base} ${OUTPUT}/${base}.o ${TESTDRIVER}/${base}.c
+  #Run execuable on QEMU virtual
+  qemu-mips ${EXEC}/${base}
+  RETURNCODE=$?
+  #Check return code
+  if [[${RETURNCODE} -eq 0]];then
+    let "PASS++"
+    echo "PASS TEST ${base}.c"
+  fi
+  let "COUNT++"
 done
 
-
-echo "Exit test suite without erros"
+FAIL=${COUNT}-${PASS}
+echo "Exit test suite with ${PASS} test case passed"
 echo "*****************************"
 echo " "
+exit ${FAIL}
