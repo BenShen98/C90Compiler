@@ -27,8 +27,9 @@ clean :
 	rm -f src/*.tab.cpp
 	rm -f src/*.yy.cpp
 	rm -f tmp/*.py
-	rm -f test/C_output
-	rm -f test/C_driver_exec
+	rm -f test/C_output/*
+	rm -f test/C_driver_exec/*
+	rm -f test/dump/*
 
 .PHONY test:testbench.sh
 	./testbench.sh
