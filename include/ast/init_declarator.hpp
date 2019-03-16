@@ -47,13 +47,12 @@ public:
 
         if(initializer==NULL){
             //zero init value
-            mp.immediate(size, "0", type, declareName.str);
+            mips.immediate(size, "0", para.type, declareName.str);
 
         }else{
             Result declaredInfo;
-            declaredInfo.id=declareName.str;
-
-            int declaredId=mp.reserveId(size, para.type, declareName.str);
+            declaredInfo.id=mips.reserveId(size, para.type, declareName.str);
+            declaredInfo.freeable=false;
             initializer->mp(declaredInfo);
 
         }

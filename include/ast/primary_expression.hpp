@@ -15,6 +15,7 @@ primary_expression      (IDENTIFIER does not contain "", but STRING_LITERAL does
 
 inline bool isDec(char c) { return (c>='0' && c<='9'); }
 inline std::string cConst2pyConst(std::string cConst);
+inline int cConst2Mp(std::string cConst);
 
 
 class primary_expression: public ast_abs{
@@ -25,7 +26,6 @@ private:
     astPtr pt=0;
     std::string * str;
 
-    int cConst2Mp(std::string cConst);
 
 
 public:
@@ -66,7 +66,7 @@ public:
         switch (type){
             case 0:
                 // load variable, may be referenced latter
-                result.id = mp->getId(*str);
+                result.id = mips.getId(*str);
                 result.freeable = false;
                 break;
 
@@ -83,10 +83,12 @@ public:
 
             case 3:
                 //evaluate the expression
-                pt->mp(result);
+                Result rst;
+                pt->mp(rst);
 
                 // make temporary duplicate,
-                result.id=mp->makeCopy(result.id);
+                result.id=mips.reserveId(sizeOf(rst.type),rst.type,"temp copy of "+std::to_string(rst.id));
+                mips.assignment(result.id,rst.id,ASSIGN,rst.freeable);
                 result.freeable=true;
 
                 //pass on to parents
@@ -116,10 +118,12 @@ inline std::string cConst2pyConst(std::string cConst){
 
 }
 
-int primary_expression::cConst2Mp(std::string cConst){
+// return id which stored the constant
+inline int cConst2Mp(std::string cConst){
     // convert string to what ever
 
-    //default type
+    //TODO: float,
+    //TODO: CHECK WITH SPEC 6.3 Conversions
 
     switch (cConst[0]){
         case ',': //char literal
@@ -134,11 +138,11 @@ int primary_expression::cConst2Mp(std::string cConst){
 
         case '0':
             // input is either oct(0467), hex(0x2af), binary(0b0101)
-            if( cConst.back()=='U' || cConst.back()='u' ) {
+            if( cConst.back()=='U' || cConst.back()=='u' ) {
                 cConst.pop_back(); //remove postfix
-                return ( Mp->immediate(4, cConst, TYPE_UNSIGNED_INT ) );
+                return ( mips.immediate(4, cConst, TYPE_UNSIGNED_INT ) );
             }else{
-                return ( Mp->immediate(4, cConst, TYPE_UNSIGNED_INT ) );
+                return ( mips.immediate(4, cConst, TYPE_UNSIGNED_INT ) );
             }
 
 
@@ -152,11 +156,11 @@ int primary_expression::cConst2Mp(std::string cConst){
 
             if( dot==std::string::npos && dot==std::string::npos) {
                 // input does not contain . nor e
-                if( cConst.back()=='U' || cConst.back()='u' ) {
+                if( cConst.back()=='U' || cConst.back()=='u' ) {
                     cConst.pop_back(); //remove postfix
-                    return ( Mp->immediate(4, cConst, TYPE_UNSIGNED_INT ) );
+                    return ( mips.immediate(4, cConst, TYPE_UNSIGNED_INT ) );
                 }else{
-                    return ( Mp->immediate(4, cConst, TYPE_UNSIGNED_INT ) );
+                    return ( mips.immediate(4, cConst, TYPE_UNSIGNED_INT ) );
                 }
 
             } else{

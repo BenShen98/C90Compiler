@@ -41,7 +41,7 @@ public:
     void mp(Result& result) const override{
         if(pointer==NULL){
             //case 1, direct_declarator
-            direct_declarator(result);
+            direct_declarator->mp(result);
 
         }else{
             notImplemented();

@@ -249,7 +249,7 @@ public:
         left->mp(op1);
         right->mp(op2);
 
-        result.id = mp.algebra(type, op1.id, op2.id, op1.freeable, op2.freeable);
+        result.id = mips.algebra(type, op1.id, op2.id, op1.freeable, op2.freeable);
         result.freeable= true; //this is indeterminate result, no need to store
 
 

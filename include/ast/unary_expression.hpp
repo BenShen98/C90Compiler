@@ -71,7 +71,7 @@ public:
     }
 
     void mp(Result& result) const override{
-        mp->mp(result);
+        pt->mp(result);
 
         switch (type){
             case 0:
@@ -80,11 +80,11 @@ public:
             case 1:
                 //per increment, self assign,
                 //only alter value pointed by id, does not change result.id AND result.freeable
-                mp.addi(true, result.id, "1", false, "per increment id "+ std::to_string(result.id) );
+                mips.addi(true, result.id, "1", false, "per increment id "+ std::to_string(result.id) );
 
                 break;
             case 2:
-                mp.addi(true, result.id, "-1", false, "per decrement id "+ std::to_string(result.id) );
+                mips.addi(true, result.id, "-1", false, "per decrement id "+ std::to_string(result.id) );
                 break;
 
             default:

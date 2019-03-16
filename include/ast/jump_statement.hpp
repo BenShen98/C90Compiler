@@ -43,13 +43,16 @@ public:
 
         switch (type){
             case 3: // RETURN ';'
-                mp->Return();
+                mips.Return();
                 break;
 
             case 4: // RETURN expression ';'
                 exp->mp(result);
-                mp->Return(result.id); // result.id will be freed, since it is the last line of the frame, there is no point write back
+                mips.Return(result.id); // result.id will be freed, since it is the last line of the frame, there is no point write back
+                break;
 
+            default:
+                notImplemented();
         }
     }
 

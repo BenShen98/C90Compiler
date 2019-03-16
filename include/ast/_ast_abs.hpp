@@ -8,12 +8,13 @@
 #include "_query_enum.hpp"
 #include "../Mp.hpp"
 
+
 class ast_abs;
 typedef const ast_abs * astPtr;
 
 static Result _dummy_;
 
-extern Mp mp;
+extern Mp mips;
 extern std::ofstream ffout;
 extern std::vector<std::string> globalvar;
 

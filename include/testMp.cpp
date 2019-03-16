@@ -17,7 +17,7 @@ Mp mp;
 Context context;
 
 void dump(){
-    mp.dump();
+    mips.dump();
 }
 
 int main(){
@@ -66,15 +66,15 @@ int main(){
     context.addFunc("main",TYPE_SIGNED_INT);
     context.commitFunc();
 
-    mp.newFrame("main");
+    mips.newFrame("main");
     int r,o1,o2;
-    o1=mp.immediate(4,"123456",TYPE_SIGNED_INT,"op1");
-    o2=mp.immediate(4,"4564",TYPE_SIGNED_INT,"op2");
-    r=mp.algebra(ADD,o1,o2,false, true,"result");//wb r,o1, discard o2
+    o1=mips.immediate(4,"123456",TYPE_SIGNED_INT,"op1");
+    o2=mips.immediate(4,"4564",TYPE_SIGNED_INT,"op2");
+    r=mips.algebra(ADD,o1,o2,false, true,"result");//wb r,o1, discard o2
 
-    mp.Return(r);
+    mips.Return(r);
 
-    mp.endFrame();
+    mips.endFrame();
 
     ffout.close();
 

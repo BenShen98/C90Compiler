@@ -1,5 +1,7 @@
 #include "ast.hpp"
 #include "Mp.hpp"
+#include "Context.hpp"
+
 
 #include <iostream>
 #include <fstream>
@@ -10,7 +12,8 @@ std::ofstream ffout;
 extern FILE *yyin;
 std::vector<std::string> globalvar;
 
-Mp mp;
+Mp mips;
+Context context;
 
 //debug dummy
 void dd(){

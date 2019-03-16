@@ -241,6 +241,8 @@ typedef struct _result{
     int id;     // used for operation which have dst register
     Type type; //used for declaration_specifiers
 
+    std::string str;// this field need refactor
+
     bool freeable=false;
 } Result;
 
