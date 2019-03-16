@@ -7,7 +7,7 @@ all: a.out
 	cat MpOut.temp
 
 
-a.out: testMp.o Mp.o
+a.out: testMp.o Mp.o Context.o
 	g++ -o $@ $^
 
 clean:

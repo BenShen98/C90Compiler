@@ -9,10 +9,12 @@
 
 
 #include "Mp.hpp"
+#include "Context.hpp"
 
 std::ofstream ffout;
 
 Mp mp;
+Context context;
 
 void dump(){
     mp.dump();
@@ -60,14 +62,17 @@ int main(){
 
     ffout.open("MpOut.temp");
 
-    mp.newFrame("para");
+    //declare function
+    context.addFunc("main",TYPE_SIGNED_INT);
+    context.commitFunc();
 
+    mp.newFrame("main");
     int r,o1,o2;
-    r=mp.reserveId(4,TYPE_SIGNED_INT,"result");
     o1=mp.immediate(4,"123456",TYPE_SIGNED_INT,"op1");
     o2=mp.immediate(4,"4564",TYPE_SIGNED_INT,"op2");
+    r=mp.algebra(ADD,o1,o2,false, true,"result");//wb r,o1, discard o2
 
-    mp.algebra(ADD,o1,o2,false, true);//wb r,o1, discard o2
+    mp.Return(r);
 
     mp.endFrame();
 

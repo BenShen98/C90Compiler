@@ -15,17 +15,19 @@
 #include <iostream>
 #include <utility>
 
-
-
 #include "Mp_Type.hpp"
+#include "Context_Type.hpp"
+
 #include "ast/algebra_enum.hpp"
+#include "ast/assignment_operator.hpp"
 
 class Mp {
 
 private:
 
     //funcName of current function
-    std::string funcName="";
+    Functions::const_iterator asCallee;
+
     int uniqueCounter;
 
     /*
@@ -87,13 +89,13 @@ private:
     void sw_sp(std::string reg,int id, std::string comment=""){
 
         postEditPtr.push_back(buffer.size());//push_back idx of next line
-        buffer.push_back("sw " + reg + ",_" + std::to_string(id) + "_($sp) #" + comment + '\n');
+        buffer.push_back("sw " + reg + ",_" + std::to_string(id) + "_($sp) #" + comment);
 
     }
 
     void lw_sp(std::string reg,int id, std::string comment=""){
         postEditPtr.push_back(buffer.size());//push_back idx of next line
-        buffer.push_back("lw " + reg + ",_" + std::to_string(id) + "_($sp) #" + comment + '\n');
+        buffer.push_back("lw " + reg + ",_" + std::to_string(id) + "_($sp) #" + comment);
 
     }
 
@@ -104,24 +106,10 @@ private:
     /*
  * make function call
  */
-    int arg_top_id;
-
-    // mapping which stores all the functions
-    //need further check the best data struct for this
-//    std::map<const std::string name, std::vector<Entry>> functions;
-
-//    std::vector<Arg> args;
-
-    //iterator for function
-    //idx 0 for return variable, later one args
-    std::vector<Entry>::iterator paraItr;
-
+    int arg_max_size; //minimum size when no arguement
+    Functions::const_iterator asCaller;
 // TODO START WITH FUNCTION WITHOUT ARGUMENT
 
-/*
- * current function call
- */
-    void Return();
 
 
 
@@ -136,41 +124,41 @@ private:
     RegPtr loadGenReg(int id, bool load=true);
     RegPtr findFreeGenReg( );
 
-    int
+    void _algebra(enum_algebra operation, RegPtr dst, RegPtr op1, RegPtr op2, std::string comment);
 
 /*
  * MIPS function
  */
     void _li(std::string reg,std::string imm, std::string comment=""){
-        buffer.push_back("li "+ reg + ',' + imm + " #" + comment + '\n');
+        buffer.push_back("li "+ reg + ',' + imm + " #" + comment );
     }
 
     void _add(std::string d,std::string s,std::string t, std::string comment=""){
-        buffer.push_back("add " + d + ',' + s + ',' + t +" #" + comment + '\n');
+        buffer.push_back("add " + d + ',' + s + ',' + t +" #" + comment );
     }
 
     void _addi(std::string t,std::string s,std::string imm, std::string comment=""){
-        buffer.push_back("addi " + t + ',' + s + ',' + imm +" #" + comment + '\n');
+        buffer.push_back("addi " + t + ',' + s + ',' + imm +" #" + comment );
     }
 
     void _addiu(std::string t,std::string s,std::string imm, std::string comment=""){
-        buffer.push_back("addiu " + t + ',' + s + ',' + imm +" #" + comment + '\n');
+        buffer.push_back("addiu " + t + ',' + s + ',' + imm +" #" + comment );
     }
 
     void _addu(std::string d,std::string s,std::string t, std::string comment=""){
-        buffer.push_back("addu " + d + ',' + s + ',' + t +" #" + comment + '\n');
+        buffer.push_back("addu " + d + ',' + s + ',' + t +" #" + comment );
     }
 
     void _and(std::string d,std::string s,std::string t, std::string comment=""){
-        buffer.push_back("and " + d + ',' + s + ',' + t +" #" + comment + '\n');
+        buffer.push_back("and " + d + ',' + s + ',' + t +" #" + comment );
     }
 
     void _andi(std::string t,std::string s,std::string imm, std::string comment=""){
-        buffer.push_back("andi " + t + ',' + s + ',' + imm +" #" + comment + '\n');
+        buffer.push_back("andi " + t + ',' + s + ',' + imm +" #" + comment );
     }
 
     void _b(std::string label){
-        buffer.push_back("b " + label + '\n');
+        buffer.push_back("b " + label );
     }
 
     /* ... */
@@ -185,8 +173,9 @@ private:
     // if free1=true => convert type in ONE register
     // if free1=false => convert type in ONE register
     // dst1 != op1 at all time, type can not be changed
-
-    RegPtr typeDuplicate(int dst, int op1, bool free1);
+    // force the duplicated op1 have type of dst
+    // the returned regPtr will contain a new id
+    RegPtr typeDuplicate(int dst, int op1, bool free1 = false);
 
 
 
@@ -218,32 +207,37 @@ public:
 
 //    int push_back_array();
 
+/*
+ * current function call & block control
+ */
+    void Return();
+    void Return(int id);
+
+    int getPara(std::string name);
+
+    std::string mkLable(const std::string& name);
+
 
 /*
  * make function call
  */
 
-    //init paraItr, itr first element (ignore if is not struct)
-    void initFunc(std::string name);
+
 
 //    //take CONTENT in id as agreement, COPY the whole size in stack
 //    //(use for int; single/double float; ptr; struct) NOT FOR ARRAY e.g. void foo(int* x)
 //    void addArg(int id);
-//
-//    //USE THIS for copy the whole array i.e. void foo(int[] x) ,
-//    void addArg_cpArray(int id);
-//
+
 //    //take the imm as data
 //    //derive its size and type from function declaration
 //    void addArg_Imm(std::string data);//const argument
 
     //check if all argument had been filled, and issue jal instruction
     //write back all register
-    void commitFunc();
+//    void commitFunc();
+//
 
-    std::string mkLable(const std::string& name);
 
-    
 
 /*
  * data modification
@@ -284,7 +278,6 @@ public:
 /*
  * size of
  */
-    int sizeOf(Type type);
 //    std::string sizeOf() // for expression
 
 /*
@@ -295,11 +288,14 @@ public:
 
     int algebra(enum_algebra algebra,int op1, int op2, bool free1=false, bool free2=false, std::string comment="");
 
-    int addi(bool selfAssign, int op1, std::string integer,bool free1=false std::string comment="");
+    void assignment(int dst, int op1,enum_assignment operation=ASSIGN, bool free= false);
+    void copyAssign(int dst, int op1, bool free1=true); // for simple assignment
+
+    //ONLY for INT, used for a++, a--
+    int addi(bool selfAssign, int op1, std::string integer,bool free1=false, std::string comment="");
 
     //overwrite regist
-    int makeCopy(int id, bool free1=true);
-    void copyAssign(int dst, int op1, bool free1=true);
+//    int makeCopy(int id, bool free1=true); //use assignment instead
 
 
 

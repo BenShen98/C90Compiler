@@ -37,9 +37,20 @@ public:
         }
     }
 
-    void mp(Result& result) const override{
-        notImplemented();
+    void mp() const override{
 
+        Result result;
+
+        switch (type){
+            case 3: // RETURN ';'
+                mp->Return();
+                break;
+
+            case 4: // RETURN expression ';'
+                exp->mp(result);
+                mp->Return(result.id); // result.id will be freed, since it is the last line of the frame, there is no point write back
+
+        }
     }
 
 };

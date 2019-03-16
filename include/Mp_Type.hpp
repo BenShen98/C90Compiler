@@ -7,7 +7,6 @@
 
 
 
-
 /*
 # Least two significant bit
 | BIT 1 | BIT 0 | MEANING      |
@@ -184,6 +183,22 @@ inline void setRegUnkown(Type& t){
 inline void setRegSync(Type& t){
     t= (t&CHECK_REG_N)|REG_SYNC;
 }
+
+/*
+ *  sizeOf
+ */
+inline int sizeOf(Type type) {
+    if( isDoubleFloat(type) ){
+        //only double is 8 byte
+        return 8;
+    }else if(isVoid(type)){
+        return 0;
+    }else{
+        //all other is 4 byte wide (ptr, int, float, etc
+        return 4;
+    }
+}
+
 
 /*
  * advanced data type

@@ -4,6 +4,8 @@
 
 #include "Mp.hpp"
 
+#include "Context.hpp"
+
 #include <string>
 #include <vector>
 #include <bitset>
@@ -12,8 +14,9 @@
 #include <regex>
 #include <fstream>
 
-#define RETURN_LABEL "EXIT_"+funcName
+#define RETURN_LABEL "EXIT_"+asCallee->first
 
+extern Context context;
 extern std::ofstream ffout;
 
 /*
@@ -40,8 +43,9 @@ extern std::ofstream ffout;
         entries = std::vector<Entry>(1,{0,0,TYPE_SIGNED_INT,""});
 
         //reset function name
-        arg_top_id=0;
-        funcName=name;
+        arg_max_size=20;
+
+        asCallee=context.getFunc(name);
     //    args.clear();
     //    arg_top_id=0;
 
@@ -53,8 +57,7 @@ extern std::ofstream ffout;
     void Mp::endFrame(bool logging) {
 
         //calculate zone for `local and temporaries` and `args`
-        arg_top_id=16; //assume no arguement
-        stack_size = top_id + 4 + arg_top_id; // space for {local},$RA, {opt_place_holder}, {arg_list}
+        stack_size = top_id + 4 + arg_max_size; // space for {local},$RA, {opt_place_holder}, {arg_list}
 
         if(stack_size&0x4){
             stack_size+=4; //make stack frame 8 byte aligned
@@ -68,7 +71,7 @@ extern std::ofstream ffout;
  */
         // frame setup
         ffout<<"addiu $sp, $sp, -"<<stack_size<<'\n'; // allocate stack
-        ffout<<"sw $31, "<<arg_top_id<<"($sp)"<<'\n';
+        ffout<<"sw $31, "<<arg_max_size<<"($sp)"<<'\n';
 
         //flush content
         std::regex edit("_-?[0-9]*_");
@@ -82,31 +85,30 @@ extern std::ofstream ffout;
             if(postEditPtr[editIdx]==bufIdx){
                 //change offset
                 std::regex_search(buffer[bufIdx], m, edit);
-                ffout<<m.prefix()<<calOffset(m[0])<<m.suffix();
+                ffout<<m.prefix()<<calOffset(m[0])<<m.suffix()<<'\n';
 
                 //increment id
                 ++editIdx;
             }else{
-                ffout<<buffer[bufIdx];
+                ffout<<buffer[bufIdx]<<'\n';
             }
         }
 
         //iteration when reached end of postEditPtr
         for( ; bufIdx<buffer.size();++bufIdx){
-                ffout<<buffer[bufIdx];
+                ffout<<buffer[bufIdx]<<'\n';
         }
 
         //frame delete
         ffout<<std::string(RETURN_LABEL)<<":\n";
-        ffout<<"lw $31, "<<arg_top_id<<"($sp)"<<'\n';
+        ffout<<"lw $31, "<<arg_max_size<<"($sp)"<<'\n';
         ffout<<"addiu $sp, $sp, "<<stack_size<<'\n'; // deallocate stack
-        ffout<<"j $31\n";
+        ffout<<"j $31\n\n";
 
         //logging and exit
         if(logging)
             dump();
 
-        funcName="";
         delete[] tGeneralReg;
 
 
@@ -114,7 +116,7 @@ extern std::ofstream ffout;
 
     void Mp::dump() {
 
-        std::cerr<<"\n#############################\n# Dump for function "<< funcName <<" #\n#############################\n";
+        std::cerr<<"\n#############################\n# Dump for function "<< asCallee->first <<" #\n#############################\n";
         std::cerr<<"# # Entry dump #\n#\t# top_id #,\t# size(byte) #,\t# type(MSB -- LSB) #,\t\t\t# variable name #\n";
         for(std::vector<Entry>::reverse_iterator rit = entries.rbegin();rit!= entries.rend(); ++rit){
             std::cerr<<"#\t"<< rit->top_id <<",\t\t"<< rit->size <<",\t\t"<< std::bitset<32>(rit->type)<< ",\t" <<rit->name <<",\n";
@@ -193,7 +195,7 @@ int Mp::immediate(int size, std::string data, Type type, std::string identifier)
 int Mp::reserveId(int size, Type type, std::string identifier){
         //gen id, allocate space on heap
         top_id+=size;
-        entries.push_back({size,top_id,type,identifier});
+        entries.push_back({size,top_id,type&CHECK_REG_N ,identifier});
 
         //does not allocate register
 
@@ -240,7 +242,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         for(int i=0; i<T_GENERAL_REG_SIZE; ++i){
             if( isRegDirty(tGeneralReg[i].type) ){
                 sw_sp(tGenRegName(i),tGeneralReg[i].id,"write back id "+std::to_string(tGeneralReg[i].id));
-                setRegDirty(tGeneralReg[i].type);
+                setRegSync(tGeneralReg[i].type);
             }
         }
 
@@ -253,6 +255,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         int i =entries.size()-1;
 
         // whill throw out of rang exception if not found
+        // todo: need handel global
         while (entries.at(i).name!=identifier){
             --i;
         }
@@ -362,23 +365,41 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 //        return tGenRegName(regId);
 //    }
 
-    int Mp::sizeOf(Type type) {
-        if( isDoubleFloat(type) ){
-            //only double is 8 byte
-            return 8;
-        }else{
-            //all other is 4 byte wide (ptr, int, float, etc
-            return 4;
-        }
-    }
 
     /*
      * C instruction
      */
     //
-    void Mp::copyAssign(int dst, int op1, bool free1) {
-        typeDuplicate(dst,op1,free1);
-    }
+//    void Mp::copyAssign(int dst, int op1, bool free1) {
+//        typeDuplicate(dst,op1,free1);
+//    }
+
+//    RegPtr Mp::typeDuplicate(Type tDst, int op1, bool free1){
+//        EntryPtr e1=getInfo(op1);
+////        EntryPtr eDst=getInfo(dst);
+//
+//        //TODO: BUT, the  line below will NOT work for floating
+//
+//
+//        RegPtr r1= loadGenReg(op1); //TODO, this line need fix, use loadReg()
+//        //only write back if value is not freeable AND is dirty
+//        if( !free1 && isRegDirty(r1->type) ){
+//            sw_sp(tRegName(r1), r1->id, "save dirty register "+std::to_string(r1->id)+" before duplicate");
+//            setRegSync(r1->type);
+//        }
+//
+//        if (!isEqual(op1->type, tDst)){
+//            //type enforcement, make a copy
+//            //cast type from op1 to dst
+//            throw std::runtime_error("type enforcement not done");
+//
+//            int dst=reserveId(sizeOf(tDst), tDst); // make copy
+//
+//        }
+//
+//        return r1;//now r1 is dst
+//
+//    }
 
     RegPtr Mp::typeDuplicate(int dst, int op1, bool free1){
         EntryPtr e1=getInfo(op1);
@@ -394,12 +415,12 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             setRegSync(r1->type);
         }
 
-        if (!isBasicTypeEqual(op1->type, dst->type)){
+        if (!isBasicTypeEqual(e1->type, eDst->type)){
             //type enforcement
             //cast type from op1 to dst
             throw std::runtime_error("type enforcement not done");
 
-//            if()
+    //            if()
 
         }else{
             //same type, override id
@@ -435,26 +456,11 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     }
 
 
-    int Mp::algebra(enum_algebra algebra,int op1, int op2, bool free1, bool free2, std::string comment) {
 
-        RegPtr r1, r2,rResult;
-        std::pair<RegPtr, RegPtr> afterPromotion = typePromotion(op1,op2);
-        r1=afterPromotion.first;
-        r2=afterPromotion.second;
-
-        int resultId;
-
-
-        if(isDoubleFloat(r1->type)){
-
-        }else{
-            int resultId=reserveId(4,r1->type,comment);
-            rResult=loadGenReg(resultId, false);
-        }
-
-        switch (algebra){
+    void Mp::_algebra(enum_algebra operation, RegPtr dst, RegPtr op1, RegPtr op2, std::string comment) {
+        switch (operation){
             case ADD:
-                _addu(tRegName(rResult), tRegName(r1), tRegName(r2),comment);
+                _addu(tRegName(dst), tRegName(op1), tRegName(op2),comment);
                 break;
 //            case MUL:
 //                break;
@@ -513,7 +519,93 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                 throw std::runtime_error("Not implemented.");
         }
 
-        setRegDirty(rResult->type);
+        setRegDirty(dst->type);
+    }
+
+    void Mp::assignment(int dst, int op1, enum_assignment operation, bool free){
+
+        // make a copy of op1
+        // NOTE: _op1.id != op1 if type conversion is done
+
+        if(operation==ASSIGN){ // =
+
+            // = assign copy of op1 to dst
+            typeDuplicate(dst,op1,free);
+
+        }else{
+            //case other than simple assign
+
+            EntryPtr destInfo = getInfo(dst);
+            RegPtr rDst;
+
+            if(isFloat(destInfo->type)){
+                throw std::runtime_error("Not implemented.");
+            } else{
+                rDst=loadGenReg(dst, false);
+            }
+
+            // make a copy of op1, which have same type as dst
+            int _op1=reserveId(sizeOf(rDst->type),rDst->type,"copy "+std::to_string(op1)+ " to "+std::to_string(op1));
+            RegPtr r_op1=typeDuplicate(_op1,op1, free);
+
+
+            //doing the actual assignment
+            switch (operation){
+                case MULA: // *=
+                    break;
+
+                case DIVA: // /=
+                    break;
+
+                case MODA: // %=
+                    break;
+
+                case ADDA: // +=
+                    _algebra(ADD,rDst,r_op1,rDst,"+="+std::to_string(op1) );
+                    break;
+
+                case SUBA: // -=
+                    break;
+
+                case LEFTA: // <<=
+                    break;
+
+                case RIGHTA: // >>=
+                    break;
+
+                case ANDA: // &=
+                    break;
+
+                case XORA: // ^=
+                    break;
+
+                case ORA: // |=
+                    break;
+
+            }
+
+        }
+    }
+
+    int Mp::algebra(enum_algebra algebra,int op1, int op2, bool free1, bool free2, std::string comment) {
+
+        RegPtr r1, r2,rResult;
+        std::pair<RegPtr, RegPtr> afterPromotion = typePromotion(op1,op2);
+        r1=afterPromotion.first;
+        r2=afterPromotion.second;
+
+        int id_result;
+
+
+        if(isDoubleFloat(r1->type)){
+
+        }else{
+            id_result=reserveId(4,r1->type,comment);
+            rResult=loadGenReg(id_result, false);
+        }
+
+        //doing actual calculation
+        _algebra(algebra, rResult, r1, r2, comment);
 
         //free extra register caused by promotion
         if( r1->id != op1 ){
@@ -533,7 +625,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             discardGenReg(op2);
         }
 
-        return resultId;
+        return id_result;
 
     }
 
@@ -547,7 +639,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             rResult=r1;
             resultId=op1;
         } else{
-            int resultId=reserveId(4,op1->type,comment);
+            int resultId=reserveId(4,r1->type,comment);
             rResult=loadGenReg(resultId, false);
         }
 
@@ -564,17 +656,17 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         return resultId;
     }
 
-    int Mp::makeCopy(int id, bool free1) {
-        EntryPtr info=getInfo(id);
-        int resultId;
-
-        int size = isDoubleFloat(info->type) ? 8 : 4 ;
-        resultId=reserveId(size,info->type,"was copy of "+std::to_string(id));
-
-        typeDuplicate(resultId,id,free1);
-
-        return resultId;
-    }
+//    int Mp::makeCopy(int id, bool free1) {
+//        EntryPtr info=getInfo(id);
+//        int resultId;
+//
+//        int size = isDoubleFloat(info->type) ? 8 : 4 ;
+//        resultId=reserveId(size,info->type,"was copy of "+std::to_string(id));
+//
+//        typeDuplicate(resultId,id,free1);
+//
+//        return resultId;
+//    }
 
 
     /*
@@ -587,10 +679,33 @@ std::string Mp::calOffset(const std::string &str) {//not finished
      * current function
      */
     std::string Mp::mkLable(const std::string &name) {
-        std::string label = name + "_"+std::to_string(uniqueCounter)+"_"+funcName;
+        std::string label = name + "_"+std::to_string(uniqueCounter)+"_"+asCallee->first;
         buffer.push_back(label + ":\n");
         ++uniqueCounter;
         return label;
+    }
+
+    void Mp::Return(int id) {
+
+        //TODO: get return type
+        Type returnType=asCallee->second[0].type;
+
+
+        int dst = reserveId(sizeOf(returnType),returnType, "FUNC RETURN");
+        RegPtr _op1 = typeDuplicate(dst, id, true); // not sure (think is true, because frame will be popped )
+        std::string _op1Str=tRegName(_op1);
+
+        if(isFloat(returnType)){
+            if(isDoubleFloat(returnType)){
+                buffer.push_back("mov.d $f0, " + _op1Str);
+            }else{
+                buffer.push_back("mov.s $f0, " + _op1Str);
+            }
+        }else {
+            buffer.push_back("move $2," + _op1Str);
+        }
+
+        _b(RETURN_LABEL);
     }
 
     void Mp::Return(){
