@@ -239,12 +239,14 @@ typedef struct _result{
 //        };
 
     int id;     // used for operation which have dst register
-    Type type; //used for declaration_specifiers
+    Type type=TYPE_SIGNED_INT; //used for declaration_specifiers
 
     std::string str;// this field need refactor
 
     bool freeable=false;
+
 } Result;
+
 
 //typedef struct _msg {
 //    int id;

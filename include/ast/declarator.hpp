@@ -38,10 +38,10 @@ public:
         return direct_declarator->query_declarator_type();
     }
 
-    void mp(Result& result) const override{
+    void mp(Result& para) const override{
         if(pointer==NULL){
             //case 1, direct_declarator
-            direct_declarator->mp(result);
+            direct_declarator->mp(para);
 
         }else{
             notImplemented();

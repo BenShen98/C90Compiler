@@ -125,8 +125,11 @@ extern std::ofstream ffout;
         for(int i=0;i<T_GENERAL_REG_SIZE;++i){
             std::cerr<<"#\t"<< tGenRegName(i) <<",\t\t"<< tGeneralReg[i].id <<",\t\t"<< std::bitset<32>(tGeneralReg[i].type) <<",\n";
         }
+        std::cerr<<"\n# instruction dump #\n";
+        for(int i=0;i<buffer.size();++i){
+            std::cerr<< buffer[i]<<"\n";
+        }
         std::cerr<<"\n";
-
     }
 
 /*
@@ -171,6 +174,7 @@ extern std::ofstream ffout;
  * insertion of new variable/arguement
  */
 
+//TODO:: array type
 int Mp::immediate(int size, std::string data, Type type, std::string identifier) {
     int id = reserveId(size, type, identifier);
 
@@ -418,6 +422,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         if (!isBasicTypeEqual(e1->type, eDst->type)){
             //type enforcement
             //cast type from op1 to dst
+            std::cerr<<"convert "<<std::bitset<32>(e1->type)<<" to "<<std::bitset<32>(eDst->type)<<std::endl;
             throw std::runtime_error("type enforcement not done");
 
     //            if()
@@ -425,6 +430,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         }else{
             //same type, override id
             r1->id=dst;
+            setRegDirty(r1->type);
         }
 
 
@@ -520,6 +526,12 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         }
 
         setRegDirty(dst->type);
+    }
+
+    void Mp::assignment(int dst, std::string constant) {
+        RegPtr rDst=loadGenReg(dst, false);
+        setRegDirty(rDst->type);
+        _li(tRegName(rDst), constant, "assign imm to "+std::to_string(dst));
     }
 
     void Mp::assignment(int dst, int op1, enum_assignment operation, bool free){

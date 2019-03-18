@@ -7,7 +7,9 @@
 #include <sstream>
 #include "_query_enum.hpp"
 #include "../Mp.hpp"
+#include "../Context.hpp"
 
+#define LOGGING true
 
 class ast_abs;
 typedef const ast_abs * astPtr;
@@ -17,6 +19,8 @@ static Result _dummy_;
 extern Mp mips;
 extern std::ofstream ffout;
 extern std::vector<std::string> globalvar;
+extern Context context;
+
 
 inline void notImplemented(){ throw std::runtime_error("Not implemented."); }
 

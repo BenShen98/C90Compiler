@@ -2,7 +2,7 @@
 #define ast_type_specifier
 
 #include "_ast_abs.hpp"
-
+#include <bitset>
 /*
 type_specifier
 0	: VOID
@@ -32,6 +32,7 @@ public:
     //python does not define type, skip
 
     void mp(Result& result) const override{
+        std::cout<<"type "<<type<<" "<<std::bitset<32>(result.type)<<"\t";
         switch (type){
             //void
             case 0:
@@ -63,6 +64,8 @@ public:
             default:
                 notImplemented();
         }
+        std::cout<<std::bitset<32>(result.type)<<"\n";
+
     }
 
 

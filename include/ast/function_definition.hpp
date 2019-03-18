@@ -50,21 +50,26 @@ public:
 
     void mp() const override{
 
-        //todo: log this's return type function
-//        if (declaration_specifiers==NULL){
-//            //declarator compound_statement  , default int as return type
-//
-//        }else{
-//            //itr declaration_specifiers to get type
-//
-//        }
+        //get  function return type
+        Result info;
+        if (declaration_specifiers==NULL){
+            info.type=TYPE_SIGNED_INT;
+        }else{
+            declaration_specifiers->mp(info);
+        }
 
-        //todo: log function name,  parameter type
-//        declarator->mp(_dummy_);
+        //add function to context
+        //input: basic_type, output: type, str
+        declarator->mp(info);
+
+        //start function
+        mips.newFrame(info.str);
 
         // compile function
         compound_statement->mp();
 
+        //end function
+        mips.endFrame(LOGGING);
 
     }
 

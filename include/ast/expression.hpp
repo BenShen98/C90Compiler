@@ -19,6 +19,19 @@ public:
     expression(astPtr e)
         :left_list(e){}
 
+    /*
+     *  CAN not use default method, because comma operator is sequence point
+     */
+    virtual void mp(Result& result) const override{
+        element->mp(result);
+        list->mp(result);
+    }
+
+    virtual void mp() const override{
+        element->mp();
+        list->mp();
+    }
+
 };
 
 #endif

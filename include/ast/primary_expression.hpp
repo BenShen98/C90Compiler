@@ -140,9 +140,9 @@ inline int cConst2Mp(std::string cConst){
             // input is either oct(0467), hex(0x2af), binary(0b0101)
             if( cConst.back()=='U' || cConst.back()=='u' ) {
                 cConst.pop_back(); //remove postfix
-                return ( mips.immediate(4, cConst, TYPE_UNSIGNED_INT ) );
+                return ( mips.immediate(4, cConst, TYPE_SIGNED_INT ) );
             }else{
-                return ( mips.immediate(4, cConst, TYPE_UNSIGNED_INT ) );
+                return ( mips.immediate(4, cConst, TYPE_SIGNED_INT ) );
             }
 
 
@@ -158,9 +158,9 @@ inline int cConst2Mp(std::string cConst){
                 // input does not contain . nor e
                 if( cConst.back()=='U' || cConst.back()=='u' ) {
                     cConst.pop_back(); //remove postfix
-                    return ( mips.immediate(4, cConst, TYPE_UNSIGNED_INT ) );
+                    return ( mips.immediate(4, cConst, TYPE_SIGNED_INT ) );
                 }else{
-                    return ( mips.immediate(4, cConst, TYPE_UNSIGNED_INT ) );
+                    return ( mips.immediate(4, cConst, TYPE_SIGNED_INT ) );
                 }
 
             } else{

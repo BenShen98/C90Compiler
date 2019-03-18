@@ -40,20 +40,18 @@ public:
     }
 
     void mp(Result& para) const override{
-        Result declareName;
-        declarator->mp(declareName);
 
-        int size = isDoubleFloat(para.type) ? 8 : 4;
+        // pass down basic_type, return str,type
+        declarator->mp(para);
+
 
         if(initializer==NULL){
             //zero init value
-            mips.immediate(size, "0", para.type, declareName.str);
+            mips.immediate(sizeOf(para.type), "0", para.type, para.str);
 
         }else{
-            Result declaredInfo;
-            declaredInfo.id=mips.reserveId(size, para.type, declareName.str);
-            declaredInfo.freeable=false;
-            initializer->mp(declaredInfo);
+            //pass id
+            initializer->mp(para);
 
         }
     }

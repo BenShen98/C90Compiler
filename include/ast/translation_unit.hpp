@@ -52,11 +52,6 @@ public:
 
     }
 
-    void mp() const override{
-        list->mp();
-
-        element->mp();
-    }
 };
 
 

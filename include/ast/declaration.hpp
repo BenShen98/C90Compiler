@@ -2,10 +2,11 @@
 #define ast_declaration
 
 #include "_ast_abs.hpp"
+#include <bitset>
 
 /*CHECKED
 declaration
-	: declaration_specifiers ';'
+	: declaration_specifiers ';' //USELESS? (unreachable, no effect)
 	| declaration_specifiers init_declarator_list ';'
 	;
  */
@@ -32,14 +33,14 @@ public:
 
     }
 
-    void mp(Result& result) const override{
+    void mp() const override{
         //get type
-        Result declareType;
-        declaration_specifiers->mp(declareType);
-        result=declareType;
-
         if(init_declarator_list!=NULL){
+            Result declareType;
+            declaration_specifiers->mp(declareType);
             init_declarator_list->mp(declareType);
+        }else{
+            std::cerr<<"[warning], useless type name in empty declaration\n";
         }
 
 

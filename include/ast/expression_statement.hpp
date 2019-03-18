@@ -30,10 +30,10 @@ public:
 
     }
 
-    void mp(Result& result) const override{
+    void mp() const override{
         if(exp!=NULL) {
             //HAVE TO CALL mp(), not mp(Result&)
-            //see wiki for detail
+            //see wiki for detail (it is statement)
             exp->mp();
         }
     }
