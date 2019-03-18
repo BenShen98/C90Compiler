@@ -143,8 +143,35 @@ public:
         }
     }
 
-    void mp() const override{
-        notImplemented();
+//    void mp() const override{
+//        //parent node are expression
+//        if(unary_expression==NULL){
+//            //case like {1+2;}
+//            std::cerr<<"[warning] assignment expression without rvalue\n";
+//        }else{
+//            // case like {x=1+2;}
+//            // call function below
+//            Result dummy; //not actually used
+//            mp(dummy);
+//        }
+//    }
+
+    void mp(Result& result) const override{
+        //parent node are assignment_expression
+        if(unary_expression==NULL){
+            //base case
+            expression->mp(result);
+        } else{
+            //get lvalue
+            unary_expression->mp(result);
+
+            //eval expression
+            Result exp;
+            expression->mp(exp);
+
+            //perform assignment
+            mips.assignment(result.id,exp.id,assignment_operator,exp.freeable);
+        }
 
     }
 

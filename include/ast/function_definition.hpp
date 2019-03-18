@@ -2,7 +2,6 @@
 #define ast_function_definition
 
 #include "_ast_abs.hpp"
-
 /*
 function_definition
  : ~~declaration_specifiers declarator declaration_list compound_statement~~     REMOVED (K&R-style)  int foo(a, b) int a; double b; { ... }
@@ -50,13 +49,28 @@ public:
     }
 
     void mp() const override{
-        notImplemented();
+
+        //get  function return type
+        Result info;
         if (declaration_specifiers==NULL){
-        //declarator compound_statement  , default int as return type
-
+            info.type=TYPE_SIGNED_INT;
         }else{
-
+            declaration_specifiers->mp(info);
         }
+
+        //add function to context
+        //input: basic_type, output: type, str
+        declarator->mp(info);
+
+        //start function
+        mips.newFrame(info.str);
+
+        // compile function
+        compound_statement->mp();
+
+        //end function
+        mips.endFrame(LOGGING);
+
     }
 
 };

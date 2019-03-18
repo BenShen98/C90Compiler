@@ -5,7 +5,7 @@
 
 /*
 translation_unit
-	: external_declaration
+X	: external_declaration ($$=$1 in yacc)
 	| translation_unit external_declaration
 	;
  */
@@ -39,22 +39,21 @@ public:
 //        }
 //    }
 //
-//    void mp() const override{
+//    void mp(Result& result) const override{
 //        _unit->mp();
 //        _declaration->mp();
 //    }
-virtual void py(std::string& dst) const override{
-    std::string e, l;
+    virtual void py(std::string& dst) const override{
+        std::string e, l;
 
-    if(list!=NULL){
         list->py(l);
         element->py(e);
         dst = l + '\n' + e;
-    }else{
-        element->py(e);
-        dst=e;
+
     }
-}
+
 };
+
+
 
 #endif

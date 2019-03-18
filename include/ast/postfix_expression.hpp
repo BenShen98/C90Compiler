@@ -20,7 +20,7 @@ postfix_expression
 
 class postfix_expression: public ast_abs{
     int type;
-    astPtr pt=0;
+    astPtr pt;
 
     // make a union for two type below
     astPtr op=0; //for only case 1,3 optional parameter
@@ -65,8 +65,11 @@ public:
 
     }
 
-    void mp() const override{
+    void mp(Result& result) const override{
         switch (type){
+            case 0:
+                pt->mp(result);
+                break;
 
             default:
                 notImplemented();

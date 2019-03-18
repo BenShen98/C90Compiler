@@ -1,11 +1,11 @@
 #ifndef ast_declaration_list
 #define ast_declaration_list
 
-#include "_right_list.hpp"
+#include "_left_list.hpp"
 
 /*
 declaration_list
-	: declaration
+X 	: declaration ($$=$1 in yacc)
 	| declaration_list declaration
 	;
  */
@@ -21,15 +21,13 @@ public:
 
     virtual void py(std::string& dst) const override{
         std::string e, l;
-        element->py(e);
+        list->py(l);
 
-        if(list!=NULL){
-            list->py(l);
-            dst = l + '\n' + e;
-        }else{
-            dst=e;
-        }
+        element->py(e);
+        dst = l + '\n' + e;
+
     }
+
 };
 
 #endif

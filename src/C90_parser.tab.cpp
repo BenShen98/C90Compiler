@@ -1637,7 +1637,7 @@ yyreduce:
 
   case 14:
 #line 68 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new argument_expression_list((yyvsp[0].expr)); }
+    { (yyval.expr) = (yyvsp[0].expr); }
 #line 1642 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
@@ -1973,7 +1973,7 @@ yyreduce:
 
   case 70:
 #line 178 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new expression((yyvsp[0].expr)); }
+    { (yyval.expr) = (yyvsp[0].expr); }
 #line 1978 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
@@ -2009,7 +2009,7 @@ yyreduce:
 
   case 76:
 #line 193 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new declaration_specifiers((yyvsp[0].expr)); }
+    { (yyval.expr) = (yyvsp[0].expr); }
 #line 2014 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
@@ -2021,7 +2021,7 @@ yyreduce:
 
   case 78:
 #line 195 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new declaration_specifiers((yyvsp[0].expr)); }
+    { (yyval.expr) = (yyvsp[0].expr); }
 #line 2026 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
@@ -2033,7 +2033,7 @@ yyreduce:
 
   case 80:
 #line 202 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new init_declarator_list((yyvsp[0].expr)); }
+    { (yyval.expr) = (yyvsp[0].expr); }
 #line 2038 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
@@ -2171,7 +2171,7 @@ yyreduce:
 
   case 103:
 #line 327 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new parameter_list((yyvsp[0].expr)); }
+    { (yyval.expr) = (yyvsp[0].expr); }
 #line 2176 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
@@ -2213,7 +2213,7 @@ yyreduce:
 
   case 110:
 #line 372 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new initializer_list((yyvsp[0].expr)); }
+    { (yyval.expr) = (yyvsp[0].expr); }
 #line 2218 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
@@ -2297,7 +2297,7 @@ yyreduce:
 
   case 125:
 #line 399 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new declaration_list((yyvsp[0].expr)); }
+    { (yyval.expr) = (yyvsp[0].expr); }
 #line 2302 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
@@ -2309,7 +2309,7 @@ yyreduce:
 
   case 127:
 #line 404 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new statement_list((yyvsp[0].expr)); }
+    { (yyval.expr) = (yyvsp[0].expr); }
 #line 2314 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 
@@ -2411,7 +2411,7 @@ yyreduce:
 
   case 144:
 #line 438 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new translation_unit((yyvsp[0].expr)); }
+    { (yyval.expr) = (yyvsp[0].expr); }
 #line 2416 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 

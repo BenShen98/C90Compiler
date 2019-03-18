@@ -23,7 +23,7 @@ class direct_declarator: public ast_abs{
     std::string * identifier;
     astPtr left;
 
-    astPtr right;
+    astPtr right=0;
 
 public:
     direct_declarator(std::string * id):type(0),identifier(id){}              //for case 0
@@ -56,6 +56,8 @@ public:
                 dst = s + '(' + s_opt + ')';
                 break;
 
+
+
             case 5:
                 left->py(s);
                 dst = s + "()";
@@ -78,11 +80,36 @@ public:
         }
     }
 
-    void mp() const override{
+    void mp(Result& result) const override{
         switch (type){
+            case 0:
+                result.str = *identifier;
+                break;
 
-            default:
+            case 1:
+                //do nothing
+                break;
+
+            case 2:
+            case 3:
                 notImplemented();
+                break;
+
+            case 4: //direct_declarator '(' parameter_type_list ')'
+            case 5: //direct_declarator '(' ')'
+                {
+                    left->mp(result);
+                    context.addFunc(result.str, result.type);
+
+                    // add para if exist
+                    if(right!=NULL)
+                        right->mp();
+
+                    // commit function
+                    context.commitFunc();
+                }
+                break;
+
         }
     }
 

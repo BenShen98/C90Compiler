@@ -41,13 +41,13 @@ public:
 
     }
 
-    void mp() const override{
-        notImplemented();
+    void mp(Result& para) const override{
         if (is_true==NULL){
         //logical_or_expression
-
+            exp->mp(para);
         }else{
         //logical_or_expression '?' expression ':' conditional_expression
+            notImplemented();
 
         }
     }
