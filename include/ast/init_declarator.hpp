@@ -39,19 +39,24 @@ public:
         return declarator->query_declarator_type();
     }
 
+    /*
+     * //make a copy, DO NOT CHANGE basic_type, int x=5, *y;
+     */
     void mp(Result& para) const override{
+        Result info=para;
 
         // pass down basic_type, return str,type
-        declarator->mp(para);
+        declarator->mp(info);
 
 
         if(initializer==NULL){
             //zero init value
-            mips.immediate(sizeOf(para.type), "0", para.type, para.str);
+            mips.immediate(sizeOf(info.type), "0", info.type, info.str);
 
         }else{
             //pass id
-            initializer->mp(para);
+            info.id=mips.reserveId(sizeOf(info.type),info.type,info.str);
+            initializer->mp(info);
 
         }
     }
