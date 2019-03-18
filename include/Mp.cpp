@@ -295,7 +295,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
         // check if is already in register
         for (int idx=0; idx<T_GENERAL_REG_SIZE; ++regItr, ++idx ) {
-            if (regItr->id == id) {
+            if (regItr->id == id && !isRegEmpty(regItr->type)) {
 
                 //should not be dirty
                 if( isRegUnkown(regItr->type) ){

@@ -32,9 +32,8 @@ public:
 
     void mp() const override{
         if(exp!=NULL) {
-            //HAVE TO CALL mp(), not mp(Result&)
-            //see wiki for detail (it is statement)
-            exp->mp();
+            Result dummy;
+            exp->mp(dummy);
         }
     }
 
