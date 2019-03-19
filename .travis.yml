@@ -22,6 +22,7 @@ before_install:
 - ./scripts/dependencies.sh
 script:
 - ./scripts/testansi.sh
+- ./scripts/testmips.sh
 branches:
   only:
     - master
