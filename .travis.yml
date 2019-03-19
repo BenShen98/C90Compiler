@@ -21,6 +21,7 @@ before_install:
 - chmod u+x ./scripts/dependencies.sh
 - ./scripts/dependencies.sh
 script:
+- make
 - ./scripts/testansi.sh
 - ./scripts/testmips.sh
 branches:
