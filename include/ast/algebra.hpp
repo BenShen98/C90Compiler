@@ -249,7 +249,7 @@ public:
         left->mp(op1);
         right->mp(op2);
 
-        result.id = mips.algebra(type, op1.id, op2.id, op1.freeable, op2.freeable);
+        result.id = mips.algebra(type, op1.id, op2.id, op1.freeable, op2.freeable,"=op(" + std::to_string(type) + ") " + std::to_string(op1.id) + " " +std::to_string(op2.id)) ;
         result.freeable= true; //this is indeterminate result, no need to store
 
 

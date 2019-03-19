@@ -70,6 +70,10 @@ extern std::ofstream ffout;
  * flush buffer
  */
         // frame setup
+        ffout<< ".globl "<<(asCallee->first)<<'\n';
+        ffout<<".ent "<<(asCallee->first)<<'\n';
+        ffout<< (asCallee->first) <<":\n";
+        ffout<< ".frame $fp,"<<stack_size<<",$31\n";
         ffout<<"addiu $sp, $sp, -"<<stack_size<<'\n'; // allocate stack
         ffout<<"sw $31, "<<arg_max_size<<"($sp)"<<'\n';
 
@@ -103,7 +107,8 @@ extern std::ofstream ffout;
         ffout<<std::string(RETURN_LABEL)<<":\n";
         ffout<<"lw $31, "<<arg_max_size<<"($sp)"<<'\n';
         ffout<<"addiu $sp, $sp, "<<stack_size<<'\n'; // deallocate stack
-        ffout<<"j $31\n\n";
+        ffout<<"j $31\n";
+        ffout<<".end "<<(asCallee->first)<<"\n\n";
 
         //logging and exit
         if(logging)
@@ -190,7 +195,7 @@ int Mp::immediate(int size, std::string data, Type type, std::string identifier)
         freshCounter++;
 
         setRegDirty(regId->type);
-        _li( tRegName(regId ), data, "immediate " + identifier);
+        _li( tRegName(regId ), data, "imm id _" + std::to_string(id) +"_" );
     }
 
     return id;
@@ -299,7 +304,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
                 //should not be dirty
                 if( isRegUnkown(regItr->type) ){
-                    std::cerr<<"[error] *REload* unknown register, id"<< (regItr->id)<<"\n";
+                    std::cerr<<"[error] *RELOAD* unknown register, id"<< (regItr->id)<<"\n";
                 }
                 return regItr;
             }
@@ -325,7 +330,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         freshCounter++;
         // only load data from stack to register when required to
         if(load){
-            lw_sp(tRegName( regItr ), id, "load "+entryPtr->name);
+            lw_sp(tRegName( regItr ), id, "load _"+std::to_string(id) +"_ to" + tRegName( regItr ));
             setRegSync(regItr->type);
         }else{
             setRegUnkown(regItr->type);
@@ -415,7 +420,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
         //only write back if value is not freeable AND is dirty
         if( !free1 && isRegDirty(r1->type) ){
-            sw_sp(tRegName(r1), r1->id, "save dirty register "+std::to_string(r1->id)+" before duplicate");
+            sw_sp(tRegName(r1), r1->id, "save dirty re _"+std::to_string(r1->id)+"_ before duplicate");
             setRegSync(r1->type);
         }
 
@@ -429,6 +434,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
         }else{
             //same type, override id
+            _comment("assign _"+std::to_string(r1->id)+"_ to _"+std::to_string(dst)+"_ in reg "+tRegName(r1));
             r1->id=dst;
             setRegDirty(r1->type);
         }
@@ -528,11 +534,11 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         setRegDirty(dst->type);
     }
 
-    void Mp::assignment(int dst, std::string constant) {
-        RegPtr rDst=loadGenReg(dst, false);
-        setRegDirty(rDst->type);
-        _li(tRegName(rDst), constant, "assign imm to "+std::to_string(dst));
-    }
+    // void Mp::assignment(int dst, std::string constant) {
+    //     RegPtr rDst=loadGenReg(dst, false);
+    //     setRegDirty(rDst->type);
+    //     _li(tRegName(rDst), constant, "assign imm to "+std::to_string(dst));
+    // }
 
     void Mp::assignment(int dst, int op1, enum_assignment operation, bool free){
 
@@ -599,7 +605,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         }
     }
 
-    int Mp::algebra(enum_algebra algebra,int op1, int op2, bool free1, bool free2, std::string comment) {
+    int Mp::algebra(enum_algebra algebra,int op1, int op2, bool free1, bool free2, std::string varName) {
 
         RegPtr r1, r2,rResult;
         std::pair<RegPtr, RegPtr> afterPromotion = typePromotion(op1,op2);
@@ -612,12 +618,12 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         if(isDoubleFloat(r1->type)){
 
         }else{
-            id_result=reserveId(4,r1->type,comment);
+            id_result=reserveId(4,r1->type,varName);
             rResult=loadGenReg(id_result, false);
         }
 
         //doing actual calculation
-        _algebra(algebra, rResult, r1, r2, comment);
+        _algebra(algebra, rResult, r1, r2, "dst id _" + std::to_string(id_result) + "_");
 
         //free extra register caused by promotion
         if( r1->id != op1 ){
@@ -664,7 +670,6 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             //ignore free flag if is self assign
             discardGenReg(op1);
         }
-
         return resultId;
     }
 
