@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source script/config.sh
+source scripts/config.sh
 
 rm -rf ${ANSI_BIN}
 mkdir ${ANSI_BIN}

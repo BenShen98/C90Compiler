@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source script/config.sh
+source scripts/config.sh
 
 #make dir
 rm -rf ${OUTPUT}
