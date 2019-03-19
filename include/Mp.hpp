@@ -346,7 +346,7 @@ public:
     int algebra(enum_algebra algebra,int op1, int op2, bool free1=false, bool free2=false, std::string varName="");
 
     void assignment(int dst, int op1,enum_assignment operation=ASSIGN, bool free= false);
-    void assignment(int dst, std::string constant);
+    // void assignment(int dst, std::string constant);
 
     //ONLY for INT, used for a++, a--
     int addi(bool selfAssign, int op1, std::string integer,bool free1=false, std::string comment="");

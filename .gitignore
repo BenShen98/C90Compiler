@@ -8,3 +8,6 @@ _playground
 output
 tmp
 cmake-build-debug
+test/C_output
+test/C_log
+test/ansi
