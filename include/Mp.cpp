@@ -70,6 +70,10 @@ extern std::ofstream ffout;
  * flush buffer
  */
         // frame setup
+        ffout<< ".globl "<<(asCallee->first)<<'\n';
+        ffout<<".ent "<<(asCallee->first)<<'\n';
+        ffout<< (asCallee->first) <<":\n";
+        ffout<< ".frame $fp,"<<stack_size<<",$31\n";
         ffout<<"addiu $sp, $sp, -"<<stack_size<<'\n'; // allocate stack
         ffout<<"sw $31, "<<arg_max_size<<"($sp)"<<'\n';
 
@@ -103,7 +107,8 @@ extern std::ofstream ffout;
         ffout<<std::string(RETURN_LABEL)<<":\n";
         ffout<<"lw $31, "<<arg_max_size<<"($sp)"<<'\n';
         ffout<<"addiu $sp, $sp, "<<stack_size<<'\n'; // deallocate stack
-        ffout<<"j $31\n\n";
+        ffout<<"j $31\n";
+        ffout<<".end "<<(asCallee->first)<<"\n\n";
 
         //logging and exit
         if(logging)

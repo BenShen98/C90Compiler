@@ -1,3 +1,7 @@
+.globl main
+.ent main
+main:
+.frame $fp,64,$31
 addiu $sp, $sp, -64
 sw $31, 20($sp)
 li $t0,0 #imm id _4_
@@ -21,3 +25,4 @@ lw $31, 20($sp)
 addiu $sp, $sp, 64
 j $31
 
+.end main

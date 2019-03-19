@@ -62,11 +62,11 @@ for i in ${TESTDIRECTORY}/*.c; do
     echo "=>PASS TEST ${base}.c"
     printf "\n\n"
   else
-    echo "********************TEST FAIL ${base}.c********************"
-    echo "=>FAIL TEST ${base}.c"
-    printf "\n\n"
 
     #print debug info ONLY when test FAIL
+    echo "********************TEST FAIL ${base}********************"
+    echo "=>FAIL TEST ${base}.c"
+    printf "\n\n"
     echo "## C Input: "
     cat ${TESTDIRECTORY}/${base}.c
     printf "\n"
@@ -79,7 +79,7 @@ for i in ${TESTDIRECTORY}/*.c; do
     echo "## Assembly Disassembly:"
     cat ${DUMP}/${base}.mips.s
     printf "\n\n"
-    printf "********************END FAIL ${base}.c********************\n\n\n"
+    printf "********************END FAIL ${base}********************\n\n\n"
   fi
 
 
