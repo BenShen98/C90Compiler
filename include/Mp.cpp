@@ -299,7 +299,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
                 //should not be dirty
                 if( isRegUnkown(regItr->type) ){
-                    std::cerr<<"[error] *REload* unknown register, id"<< (regItr->id)<<"\n";
+                    std::cerr<<"[error] *RELOAD* unknown register, id"<< (regItr->id)<<"\n";
                 }
                 return regItr;
             }
@@ -325,7 +325,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         freshCounter++;
         // only load data from stack to register when required to
         if(load){
-            lw_sp(tRegName( regItr ), id, "load "+entryPtr->name);
+            lw_sp(tRegName( regItr ), id, "load _"+std::to_string(id) +"_ to" + tRegName( regItr ));
             setRegSync(regItr->type);
         }else{
             setRegUnkown(regItr->type);
