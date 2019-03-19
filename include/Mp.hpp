@@ -160,11 +160,64 @@ private:
     void _b(std::string label){
         buffer.push_back("b " + label );
     }
-
     void _comment(const std::string& comment ){
         buffer.push_back("# " + comment );
     }
-
+    void _mul(std::string d,std::string s,std::string t, std::string comment=""){
+      //use $LO
+        buffer.push_back("mult " + s + ',' + t +" #" + comment );
+        buffer.push_back("mflo " + d + '#' + comment );
+    }
+    void _div(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("div " + s + ',' + t +" #" + comment );
+        buffer.push_back("mflo " + d + '#' + comment );
+    }
+    void _mod(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("div " + s + ',' + t +" #" + comment );
+        buffer.push_back("mfhi " + d + '#' + comment );
+    }
+    void _sub(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("sub " + d + ',' + s + ',' + t +" #" + comment );
+    }
+    void _sll(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("sll" + d + ',' + s + ',' + t +" #" + comment );
+    }
+    void _srl(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("srl" + d + ',' + s + ',' + t +" #" + comment );
+    }
+    void _sra(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("sra" + d + ',' + s + ',' + t +" #" + comment );
+    }
+    void _sltu(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("sltu" + d + ',' + s + ',' + t +" #" + comment );
+    }
+    void _slt(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("slt" + d + ',' + s + ',' + t +" #" + comment );
+    }
+    void _LE(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("slt" + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("xori" + d + ',' + d + ',' + "0x1" +" #" + comment );
+    }
+    void _LEu(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("sltu" + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("xori" + d + ',' + d + ',' + "0x1" +" #" + comment );
+    }
+    void _EQ(std::string d,std::string s,std::string t, std::string comment=""){
+      //TODO might need to andi 0x000ff
+        buffer.push_back("xor" + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("sltu" + d + ',' + d + ',' + "0x1" +" #" + comment );
+    }
+    void _NE(std::string d,std::string s,std::string t, std::string comment=""){
+      //TODO might need to andi 0x000ff
+        buffer.push_back("xor" + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("sltu" + d + ',' + "$0" + ',' + d +" #" + comment );
+    }
+    void _xor(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
+    }
+    void _or(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("or " + d + ',' + s + ',' + t +" #" + comment );
+    }
     /* ... */
 
     /*

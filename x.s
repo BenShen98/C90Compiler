@@ -8,7 +8,7 @@ li $t3,3 #imm id _20_
 addu $t4,$t2,$t3 #dst id _24_
 li $t2,6 #imm id _28_
 # assign _28_ to _4_ in reg $t2
-addiu $t2,$t2,1 #per increment id 4
+addi $t2,$t2,1 #per increment id 4
 addu $t0,$t1,$t2 #dst id _32_
 # assign _32_ to _36_ in reg $t0
 move $2,$t0

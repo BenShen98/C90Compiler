@@ -299,7 +299,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
                 //should not be dirty
                 if( isRegUnkown(regItr->type) ){
-                    std::cerr<<"[error] *REload* unknown register, id"<< (regItr->id)<<"\n";
+                    std::cerr<<"[error] *RELOAD* unknown register, id"<< (regItr->id)<<"\n";
                 }
                 return regItr;
             }
@@ -325,7 +325,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         freshCounter++;
         // only load data from stack to register when required to
         if(load){
-            lw_sp(tRegName( regItr ), id, "load "+entryPtr->name);
+            lw_sp(tRegName( regItr ), id, "load _"+std::to_string(id) +"_ to" + tRegName( regItr ));
             setRegSync(regItr->type);
         }else{
             setRegUnkown(regItr->type);
@@ -467,61 +467,336 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     void Mp::_algebra(enum_algebra operation, RegPtr dst, RegPtr op1, RegPtr op2, std::string comment) {
         switch (operation){
             case ADD:
+            {
+                Type temp=dst->type;
+                if(isUnsignedInt(temp)||isSignedInt(temp)){
                 _addu(tRegName(dst), tRegName(op1), tRegName(op2),comment);
+                }
+                else if(isSingleFloat(temp)){
+                //single floating
+                }
+                else if(isDoubleFloat(temp)){
+                //double floating
+                }
+                else if (isArray(temp)){
+                //array
+                }
+            }
                 break;
-//            case MUL:
-//                break;
-//
-//            case DIV:
-//                break;
-//
-//            case MOD:
-//                break;
-//
-//            case SUB:
-//                break;
-//
-//            case LEFT_:
-//                break;
-//
-//            case RIGHT_:
-//                break;
-//
-//            case SMALLER:
-//                break;
-//
-//            case GREATER:
-//                break;
-//
-//            case LE_:
-//                break;
-//
-//            case GE_:
-//                break;
-//
-//            case EQ_:
-//                break;
-//
-//            case NE_:
-//                break;
-//
-//            case AND:
-//                break;
-//
-//            case XOR:
-//                break;
-//
-//            case OR:
-//                break;
-//
-//            case AND_:
-//                //short circuit
-//                break;
-//
-//            case OR_:
-//                //short circuit
-//                break;
-//
+           case MUL:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)||isSignedInt(temp)){
+               _mul(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               //TODO set to LO register
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case DIV:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)||isSignedInt(temp)){
+               _div(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               //TODO set to LO register
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case MOD:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)||isSignedInt(temp)){
+               _mod(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case SUB:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)||isSignedInt(temp)){
+               _sub(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case LEFT_:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)||isSignedInt(temp)){
+               _sll(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               throw std::runtime_error("Floating not supported");
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               throw std::runtime_error("Floating not supported");
+               }
+               else if (isArray(temp)){
+               //array
+               throw std::runtime_error("Array not supported");
+               }
+           }
+               break;
+
+           case RIGHT_:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)){
+                 _srl(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if (isSignedInt(temp)){
+                 _sra(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               throw std::runtime_error("Floating not supported");
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               throw std::runtime_error("Floating not supported");
+               }
+               else if (isArray(temp)){
+               //array
+               throw std::runtime_error("Array not supported");
+               }
+           }
+               break;
+
+           case SMALLER:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)){
+                 _sltu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if (isSignedInt(temp)){
+                 _slt(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case GREATER:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)){
+                 _sltu(tRegName(dst),tRegName(op2), tRegName(op1),comment);
+               }
+               else if (isSignedInt(temp)){
+                 _slt(tRegName(dst),tRegName(op2), tRegName(op1),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case LE_:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)){
+                 _LEu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if (isSignedInt(temp)){
+                 _LE(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case GE_:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)){
+                 _LEu(tRegName(dst),tRegName(op2), tRegName(op1),comment);
+               }
+               else if (isSignedInt(temp)){
+                 _LE(tRegName(dst),tRegName(op2), tRegName(op1),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case EQ_:
+           {
+               Type temp=dst->type;
+               if(isInt(temp)){
+                 _EQ(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case NE_:
+           {
+               Type temp=dst->type;
+               if(isInt(temp)){
+                 _NE(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case AND:
+           {
+               Type temp=dst->type;
+               if(isInt(temp)){
+                 _and(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case XOR:
+           {
+               Type temp=dst->type;
+               if(isInt(temp)){
+                 _xor(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case OR:
+           {
+               Type temp=dst->type;
+               if(isInt(temp)){
+                 _or(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+          //  case AND_:
+          //  {
+          //      Type temp=dst->type;
+          //      if(isUnsignedInt(temp)||isSignedInt(temp))){
+          //      _and(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+          //      }
+          //      else if(isSingleFloat(temp)){
+          //      //single floating
+          //      }
+          //      else if(isDoubleFloat(temp)){
+          //      //double floating
+          //      }
+          //      else if (isArray(temp)){
+          //      //array
+          //      }
+          //  }
+          //      break;
+           //
+          //  case OR_:
+          //      //short circuit
+          //      break;
             default:
                 throw std::runtime_error("Not implemented.");
         }
@@ -529,11 +804,11 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         setRegDirty(dst->type);
     }
 
-    void Mp::assignment(int dst, std::string constant) {
-        RegPtr rDst=loadGenReg(dst, false);
-        setRegDirty(rDst->type);
-        _li(tRegName(rDst), constant, "assign imm to "+std::to_string(dst));
-    }
+    // void Mp::assignment(int dst, std::string constant) {
+    //     RegPtr rDst=loadGenReg(dst, false);
+    //     setRegDirty(rDst->type);
+    //     _li(tRegName(rDst), constant, "assign imm to "+std::to_string(dst));
+    // }
 
     void Mp::assignment(int dst, int op1, enum_assignment operation, bool free){
 
@@ -592,7 +867,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                 case XORA: // ^=
                     break;
 
-                case ORA: // |=
+                case ORA: // ||=
                     break;
 
             }
@@ -657,7 +932,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         }
 
 
-        _addiu(tRegName(rResult), tRegName(r1), integer, comment);
+        _addi(tRegName(rResult), tRegName(r1), integer, comment);
 
         setRegDirty(rResult->type);
 
@@ -665,7 +940,6 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             //ignore free flag if is self assign
             discardGenReg(op1);
         }
-
         return resultId;
     }
 
@@ -683,6 +957,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
 
     /*
+            } else{
      * make function calls
      */
 
