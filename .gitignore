@@ -7,3 +7,4 @@ _playground
 *.o
 output
 tmp
+cmake-build-debug

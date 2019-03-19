@@ -190,7 +190,7 @@ int Mp::immediate(int size, std::string data, Type type, std::string identifier)
         freshCounter++;
 
         setRegDirty(regId->type);
-        _li( tRegName(regId ), data, "immediate " + identifier);
+        _li( tRegName(regId ), data, "imm id _" + std::to_string(id) +"_" );
     }
 
     return id;
@@ -415,7 +415,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
         //only write back if value is not freeable AND is dirty
         if( !free1 && isRegDirty(r1->type) ){
-            sw_sp(tRegName(r1), r1->id, "save dirty register "+std::to_string(r1->id)+" before duplicate");
+            sw_sp(tRegName(r1), r1->id, "save dirty re _"+std::to_string(r1->id)+"_ before duplicate");
             setRegSync(r1->type);
         }
 
@@ -429,6 +429,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
         }else{
             //same type, override id
+            _comment("assign _"+std::to_string(r1->id)+"_ to _"+std::to_string(dst)+"_ in reg "+tRegName(r1));
             r1->id=dst;
             setRegDirty(r1->type);
         }
@@ -599,7 +600,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         }
     }
 
-    int Mp::algebra(enum_algebra algebra,int op1, int op2, bool free1, bool free2, std::string comment) {
+    int Mp::algebra(enum_algebra algebra,int op1, int op2, bool free1, bool free2, std::string varName) {
 
         RegPtr r1, r2,rResult;
         std::pair<RegPtr, RegPtr> afterPromotion = typePromotion(op1,op2);
@@ -612,12 +613,12 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         if(isDoubleFloat(r1->type)){
 
         }else{
-            id_result=reserveId(4,r1->type,comment);
+            id_result=reserveId(4,r1->type,varName);
             rResult=loadGenReg(id_result, false);
         }
 
         //doing actual calculation
-        _algebra(algebra, rResult, r1, r2, comment);
+        _algebra(algebra, rResult, r1, r2, "dst id _" + std::to_string(id_result) + "_");
 
         //free extra register caused by promotion
         if( r1->id != op1 ){
