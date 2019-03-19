@@ -2,8 +2,8 @@
 	.section .mdebug.abi32
 	.previous
 	.nan	legacy
-	.module	fp=32
-	.module	oddspreg
+	.module	fp=xx
+	.module	nooddspreg
 	.abicalls
 	.text
 	.align	2
