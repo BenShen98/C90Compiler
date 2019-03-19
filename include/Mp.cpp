@@ -529,11 +529,11 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         setRegDirty(dst->type);
     }
 
-    void Mp::assignment(int dst, std::string constant) {
-        RegPtr rDst=loadGenReg(dst, false);
-        setRegDirty(rDst->type);
-        _li(tRegName(rDst), constant, "assign imm to "+std::to_string(dst));
-    }
+    // void Mp::assignment(int dst, std::string constant) {
+    //     RegPtr rDst=loadGenReg(dst, false);
+    //     setRegDirty(rDst->type);
+    //     _li(tRegName(rDst), constant, "assign imm to "+std::to_string(dst));
+    // }
 
     void Mp::assignment(int dst, int op1, enum_assignment operation, bool free){
 
@@ -665,7 +665,6 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             //ignore free flag if is self assign
             discardGenReg(op1);
         }
-
         return resultId;
     }
 

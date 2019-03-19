@@ -1,7 +1,7 @@
 addiu $sp, $sp, -64
 sw $31, 20($sp)
 li $t0,0 #imm id _4_
-li $t1,5 #imm id _12_
+li $t1,0x5 #imm id _12_
 # assign _12_ to _8_ in reg $t1
 li $t2,2 #imm id _16_
 li $t3,3 #imm id _20_
