@@ -299,7 +299,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
                 //should not be dirty
                 if( isRegUnkown(regItr->type) ){
-                    std::cerr<<"[error] *REload* unknown register, id"<< (regItr->id)<<"\n";
+                    std::cerr<<"[error] *RELOAD* unknown register, id"<< (regItr->id)<<"\n";
                 }
                 return regItr;
             }
@@ -325,7 +325,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         freshCounter++;
         // only load data from stack to register when required to
         if(load){
-            lw_sp(tRegName( regItr ), id, "load "+entryPtr->name);
+            lw_sp(tRegName( regItr ), id, "load _"+std::to_string(id) +"_ to" + tRegName( regItr ));
             setRegSync(regItr->type);
         }else{
             setRegUnkown(regItr->type);
@@ -529,11 +529,11 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         setRegDirty(dst->type);
     }
 
-    void Mp::assignment(int dst, std::string constant) {
-        RegPtr rDst=loadGenReg(dst, false);
-        setRegDirty(rDst->type);
-        _li(tRegName(rDst), constant, "assign imm to "+std::to_string(dst));
-    }
+    // void Mp::assignment(int dst, std::string constant) {
+    //     RegPtr rDst=loadGenReg(dst, false);
+    //     setRegDirty(rDst->type);
+    //     _li(tRegName(rDst), constant, "assign imm to "+std::to_string(dst));
+    // }
 
     void Mp::assignment(int dst, int op1, enum_assignment operation, bool free){
 
@@ -665,7 +665,6 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             //ignore free flag if is self assign
             discardGenReg(op1);
         }
-
         return resultId;
     }
 
