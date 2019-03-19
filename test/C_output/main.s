@@ -1,35 +1,12 @@
-	.file	1 "main.c"
-	.section .mdebug.abi32
-	.previous
-	.nan	legacy
-	.module	fp=xx
-	.module	nooddspreg
-	.abicalls
-	.text
-	.align	2
-	.globl	main
-	.set	nomips16
-	.set	nomicromips
-	.ent	main
-	.type	main, @function
-main:
-	.frame	$fp,8,$31		# vars= 0, regs= 1/0, args= 0, gp= 0
-	.mask	0x40000000,-4
-	.fmask	0x00000000,0
-	.set	noreorder
-	.set	nomacro
-	addiu	$sp,$sp,-8
-	sw	$fp,4($sp)
-	move	$fp,$sp
-	move	$2,$0
-	move	$sp,$fp
-	lw	$fp,4($sp)
-	addiu	$sp,$sp,8
-	j	$31
-	nop
+addiu $sp, $sp, -32
+sw $31, 20($sp)
+li $t0,0 #imm id _4_
+# assign _4_ to _8_ in reg $t0
+move $2,$t0
+b EXIT_main
+sw $t0,24($sp) #write back id 8
+EXIT_main:
+lw $31, 20($sp)
+addiu $sp, $sp, 32
+j $31
 
-	.set	macro
-	.set	reorder
-	.end	main
-	.size	main, .-main
-	.ident	"GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609"
