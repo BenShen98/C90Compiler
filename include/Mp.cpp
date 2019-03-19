@@ -491,9 +491,8 @@ std::string Mp::calOffset(const std::string &str) {//not finished
            case MUL:
            {
                Type temp=dst->type;
-               if(isUnsignedInt(temp)||isSignedInt(temp)){
+               if(isInt(temp)){
                _mul(tRegName(dst),tRegName(op1), tRegName(op2),comment);
-               //TODO set to LO register
                }
                else if(isSingleFloat(temp)){
                //single floating
@@ -510,9 +509,11 @@ std::string Mp::calOffset(const std::string &str) {//not finished
            case DIV:
            {
                Type temp=dst->type;
-               if(isUnsignedInt(temp)||isSignedInt(temp)){
-               _div(tRegName(dst),tRegName(op1), tRegName(op2),comment);
-               //TODO set to LO register
+               if(isUnsignedInt(temp)){
+                 _divu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if (isSignedInt(temp)){
+                 _div(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
                else if(isSingleFloat(temp)){
                //single floating
@@ -529,8 +530,11 @@ std::string Mp::calOffset(const std::string &str) {//not finished
            case MOD:
            {
                Type temp=dst->type;
-               if(isUnsignedInt(temp)||isSignedInt(temp)){
-               _mod(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               if(isUnsignedInt(temp)){
+                 _modu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if (isSignedInt(temp)){
+                 _mod(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
                else if(isSingleFloat(temp)){
                //single floating
@@ -547,8 +551,11 @@ std::string Mp::calOffset(const std::string &str) {//not finished
            case SUB:
            {
                Type temp=dst->type;
-               if(isUnsignedInt(temp)||isSignedInt(temp)){
-               _sub(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               if(isSignedInt(temp)){
+                 _sub(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if (isUnsignedInt(temp)){
+                _subu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
                else if(isSingleFloat(temp)){
                //single floating
@@ -845,12 +852,15 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             //doing the actual assignment
             switch (operation){
                 case MULA: // *=
+                _algebra(MUL,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
                 case DIVA: // /=
+                _algebra(DIV,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
                 case MODA: // %=
+                _algebra(MOD,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
                 case ADDA: // +=
@@ -858,21 +868,27 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                     break;
 
                 case SUBA: // -=
+                _algebra(SUB,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
                 case LEFTA: // <<=
+                _algebra(LEFT_,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
                 case RIGHTA: // >>=
+                _algebra(RIGHT_,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
                 case ANDA: // &=
+                _algebra(AND,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
                 case XORA: // ^=
+                _algebra(XOR,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
                 case ORA: // ||=
+                _algebra(OR,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
             }

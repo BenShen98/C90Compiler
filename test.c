@@ -1,9 +1,7 @@
 int main(){
-    int;
     int y;
-    int x=5;
-    2+3;
-    y=6;
-    ++y;
+    int x=0x5;
+    y=2*3;
+    x+=y;
     return x+y;
 }

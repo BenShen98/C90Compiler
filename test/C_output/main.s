@@ -13,5 +13,5 @@ EXIT_main:
 lw $31, 20($sp)
 addiu $sp, $sp, 32
 j $31
-
 .end main
+

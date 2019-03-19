@@ -172,12 +172,23 @@ private:
         buffer.push_back("div " + s + ',' + t +" #" + comment );
         buffer.push_back("mflo " + d + '#' + comment );
     }
+    void _divu(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("divu " + s + ',' + t +" #" + comment );
+        buffer.push_back("mflo " + d + '#' + comment );
+    }
     void _mod(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("div " + s + ',' + t +" #" + comment );
         buffer.push_back("mfhi " + d + '#' + comment );
     }
+    void _modu(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("divu " + s + ',' + t +" #" + comment );
+        buffer.push_back("mfhi " + d + '#' + comment );
+    }
     void _sub(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("sub " + d + ',' + s + ',' + t +" #" + comment );
+    }
+    void _subu(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("subu " + d + ',' + s + ',' + t +" #" + comment );
     }
     void _sll(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("sll" + d + ',' + s + ',' + t +" #" + comment );
