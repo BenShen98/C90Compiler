@@ -451,7 +451,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
         if( !isBasicTypeEqual(e1->type, e2->type) ){
             //type promotion
-            //..../
+            //
             throw std::runtime_error("type promotion not done");
 
         }else{
@@ -753,5 +753,8 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                 _beq(tRegName(reg), "$0", label );
             }
         }
-
     }
+
+  void Mp::branch(std::string label){
+    _b(label);
+  }

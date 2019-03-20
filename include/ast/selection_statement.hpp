@@ -76,12 +76,25 @@ public:
 
             case 1: //IF '(' expression ')' statement ELSE statement
             {
+              std::string elsestart=mips.mkLabel("elseStart");
+              std::string elseend=mips.mkLabel("elseEnd");
+              mips.bZero(false, expResult.id, elsestart); //skip s1 when false
+              s1->mp();
+              //gen code for s1
+              //branch to end
+              mips.branch(elseend);
+              mips.insertLabel(elsestart);
+              s2->mp();
+              //gen code for s2
+              mips.insertLabel(elseend);
 
             }
                 break;
 
-            case 2:
+            case 2://SWITCH '(' expression ')' statement
             {
+              //TODO branching label
+              //s1->mp(expResult);
 
             }
                 break;

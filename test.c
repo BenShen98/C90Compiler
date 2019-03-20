@@ -1,9 +1,8 @@
-int testif_t(){
-
-    int x=1;
-
-    if(x){
-        return 21;
-    }
-    return 6;
+int testifelse(){
+  if(0){
+    return 21;
+  }
+  else {
+    return 2;
+  }
 }

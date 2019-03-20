@@ -317,6 +317,8 @@ public:
         buffer.push_back("# " + comment );
     }
 
+    void branch(std::string label);
+
 //
 //        // TODO: type promotion
 //        type=TYPE_SINGED_INT;
