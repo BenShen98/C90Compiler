@@ -161,9 +161,16 @@ private:
         buffer.push_back("b " + label );
     }
 
-    void _comment(const std::string& comment ){
-        buffer.push_back("# " + comment );
+    void _beq(std::string s,std::string t,std::string label){
+        buffer.push_back("beq " + s + ',' +t + ',' + label );
     }
+
+    void _bne(std::string s,std::string t,std::string label){
+        buffer.push_back("beq " + s + ',' +t + ',' + label );
+    }
+
+
+
 
     /* ... */
 
@@ -196,6 +203,7 @@ public:
 
 
 
+
 /*
  * insertion of new variable/argument
  */
@@ -219,8 +227,12 @@ public:
 
     int getPara(std::string name);
 
-    std::string mkLable(const std::string& name);
+    // generate and insert label
+    std::string mkLabel(const std::string& name);
+    void insertLabel(const std::string &label);
 
+    //block control
+    void bZero(bool onTrue,  int id, std::string label);
 
 /*
  * make function call
@@ -301,7 +313,9 @@ public:
     //overwrite regist
 //    int makeCopy(int id, bool free1=true); //use assignment instead
 
-
+    void comment(const std::string& comment ){
+        buffer.push_back("# " + comment );
+    }
 
 //
 //        // TODO: type promotion

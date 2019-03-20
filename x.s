@@ -1,28 +1,29 @@
-.globl main
-.ent main
-main:
-.frame $fp,64,$31
-addiu $sp, $sp, -64
+.globl testif_t
+.ent testif_t
+testif_t:
+.frame $fp,48,$31
+addiu $sp, $sp, -48
 sw $31, 20($sp)
-li $t0,0 #imm id _4_
-li $t1,0x5 #imm id _12_
-# assign _12_ to _8_ in reg $t1
-li $t2,2 #imm id _16_
-li $t3,3 #imm id _20_
-addu $t4,$t2,$t3 #dst id _24_
-li $t2,6 #imm id _28_
-# assign _28_ to _4_ in reg $t2
-addiu $t2,$t2,1 #per increment id 4
-addu $t0,$t1,$t2 #dst id _32_
-# assign _32_ to _36_ in reg $t0
-move $2,$t0
-b EXIT_main
-sw $t0,28($sp) #write back id 36
-sw $t1,56($sp) #write back id 8
-sw $t4,40($sp) #write back id 24
-EXIT_main:
-lw $31, 20($sp)
-addiu $sp, $sp, 64
-j $31
+li $t0,1 #imm id _8_
+# assign _8_ to _4_ in reg $t0
+beq $t0,$0,ifEnd_0_testif_t
+# true case for ifEnd_0_testif_t
+li $t1,21 #imm id _12_
+# assign _12_ to _16_ in reg $t1
+move $2,$t1
+b EXIT_testif_t
+ifEnd_0_testif_t:
 
-.end main
+li $t2,6 #imm id _20_
+# assign _20_ to _24_ in reg $t2
+move $2,$t2
+b EXIT_testif_t
+sw $t0,44($sp) #write back id 4
+sw $t1,32($sp) #write back id 16
+sw $t2,24($sp) #write back id 24
+EXIT_testif_t:
+lw $31, 20($sp)
+addiu $sp, $sp, 48
+j $31
+.end testif_t
+

@@ -434,7 +434,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
         }else{
             //same type, override id
-            _comment("assign _"+std::to_string(r1->id)+"_ to _"+std::to_string(dst)+"_ in reg "+tRegName(r1));
+            comment("assign _"+std::to_string(r1->id)+"_ to _"+std::to_string(dst)+"_ in reg "+tRegName(r1));
             r1->id=dst;
             setRegDirty(r1->type);
         }
@@ -695,11 +695,14 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     /*
      * current function
      */
-    std::string Mp::mkLable(const std::string &name) {
+    std::string Mp::mkLabel(const std::string &name) {
         std::string label = name + "_"+std::to_string(uniqueCounter)+"_"+asCallee->first;
-        buffer.push_back(label + ":\n");
         ++uniqueCounter;
         return label;
+    }
+
+    void Mp::insertLabel(const std::string &label) {
+        buffer.push_back(label + ":\n");
     }
 
     void Mp::Return(int id) {
@@ -727,4 +730,28 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
     void Mp::Return(){
         _b(RETURN_LABEL);
+    }
+
+    /*
+     *  BLOCK control
+     */
+
+    void Mp::bZero(bool onTrue, int id, std::string label) {
+        EntryPtr entry=getInfo(id);
+
+        if(isFloat(entry->type)){
+            //is on cp1
+            throw std::runtime_error("Not implemented.");
+        }else{
+            //is on genReg
+            RegPtr reg=loadGenReg(id);
+            if(onTrue){
+                //branch on true (on 1, -ne $0)
+                _bne(tRegName(reg), "$0", label );
+            }else{
+                //branch on false (on 0, -eq $0)
+                _beq(tRegName(reg), "$0", label );
+            }
+        }
+
     }

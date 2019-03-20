@@ -53,8 +53,39 @@ public:
 
     }
 
-    void mp(Result& result) const override{
-        notImplemented();
+    void mp() const override{
+        Result expResult;
+        exp->mp(expResult);
+
+        switch (type){
+            case 0: //IF '(' expression ')' statement
+            {
+                std::string ifEnd=mips.mkLabel("ifEnd");
+
+                mips.bZero(false, expResult.id, ifEnd); //skip s1 when false
+
+                //gen code for s1
+                mips.comment("true case for "+ifEnd);
+                s1->mp(); // no para, is statement
+
+                mips.insertLabel(ifEnd);
+
+
+            }
+                break;
+
+            case 1: //IF '(' expression ')' statement ELSE statement
+            {
+
+            }
+                break;
+
+            case 2:
+            {
+
+            }
+                break;
+        }
     }
 
 };

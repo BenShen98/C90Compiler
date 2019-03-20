@@ -1,8 +1,6 @@
-int testnif(int x){
-  if(x>4){
-    return 3;
+int testif_f(){
+  if(0){
+    return 21;
   }
-  else{
-    return 1;
-  }
+  return 6;
 }
