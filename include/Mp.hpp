@@ -160,6 +160,7 @@ private:
     void _b(std::string label){
         buffer.push_back("b " + label );
     }
+
     void _comment(const std::string& comment ){
         buffer.push_back("# " + comment );
     }
@@ -229,6 +230,20 @@ private:
     void _or(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("or " + d + ',' + s + ',' + t +" #" + comment );
     }
+
+
+    void _beq(std::string s,std::string t,std::string label){
+        buffer.push_back("beq " + s + ',' +t + ',' + label );
+    }
+
+    void _bne(std::string s,std::string t,std::string label){
+        buffer.push_back("beq " + s + ',' +t + ',' + label );
+    }
+
+
+
+
+
     /* ... */
 
     /*
@@ -260,6 +275,7 @@ public:
 
 
 
+
 /*
  * insertion of new variable/argument
  */
@@ -283,8 +299,12 @@ public:
 
     int getPara(std::string name);
 
-    std::string mkLable(const std::string& name);
+    // generate and insert label
+    std::string mkLabel(const std::string& name);
+    void insertLabel(const std::string &label);
 
+    //block control
+    void bZero(bool onTrue,  int id, std::string label);
 
 /*
  * make function call
@@ -365,7 +385,11 @@ public:
     //overwrite regist
 //    int makeCopy(int id, bool free1=true); //use assignment instead
 
+    void comment(const std::string& comment ){
+        buffer.push_back("# " + comment );
+    }
 
+    void branch(std::string label);
 
 //
 //        // TODO: type promotion

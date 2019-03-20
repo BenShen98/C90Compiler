@@ -1,6 +1,6 @@
-int testif(int x);
+int testif_t();
 int main(){
-  if(testif(3)>1){
+  if(testif_t()==21){
     return 0;
   }
   return 1;
