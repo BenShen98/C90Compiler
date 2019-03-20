@@ -107,6 +107,8 @@ public:
 
                     // commit function
                     context.commitFunc();
+
+                    result.type=TYPE_VOID;
                 }
                 break;
 

@@ -698,6 +698,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     void Mp::callFunc(const std::string &funcName) {
 
         asCaller_name=funcName;
+        paraIdx=1;
 
 
         Functions::const_iterator asCaller;
@@ -711,6 +712,9 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
     }
 
+    void Mp::addArg(int id) {
+        
+    }
 
 
     int Mp::commitCall() {

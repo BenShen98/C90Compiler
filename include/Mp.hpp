@@ -113,6 +113,7 @@ private:
 
     std::string asCaller_name;
     Paras asCaller_paras; //only used by per-declared function
+    int paraIdx;
     bool implicitCall;
 
 // TODO START WITH FUNCTION WITHOUT ARGUMENT

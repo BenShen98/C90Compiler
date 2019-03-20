@@ -1,5 +1,5 @@
 
-
+int f1();
 int f(){
     return f1()+f2();
 }
