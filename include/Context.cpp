@@ -19,10 +19,13 @@ void Context::commitFunc(){
     functions[_funcName] = _funcParas;
 }
 
-Functions::const_iterator Context::getFunc(std::string name) {
-    Functions::const_iterator func=functions.find(name);
+/*
+ * return true when function not found
+ */
+bool Context::getFunc(std::string name, Functions::const_iterator& func) {
+    func=functions.find(name);
     if(func==functions.end()){
-        throw std::runtime_error("function "+name+" is not defined");
+        return true;
     }
-    return func;
+    return false;
 }

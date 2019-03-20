@@ -14,7 +14,7 @@
 #include <regex>
 #include <fstream>
 
-#define RETURN_LABEL "EXIT_"+asCallee->first
+#define RETURN_LABEL "EXIT_"+asCallee_name
 
 extern Context context;
 extern std::ofstream ffout;
@@ -45,7 +45,12 @@ extern std::ofstream ffout;
         //reset function name
         arg_max_size=20;
 
-        asCallee=context.getFunc(name);
+        Functions::const_iterator asCallee;
+        if( context.getFunc(name,asCallee) ){ // have side effect
+            throw std::runtime_error("func not defined");
+        }
+        asCallee_name=asCallee->first;
+        asCallee_paras=asCallee->second;
     //    args.clear();
     //    arg_top_id=0;
 
@@ -70,9 +75,9 @@ extern std::ofstream ffout;
  * flush buffer
  */
         // frame setup
-        ffout<< ".globl "<<(asCallee->first)<<'\n';
-        ffout<<".ent "<<(asCallee->first)<<'\n';
-        ffout<< (asCallee->first) <<":\n";
+        ffout<< ".globl "<<(asCallee_name)<<'\n';
+        ffout<<".ent "<<(asCallee_name)<<'\n';
+        ffout<< (asCallee_name) <<":\n";
         ffout<< ".frame $fp,"<<stack_size<<",$31\n";
         ffout<<"addiu $sp, $sp, -"<<stack_size<<'\n'; // allocate stack
         ffout<<"sw $31, "<<arg_max_size<<"($sp)"<<'\n';
@@ -108,7 +113,7 @@ extern std::ofstream ffout;
         ffout<<"lw $31, "<<arg_max_size<<"($sp)"<<'\n';
         ffout<<"addiu $sp, $sp, "<<stack_size<<'\n'; // deallocate stack
         ffout<<"j $31\n";
-        ffout<<".end "<<(asCallee->first)<<"\n\n";
+        ffout<<".end "<<(asCallee_name)<<"\n\n";
 
         //logging and exit
         if(logging)
@@ -121,7 +126,7 @@ extern std::ofstream ffout;
 
     void Mp::dump() {
 
-        std::cerr<<"\n#############################\n# Dump for function "<< asCallee->first <<" #\n#############################\n";
+        std::cerr<<"\n#############################\n# Dump for function "<< asCallee_name <<" #\n#############################\n";
         std::cerr<<"# # Entry dump #\n#\t# top_id #,\t# size(byte) #,\t# type(MSB -- LSB) #,\t\t\t# variable name #\n";
         for(std::vector<Entry>::reverse_iterator rit = entries.rbegin();rit!= entries.rend(); ++rit){
             std::cerr<<"#\t"<< rit->top_id <<",\t\t"<< rit->size <<",\t\t"<< std::bitset<32>(rit->type)<< ",\t" <<rit->name <<",\n";
@@ -251,7 +256,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         for(int i=0; i<T_GENERAL_REG_SIZE; ++i){
             if( isRegDirty(tGeneralReg[i].type) ){
                 sw_sp(tGenRegName(i),tGeneralReg[i].id,"write back id "+std::to_string(tGeneralReg[i].id));
-                setRegSync(tGeneralReg[i].type);
+                setRegEmpty(tGeneralReg[i].type);
             }
         }
 
@@ -690,13 +695,64 @@ std::string Mp::calOffset(const std::string &str) {//not finished
      * make function calls
      */
 
+    void Mp::callFunc(const std::string &funcName) {
+
+        asCaller_name=funcName;
+
+
+        Functions::const_iterator asCaller;
+        implicitCall = context.getFunc(funcName, asCaller); //have side effect
+
+        if(implicitCall){
+            context.addFunc(funcName, TYPE_SIGNED_INT); //implicit function declaration
+        } else{
+            asCaller_paras=asCaller->second;
+        }
+
+    }
+
+
+
+    int Mp::commitCall() {
+        int resultId;
+
+        //update system state
+        if(implicitCall){
+            // commit implicit function declaration
+            context.commitFunc();
+        }
+
+        //save all reg before calls
+        writeBackAll();
+
+        //JAL to function
+        _jal(asCaller_name);
+
+        //get return result
+        if(implicitCall || !isFloat(asCaller_paras[0].type)){
+            // in GPR
+            Type returnType = implicitCall ? TYPE_SIGNED_INT : asCaller_paras[0].type;
+            resultId=reserveId(4,returnType,asCaller_name+" return");
+            RegPtr rReg= loadGenReg(resultId, false);
+            _move(tRegName(rReg), "$v0", "mv return to tReg _"+std::to_string(resultId)+"_");
+            setRegDirty(rReg->type);
+
+        }else{
+            //in cp1
+
+        }
+
+        return resultId;
+
+    }
+
 
 
     /*
      * current function
      */
     std::string Mp::mkLabel(const std::string &name) {
-        std::string label = name + "_"+std::to_string(uniqueCounter)+"_"+asCallee->first;
+        std::string label = name + "_"+std::to_string(uniqueCounter)+"_"+asCallee_name;
         ++uniqueCounter;
         return label;
     }
@@ -708,7 +764,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     void Mp::Return(int id) {
 
         //TODO: get return type
-        Type returnType=asCallee->second[0].type;
+        Type returnType=asCallee_paras[0].type;
 
 
         int dst = reserveId(sizeOf(returnType),returnType, "FUNC RETURN");

@@ -45,7 +45,7 @@ public:
     void addFuncPara(Type paraType, std::string paraName);
     void commitFunc();
 
-    Functions::const_iterator getFunc(std::string name);
+    bool getFunc(std::string name, Functions::const_iterator& func);
 
 //    // MIPS ???
 //    // function get CURRENT para (negative stack id)

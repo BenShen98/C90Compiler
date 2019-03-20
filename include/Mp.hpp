@@ -26,7 +26,8 @@ class Mp {
 private:
 
     //funcName of current function
-    Functions::const_iterator asCallee;
+    std::string asCallee_name;
+    Paras asCallee_paras;
 
     int uniqueCounter;
 
@@ -106,8 +107,14 @@ private:
     /*
  * make function call
  */
-    int arg_max_size; //minimum size when no arguement
-    Functions::const_iterator asCaller;
+    //max arg size of all function call
+    int arg_max_size;
+
+
+    std::string asCaller_name;
+    Paras asCaller_paras; //only used by per-declared function
+    bool implicitCall;
+
 // TODO START WITH FUNCTION WITHOUT ARGUMENT
 
 
@@ -161,12 +168,20 @@ private:
         buffer.push_back("b " + label );
     }
 
+    void _jal(std::string label){
+        buffer.push_back("jal " + label );
+    }
+
     void _beq(std::string s,std::string t,std::string label){
         buffer.push_back("beq " + s + ',' +t + ',' + label );
     }
 
     void _bne(std::string s,std::string t,std::string label){
         buffer.push_back("beq " + s + ',' +t + ',' + label );
+    }
+
+    void _move(std::string d,std::string s,std::string comment=""){
+        buffer.push_back("move " + d + ',' +s +" #"+comment);
     }
 
 
@@ -238,19 +253,20 @@ public:
  * make function call
  */
 
-
+    void callFunc(const std::string& funcName);
 
 //    //take CONTENT in id as agreement, COPY the whole size in stack
 //    //(use for int; single/double float; ptr; struct) NOT FOR ARRAY e.g. void foo(int* x)
-//    void addArg(int id);
+    void addArg(int id);
 
 //    //take the imm as data
 //    //derive its size and type from function declaration
 //    void addArg_Imm(std::string data);//const argument
 
     //check if all argument had been filled, and issue jal instruction
+    // provide id with return value
     //write back all register
-//    void commitFunc();
+    int commitCall();
 //
 
 
