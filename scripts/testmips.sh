@@ -9,6 +9,7 @@ rm -rf ${DUMP}
 mkdir -p ${OUTPUT}
 mkdir -p ${EXEC}
 mkdir -p ${DUMP}
+mkdir -p ${ANSI_BIN}
 PASS=0
 COUNT=0
 
