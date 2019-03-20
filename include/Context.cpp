@@ -29,3 +29,14 @@ bool Context::getFunc(std::string name, Functions::const_iterator& func) {
     }
     return false;
 }
+
+void Context::dump() {
+    std::cerr<<"\n#############################\n# Dump for Context #\n#############################\n";
+    std::cerr<<"\n# # Function dump #\n";
+    for (std::pair<std::string, Paras > e : functions)
+    {
+        std::cerr << e.first << " :: " << e.second << "\n\n";
+    }
+}
+
+

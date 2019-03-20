@@ -8,6 +8,9 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <iostream>
+#include <bitset>
+
 
 #include "Mp_Type.hpp"
 
@@ -23,7 +26,18 @@ typedef std::vector<Para> Paras;
 
 typedef std::unordered_map<std::string, Paras> Functions;
 
-
+inline std::ostream& operator << (std::ostream& os, const Paras v)
+{
+    Paras::const_iterator i = v.begin();
+    os << "\treturn:: "<< (i->name) << '<'<< std::bitset<32>(i->type)<<'>';
+    ++i;
+    os << "\n\tpara:: \t";
+    for ( ; i != v.end(); ++i)
+    {
+        os <<(i->name) <<'<'<< std::bitset<32>(i->type)<<">\n\t\t\t ";
+    }
+    return os;
+}
 
 
 #endif

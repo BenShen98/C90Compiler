@@ -47,6 +47,8 @@ public:
 
     bool getFunc(std::string name, Functions::const_iterator& func);
 
+    void dump();
+
 //    // MIPS ???
 //    // function get CURRENT para (negative stack id)
 //    Type getReturnType();
