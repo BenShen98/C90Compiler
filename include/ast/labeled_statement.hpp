@@ -30,15 +30,18 @@ public:
     }
 
     void mp(Result& result) const override{
-      //fuck my life
       switch(type){
         case 0:
 
         break;
 
-        case 1:{
-
-        //mips.bZero(false,result.id)
+        case 1://case constant_expression : statement
+        {
+          // Result expResult;
+          // exp->mp(expResult);
+          // mips.bne(result.id,expResult.id,label);
+          // //statement mp func
+          // st->mp();
         }
         break;
         case 2:

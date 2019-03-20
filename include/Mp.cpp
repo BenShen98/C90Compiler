@@ -1050,3 +1050,18 @@ std::string Mp::calOffset(const std::string &str) {//not finished
   void Mp::branch(std::string label){
     _b(label);
   }
+
+  void Mp::beq(int id1,int id2,std::string label){
+    EntryPtr entry1=getInfo(id1);
+    EntryPtr entry2=getInfo(id2);
+    //TODO check both ?
+    if(isFloat(entry1->type)||isFloat(entry2->type)){
+        //is on cp1
+        throw std::runtime_error("Not implemented.");
+    }else{
+        //is on genReg
+        RegPtr reg1=loadGenReg(id1);
+        RegPtr reg2=loadGenReg(id2);
+        _beq(tRegName(reg1),tRegName(reg2),label);
+      }
+    }

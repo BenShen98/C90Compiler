@@ -93,11 +93,15 @@ public:
 
             case 2://SWITCH '(' expression ')' statement
             {
-              //TODO branching label
-              s1->mp(expResult);
-
+              // //TODO branching label
+              // std::string label=mips.mkLabel("CaseEnd");
+              // expResult.str=label;
+              // s1->mp(expResult);
+              //
+              // //assign label to expResult.str
+              // mips.insertLabel(label);
             }
-                break;
+              break;
         }
     }
 

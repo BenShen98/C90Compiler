@@ -241,9 +241,6 @@ private:
     }
 
 
-
-
-
     /* ... */
 
     /*
@@ -390,6 +387,8 @@ public:
     }
 
     void branch(std::string label);
+
+    void beq(int id1,int id2,std::string label);
 
 //
 //        // TODO: type promotion
