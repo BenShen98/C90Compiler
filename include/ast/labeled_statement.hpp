@@ -30,7 +30,21 @@ public:
     }
 
     void mp(Result& result) const override{
-        notImplemented();
+      //fuck my life
+      switch(type){
+        case 0:
+
+        break;
+
+        case 1:{
+
+        //mips.bZero(false,result.id)
+        }
+        break;
+        case 2:
+
+        break;
+      }
 
     }
 

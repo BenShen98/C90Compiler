@@ -1,30 +1,37 @@
-.globl testifelse
-.ent testifelse
-testifelse:
-.frame $fp,48,$31
-addiu $sp, $sp, -48
+.globl testfor
+.ent testfor
+testfor:
+.frame $fp,64,$31
+addiu $sp, $sp, -64
 sw $31, 20($sp)
-li $t0,0 #imm id _4_
-beq $t0,$0,elseStart_0_testifelse
-li $t1,21 #imm id _8_
-# assign _8_ to _12_ in reg $t1
-move $2,$t1
-b EXIT_testifelse
-b elseEnd_1_testifelse
-elseStart_0_testifelse:
+li $t0,0 #imm id _8_
+# assign _8_ to _4_ in reg $t0
+li $t1,0 #imm id _12_
+li $t2,0 #imm id _16_
+li $t3,0 #imm id _20_
+# assign _20_ to _12_ in reg $t3
+ForStart_0_testfor:
 
-li $t2,2 #imm id _16_
-# assign _16_ to _20_ in reg $t2
-move $2,$t2
-b EXIT_testifelse
-elseEnd_1_testifelse:
+beq $t2,$0,ForEnd_1_testfor
+li $t1,1 #imm id _24_
+addu $t4,$t3,$t1 #dst id _28_
+# assign _28_ to _12_ in reg $t4
+li $t1,1 #imm id _32_
+# assign _32_ to _36_ in reg $t1
+addu $t0,$t1,$t0 #+=32
+b ForStart_0_testfor
+ForEnd_1_testfor:
 
-sw $t0,44($sp) #write back id 4
-sw $t1,36($sp) #write back id 12
-sw $t2,28($sp) #write back id 20
-EXIT_testifelse:
+# assign _4_ to _40_ in reg $t0
+move $2,$t0
+b EXIT_testfor
+sw $t0,24($sp) #write back id 40
+sw $t1,28($sp) #write back id 36
+sw $t2,48($sp) #write back id 16
+sw $t4,52($sp) #write back id 12
+EXIT_testfor:
 lw $31, 20($sp)
-addiu $sp, $sp, 48
+addiu $sp, $sp, 64
 j $31
-.end testifelse
+.end testfor
 

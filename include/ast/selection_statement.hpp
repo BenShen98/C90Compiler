@@ -94,7 +94,7 @@ public:
             case 2://SWITCH '(' expression ')' statement
             {
               //TODO branching label
-              //s1->mp(expResult);
+              s1->mp(expResult);
 
             }
                 break;
