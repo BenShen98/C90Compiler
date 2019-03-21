@@ -1,5 +1,6 @@
-int postInc(){
-    int a=0,b=0;
-    b=a++;
-    return a+b;
+int oneLif()
+{
+    int x=5;
+    int y = x==6 ? 6 : 4;
+    return y;
 }

@@ -619,10 +619,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
            case SUB:
            {
                Type temp=dst->type;
-               if(isSignedInt(temp)){
-                 _sub(tRegName(dst),tRegName(op1), tRegName(op2),comment);
-               }
-               else if (isUnsignedInt(temp)){
+               if(isInt(temp)){
                 _subu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
                else if(isSingleFloat(temp)){
@@ -918,6 +915,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
 
             //doing the actual assignment
+            //BUG :) @ ALAN
             switch (operation){
                 case MULA: // *=
                 _algebra(MUL,rDst,r_op1,rDst,"+="+std::to_string(op1) );
