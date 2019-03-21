@@ -213,31 +213,31 @@ private:
         buffer.push_back("srl" + d + ',' + s + ',' + t +" #" + comment );
     }
     void _sra(std::string d,std::string s,std::string t, std::string comment=""){
-        buffer.push_back("sra" + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("sra " + d + ',' + s + ',' + t +" #" + comment );
     }
     void _sltu(std::string d,std::string s,std::string t, std::string comment=""){
-        buffer.push_back("sltu" + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("sltu " + d + ',' + s + ',' + t +" #" + comment );
     }
     void _slt(std::string d,std::string s,std::string t, std::string comment=""){
-        buffer.push_back("slt" + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("slt " + d + ',' + s + ',' + t +" #" + comment );
     }
     void _LE(std::string d,std::string s,std::string t, std::string comment=""){
-        buffer.push_back("slt" + d + ',' + s + ',' + t +" #" + comment );
-        buffer.push_back("xori" + d + ',' + d + ',' + "0x1" +" #" + comment );
+        buffer.push_back("slt " + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("xori " + d + ',' + d + ',' + "0x1" +" #" + comment );
     }
     void _LEu(std::string d,std::string s,std::string t, std::string comment=""){
-        buffer.push_back("sltu" + d + ',' + s + ',' + t +" #" + comment );
-        buffer.push_back("xori" + d + ',' + d + ',' + "0x1" +" #" + comment );
+        buffer.push_back("sltu " + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("xori " + d + ',' + d + ',' + "0x1" +" #" + comment );
     }
     void _EQ(std::string d,std::string s,std::string t, std::string comment=""){
       //TODO might need to andi 0x000ff
-        buffer.push_back("xor" + d + ',' + s + ',' + t +" #" + comment );
-        buffer.push_back("sltu" + d + ',' + d + ',' + "0x1" +" #" + comment );
+        buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("sltu " + d + ',' + d + ',' + "0x1" +" #" + comment );
     }
     void _NE(std::string d,std::string s,std::string t, std::string comment=""){
       //TODO might need to andi 0x000ff
-        buffer.push_back("xor" + d + ',' + s + ',' + t +" #" + comment );
-        buffer.push_back("sltu" + d + ',' + "$0" + ',' + d +" #" + comment );
+        buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("sltu " + d + ',' + "$0" + ',' + d +" #" + comment );
     }
     void _xor(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );

@@ -42,6 +42,7 @@ bin/c_compiler : src/c_compiler.o src/C90_parser.tab.o src/C90_lexer.yy.o src/C9
 
 clean :
 	rm -f src/*.o
+	rm -f include/*.o
 	rm -f bin/*
 	rm -f src/*.tab.cpp
 	rm -f src/*.yy.cpp

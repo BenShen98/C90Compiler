@@ -35,6 +35,7 @@ fi
 
 #run test case
 for i in ${TESTDIRECTORY}/*.c; do
+    echo "********************TEST ${base}********************"
   base=$(basename $i)
   base=${base%.c}
 
@@ -65,8 +66,7 @@ for i in ${TESTDIRECTORY}/*.c; do
   else
 
     #print debug info ONLY when test FAIL
-    echo "********************TEST FAIL ${base}********************"
-    echo "=>FAIL TEST ${base}.c"
+    echo "=>FAIL TEST ${base}.c, get ${RETURNCODE}"
     printf "\n\n"
     echo "## C Input: "
     cat ${TESTDIRECTORY}/${base}.c
@@ -80,7 +80,6 @@ for i in ${TESTDIRECTORY}/*.c; do
     echo "## Assembly Disassembly:"
     cat ${DUMP}/${base}.mips.s
     printf "\n\n"
-    printf "********************END FAIL ${base}********************\n\n\n"
   fi
 
 

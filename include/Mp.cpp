@@ -98,7 +98,7 @@ extern std::ofstream ffout;
         }
 
         //write back dirty register (not needed, for test only)
-        writeBackAll();
+//        writeBackAll();
 
 /*
  * flush buffer
