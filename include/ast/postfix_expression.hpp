@@ -66,16 +66,15 @@ public:
     }
 
     void mp(Result& result) const override{
+        Result postfix;
         switch (type){
 
             case 2: //postfix_expression '(' ')'
             case 3:
-            {
-                Result funcName;
-                funcName.type=TYPE_VOID; //set void flag, request str
-                pt->mp(funcName);
+                postfix.type=TYPE_VOID; //set void flag, request str
+                pt->mp(postfix);
 
-                mips.callFunc(funcName.str);
+                mips.callFunc(postfix.str);
 
                 if(type==3)
                     op->mp();
@@ -83,9 +82,23 @@ public:
                 result.id = mips.commitCall();
                 result.freeable= true;
 
-
-            }
                 break;
+
+            case 6: //INC_OP
+
+                pt->mp(postfix);
+                result.id=mips.addi(false,postfix.id,"1");//copy of org
+                result.freeable= true;
+
+                break;
+
+            case 7: //DEC_OP
+                pt->mp(postfix);
+                result.id=mips.addi(false,postfix.id,"1"); //copy of org
+                result.freeable= true;
+
+                break;
+
 
             default:
                 notImplemented();

@@ -1006,30 +1006,39 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
     }
 
-    int Mp::addi(bool selfAssign, int op1, std::string integer,bool free1, std::string comment) {
-        RegPtr r1,rResult;
+    int Mp::addi(bool perfix, int op1, std::string integer) {
+        RegPtr r1;
         r1=loadGenReg(op1);
 
-        int resultId;
 
-        if(selfAssign){
-            rResult=r1;
-            resultId=op1;
+
+        if(perfix){
+            //per increment
+            _addi(tRegName(r1), tRegName(r1), integer, "per increment of id _"+std::to_string(op1)+"_");
+            setRegDirty(r1->type);
+            return op1;
+
         } else{
-            int resultId=reserveId(4,r1->type,comment);
-            rResult=loadGenReg(resultId, false);
+            //if if post increment, return a copy before increment
+
+            int orgCopy;
+            RegPtr rOrgCopy;
+
+            orgCopy=reserveId(4,r1->type,"org copy of _"+std::to_string(op1)+"_");
+            rOrgCopy=loadGenReg(orgCopy, false);
+
+            _addi(tRegName(rOrgCopy), tRegName(r1), integer, "add, swap org copy & org");
+
+            r1->id=orgCopy;
+            rOrgCopy->id=op1;
+
+            setRegDirty(r1->type);
+            setRegDirty(rOrgCopy->type);
+
+            return orgCopy;
         }
 
 
-        _addi(tRegName(rResult), tRegName(r1), integer, comment);
-
-        setRegDirty(rResult->type);
-
-        if( !selfAssign && free1){
-            //ignore free flag if is self assign
-            discardGenReg(op1);
-        }
-        return resultId;
     }
 
 //    int Mp::makeCopy(int id, bool free1) {

@@ -406,8 +406,9 @@ public:
     void assignment(int dst, int op1,enum_assignment operation=ASSIGN, bool free= false);
     // void assignment(int dst, std::string constant);
 
-    //ONLY for INT, used for a++, a--
-    int addi(bool selfAssign, int op1, std::string integer,bool free1=false, std::string comment="");
+    //ONLY for INT, used for a++, a--, --a, ++a
+    //WHEN prefix=FALSE, a unchanged copy is returned, the original is changed
+    int addi(bool perfix, int op1, std::string integer);
 
     //overwrite regist
 //    int makeCopy(int id, bool free1=true); //use assignment instead
