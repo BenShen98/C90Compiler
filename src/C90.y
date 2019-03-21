@@ -54,7 +54,7 @@ primary_expression
 	;
 
 postfix_expression
-	: primary_expression					{ $$ = new postfix_expression(0, $1); }
+	: primary_expression					{ $$ = $1; }
 	| postfix_expression '[' expression ']'			{ $$ = new postfix_expression(1, $1, $3); }
 	| postfix_expression '(' ')'				{ $$ = new postfix_expression(2, $1); }
 	| postfix_expression '(' argument_expression_list ')'	{ $$ = new postfix_expression(3, $1, $3); }

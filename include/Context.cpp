@@ -11,18 +11,32 @@ void Context::addFunc(std::string name, Type returnType){
     _funcParas = Paras (1, {returnType, "returnVal"});
 }
 
-//void Context::addFuncPara(Type paraType, std::string paraName){
-//    _funcParas.push_back({paraType, paraName});
-//}
+void Context::addFuncPara(const Type& paraType, const std::string& paraName){
+    _funcParas.push_back({paraType, paraName});
+}
 
 void Context::commitFunc(){
     functions[_funcName] = _funcParas;
 }
 
-Functions::const_iterator Context::getFunc(std::string name) {
-    Functions::const_iterator func=functions.find(name);
+/*
+ * return true when function not found
+ */
+bool Context::getFunc(std::string name, Functions::const_iterator& func) {
+    func=functions.find(name);
     if(func==functions.end()){
-        throw std::runtime_error("function "+name+" is not defined");
+        return true;
     }
-    return func;
+    return false;
 }
+
+void Context::dump() {
+    std::cerr<<"\n#############################\n# Dump for Context #\n#############################\n";
+    std::cerr<<"\n# # Function dump #\n";
+    for (std::pair<std::string, Paras > e : functions)
+    {
+        std::cerr << e.first << " :: " << e.second << "\n\n";
+    }
+}
+
+

@@ -54,6 +54,9 @@ int  main(int argc, char* argv[]){
         //logic for compile to MIPS I assembly
         root->mp();
 
+        //output final function states
+        context.dump();
+
     }else{
         std::cerr<<argv[1]<<" is not a valid option, only support --translate for translate OR -S for compile\n";
         exit(-1);
