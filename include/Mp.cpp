@@ -40,17 +40,46 @@ extern std::ofstream ffout;
 
         //reset stack
         top_id=0;
-        entries = std::vector<Entry>(1,{0,0,TYPE_SIGNED_INT,""});
+        entries.clear();
 
-        //reset function name
-        arg_max_size=20;
+        //function parameter set up (as callee)
+        {
+            Functions::const_iterator asCallee;
+            if( context.getFunc(name,asCallee) ){ // have side effect
+                throw std::runtime_error("func not defined");
+            }
+            asCallee_name=asCallee->first;
+            asCallee_paras=asCallee->second;
 
-        Functions::const_iterator asCallee;
-        if( context.getFunc(name,asCallee) ){ // have side effect
-            throw std::runtime_error("func not defined");
+
+            Paras::const_iterator it = asCallee_paras.begin()+1;
+            int argOffset=0;
+
+            // todo : pass float & double
+            //first element
+            for (int i=0; it != asCallee_paras.end() && i<4; ++it, ++i) {
+                int eleSize=sizeOf(it->type);
+                entries.push_back( {eleSize, argOffset, it->type, it->name } );
+                sw_sp("$a"+std::to_string(i), argOffset, "store parameter");
+
+                argOffset-=eleSize;
+
+            }
+
+            // element after forth
+            for (; it != asCallee_paras.end() ; ++it) {
+                int eleSize=sizeOf(it->type);
+                entries.push_back( {eleSize, argOffset, it->type, it->name } );
+                argOffset-=eleSize;
+            }
+            std::reverse(entries.begin(),entries.end());
+
+
+
         }
-        asCallee_name=asCallee->first;
-        asCallee_paras=asCallee->second;
+
+        //reset function arg set up name (as caller)
+        arg_max_size=20;
     //    args.clear();
     //    arg_top_id=0;
 
@@ -265,27 +294,61 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     }
 
     int Mp::getId(std::string identifier, int offset) {
+
         //find matching name from top of the stack (itr backwards)
-        int i =entries.size()-1;
+        {
+            int i = entries.size() - 1;
 
-        // whill throw out of rang exception if not found
-        // todo: need handel global
-        while (entries.at(i).name!=identifier){
-            --i;
-        }
+            // whill throw out of rang exception if not found
+            // todo: need handel global
 
-        if(offset!=0){
-            if( isArray(entries[i].type) && (entries[i].size>offset) ){
-                //is array
-                return entries[i].top_id - offset; //SUB here
-            } else{
-                // is not array OR index out of range
-                throw std::runtime_error(identifier+" is not an array, or index out of range");
+            while (entries.at(i).name != identifier && i >0){
+                --i;
+            }
+
+            //if found in current stack frame
+            if (i >= 0) {
+
+                // if is array
+                if (offset != 0) {
+                    if (isArray(entries[i].type) && (entries[i].size > offset)) {
+                        //is array
+                        return entries[i].top_id - offset; //SUB here
+                    } else {
+                        // is not array OR index out of range
+                        throw std::runtime_error(identifier + " is not an array, or index out of range");
+                    }
+                }
+
+                //not array
+                return entries[i].top_id;
             }
         }
 
-        //not array
-        return entries[i].top_id;
+//        //check if is in parameter (shown as entry with negative id)
+//        {
+//            int argOffset;
+//            Paras::const_iterator it= asCallee_paras.begin();
+//            for ( ;it != asCallee_paras.end() && identifier != it->name; ++it ){
+//                argOffset += sizeOf(it->type);
+//            }
+//
+//            if(it!=asCallee_paras.end()){
+//                // is parameter
+//                return -argOffset;
+//            }
+//        }
+
+        //check if is global
+        {
+
+        }
+
+        //undeclared variable
+        throw std::runtime_error("undeclared variable "+identifier);
+
+
+
     }
 
     EntryPtr Mp::getInfo(int id) const {
@@ -699,6 +762,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
         asCaller_name=funcName;
         paraIdx=1;
+        para_offset=0;
 
 
         Functions::const_iterator asCaller;
@@ -707,13 +771,49 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         if(implicitCall){
             context.addFunc(funcName, TYPE_SIGNED_INT); //implicit function declaration
         } else{
-            asCaller_paras=asCaller->second;
+            asCaller_args=asCaller->second;
         }
 
     }
 
     void Mp::addArg(int id) {
-        
+        //todo only work for int
+
+//        EntryPtr info=getInfo(id);
+        RegPtr reg;
+
+        if(implicitCall){
+            // convert GPR -> INT
+            // convert CP! -> DOUBLE
+            reg=loadGenReg(id);
+
+            context.addFuncPara(TYPE_SIGNED_INT,"");
+
+            if(para_offset<16){
+                _move("$a"+std::to_string(para_offset/4), tRegName(reg), "implicit call, int type");
+            }else{
+                sw_sp(tRegName(reg),std::to_string(para_offset),"implicit call, int type");
+            };
+
+
+
+            para_offset+=sizeOf(reg->type);
+
+        }else{
+            reg=loadGenReg(id);
+
+            if(para_offset<16){
+                _move("$a"+std::to_string(para_offset/4), tRegName(reg), "implicit call, int type");
+            }else{
+                sw_sp(tRegName(reg),std::to_string(para_offset),"implicit call, int type");
+            };
+
+            para_offset+=sizeOf(reg->type);
+
+        }
+
+
+
     }
 
 
@@ -733,9 +833,9 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         _jal(asCaller_name);
 
         //get return result
-        if(implicitCall || !isFloat(asCaller_paras[0].type)){
+        if(implicitCall || !isFloat(asCaller_args[0].type)){
             // in GPR
-            Type returnType = implicitCall ? TYPE_SIGNED_INT : asCaller_paras[0].type;
+            Type returnType = implicitCall ? TYPE_SIGNED_INT : asCaller_args[0].type;
             resultId=reserveId(4,returnType,asCaller_name+" return");
             RegPtr rReg= loadGenReg(resultId, false);
             _move(tRegName(rReg), "$v0", "mv return to tReg _"+std::to_string(resultId)+"_");
@@ -745,6 +845,9 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             //in cp1
 
         }
+
+        if(para_offset>arg_max_size)
+            arg_max_size=para_offset;
 
         return resultId;
 

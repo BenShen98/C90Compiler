@@ -3,7 +3,6 @@ int f1(int a){
 }
 
 int f3(int a, int b, int c){
-    return f(1);
+    return f(b);
 }
-
 

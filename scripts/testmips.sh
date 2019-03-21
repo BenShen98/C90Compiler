@@ -89,5 +89,5 @@ done
 
 
 FAIL=$(( ${COUNT}-${PASS} ))
-echo "Exit with ${PASS} test case passed"
+echo "Exit with [ ${PASS} / ${COUNT} ] test case passed"
 exit ${FAIL}

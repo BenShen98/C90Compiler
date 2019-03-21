@@ -31,7 +31,7 @@ inline std::ostream& operator << (std::ostream& os, const Paras v)
     Paras::const_iterator i = v.begin();
     os << "\treturn:: "<< (i->name) << '<'<< std::bitset<32>(i->type)<<'>';
     ++i;
-    os << "\n\tpara:: \t";
+    os << "\n\tpara:: \t\t\t";
     for ( ; i != v.end(); ++i)
     {
         os <<(i->name) <<'<'<< std::bitset<32>(i->type)<<">\n\t\t\t ";

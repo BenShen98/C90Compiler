@@ -42,7 +42,7 @@ public:
 
     //function declaration/ definition
     void addFunc(std::string name, Type returnType); //return false if function already exist
-    void addFuncPara(Type paraType, std::string paraName);
+    void addFuncPara(const Type& paraType, const std::string& paraName="");
     void commitFunc();
 
     bool getFunc(std::string name, Functions::const_iterator& func);

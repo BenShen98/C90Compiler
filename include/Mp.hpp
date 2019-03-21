@@ -94,6 +94,12 @@ private:
 
     }
 
+    //used when store arguments
+    void sw_sp(std::string reg,std::string offset, std::string comment=""){
+        buffer.push_back("sw " + reg + "," + offset + "($sp) #" + comment);
+
+    }
+
     void lw_sp(std::string reg,int id, std::string comment=""){
         postEditPtr.push_back(buffer.size());//push_back idx of next line
         buffer.push_back("lw " + reg + ",_" + std::to_string(id) + "_($sp) #" + comment);
@@ -112,8 +118,9 @@ private:
 
 
     std::string asCaller_name;
-    Paras asCaller_paras; //only used by per-declared function
+    Paras asCaller_args; //only used by per-declared function
     int paraIdx;
+    int para_offset;
     bool implicitCall;
 
 // TODO START WITH FUNCTION WITHOUT ARGUMENT
@@ -184,6 +191,8 @@ private:
     void _move(std::string d,std::string s,std::string comment=""){
         buffer.push_back("move " + d + ',' +s +" #"+comment);
     }
+
+
 
 
 

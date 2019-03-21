@@ -11,9 +11,9 @@ void Context::addFunc(std::string name, Type returnType){
     _funcParas = Paras (1, {returnType, "returnVal"});
 }
 
-//void Context::addFuncPara(Type paraType, std::string paraName){
-//    _funcParas.push_back({paraType, paraName});
-//}
+void Context::addFuncPara(const Type& paraType, const std::string& paraName){
+    _funcParas.push_back({paraType, paraName});
+}
 
 void Context::commitFunc(){
     functions[_funcName] = _funcParas;

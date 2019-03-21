@@ -1,2 +1,7 @@
-int f(int a, int b, int c);
+int f1(int a){
+    return a+a;
+}
 
+int f3(int a, int b, int c){
+    return f1(b);
+}

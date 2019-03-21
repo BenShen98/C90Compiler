@@ -69,12 +69,16 @@ public:
         switch (type){
 
             case 2: //postfix_expression '(' ')'
+            case 3:
             {
                 Result funcName;
                 funcName.type=TYPE_VOID; //set void flag, request str
                 pt->mp(funcName);
 
                 mips.callFunc(funcName.str);
+
+                if(type==3)
+                    op->mp();
 
                 result.id = mips.commitCall();
                 result.freeable= true;
