@@ -37,6 +37,12 @@ public:
         }
     }
 
+    void mp(Result& result)const override{
+      if (exp!=NULL){
+        exp->mp(result);
+      }
+    }
+
 };
 
 #endif
