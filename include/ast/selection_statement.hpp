@@ -78,14 +78,19 @@ public:
             {
               std::string elsestart=mips.mkLabel("elseStart");
               std::string elseend=mips.mkLabel("elseEnd");
+
+              //if
               mips.bZero(false, expResult.id, elsestart); //skip s1 when false
+
+              //s1
               s1->mp();
-              //gen code for s1
-              //branch to end
               mips.branch(elseend);
+
+              //s2
               mips.insertLabel(elsestart);
               s2->mp();
-              //gen code for s2
+
+              //endif
               mips.insertLabel(elseend);
 
             }

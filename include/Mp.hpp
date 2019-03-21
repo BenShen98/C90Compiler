@@ -230,14 +230,17 @@ private:
         buffer.push_back("xori " + d + ',' + d + ',' + "0x1" +" #" + comment );
     }
     void _EQ(std::string d,std::string s,std::string t, std::string comment=""){
-      //TODO might need to andi 0x000ff
+        //might need to andi 0x000ff
+
         buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
         buffer.push_back("sltu " + d + ',' + d + ',' + "0x1" +" #" + comment );
+
     }
     void _NE(std::string d,std::string s,std::string t, std::string comment=""){
-      //TODO might need to andi 0x000ff
+      //might need to andi 0x000ff
         buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
         buffer.push_back("sltu " + d + ',' + "$0" + ',' + d +" #" + comment );
+
     }
     void _xor(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );

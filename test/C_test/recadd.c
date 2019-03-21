@@ -1,8 +1,3 @@
-int main(){
-
-    return recadd(5);
-
-}
 
 int recadd(int a){
     if(a<1){

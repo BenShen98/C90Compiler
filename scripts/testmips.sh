@@ -35,9 +35,11 @@ fi
 
 #run test case
 for i in ${TESTDIRECTORY}/*.c; do
-    echo "********************TEST ${base}********************"
   base=$(basename $i)
   base=${base%.c}
+
+  echo "********************TEST ${base}********************"
+
 
   #Run compiler on test case
   ${TESTCOMPILER} -S $i -o ${OUTPUT}/${base}.s 2> ${DUMP}/${base}.stderr 1> ${DUMP}/${base}.stdout
@@ -61,7 +63,7 @@ for i in ${TESTDIRECTORY}/*.c; do
 
   if [[ "$RETURNCODE" -eq "0" ]];then
     let "PASS++"
-    echo "=>PASS TEST ${base}.c"
+    echo "=>PASS TEST ${base}.c, get ${RETURNCODE}"
     printf "\n\n"
   else
 

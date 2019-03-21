@@ -285,8 +285,8 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         for(int i=0; i<T_GENERAL_REG_SIZE; ++i){
             if( isRegDirty(tGeneralReg[i].type) ){
                 sw_sp(tGenRegName(i),tGeneralReg[i].id,"write back id "+std::to_string(tGeneralReg[i].id));
-                setRegEmpty(tGeneralReg[i].type);
             }
+            setRegEmpty(tGeneralReg[i].type);
         }
 
 
