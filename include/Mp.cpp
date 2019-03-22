@@ -492,20 +492,26 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             setRegSync(r1->type);
         }
 
-        if (!isBasicTypeEqual(e1->type, eDst->type)){
-            //type enforcement
-            //cast type from op1 to dst
-            std::cerr<<"convert "<<std::bitset<32>(e1->type)<<" to "<<std::bitset<32>(eDst->type)<<std::endl;
-            throw std::runtime_error("type enforcement not done");
 
-    //            if()
-
-        }else{
-            //same type, override id
+        //TODO: type check has been commented
             comment("assign _"+std::to_string(r1->id)+"_ to _"+std::to_string(dst)+"_ in reg "+tRegName(r1));
             r1->id=dst;
             setRegDirty(r1->type);
-        }
+        //TODO: type check has been commented
+//        if (!isBasicTypeEqual(e1->type, eDst->type)){
+//            //type enforcement
+//            //cast type from op1 to dst
+//            std::cerr<<"convert "<<std::bitset<32>(e1->type)<<" to "<<std::bitset<32>(eDst->type)<<std::endl;
+//            throw std::runtime_error("type enforcement not done");
+//
+//    //            if()
+//
+//        }else{
+//            //same type, override id
+//            comment("assign _"+std::to_string(r1->id)+"_ to _"+std::to_string(dst)+"_ in reg "+tRegName(r1));
+//            r1->id=dst;
+//            setRegDirty(r1->type);
+//        }
 
 
         return r1;//now r1 is dst
