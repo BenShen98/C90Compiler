@@ -14,7 +14,7 @@
 #include <regex>
 #include <fstream>
 
-#define RETURN_LABEL "EXIT_"+asCallee->first
+#define RETURN_LABEL "EXIT_"+asCallee_name
 
 extern Context context;
 extern std::ofstream ffout;
@@ -40,12 +40,46 @@ extern std::ofstream ffout;
 
         //reset stack
         top_id=0;
-        entries = std::vector<Entry>(1,{0,0,TYPE_SIGNED_INT,""});
+        entries.clear();
 
-        //reset function name
+        //function parameter set up (as callee)
+        {
+            Functions::const_iterator asCallee;
+            if( context.getFunc(name,asCallee) ){ // have side effect
+                throw std::runtime_error("func not defined");
+            }
+            asCallee_name=asCallee->first;
+            asCallee_paras=asCallee->second;
+
+
+            Paras::const_iterator it = asCallee_paras.begin()+1;
+            int argOffset=0;
+
+            // todo : pass float & double
+            //first element
+            for (int i=0; it != asCallee_paras.end() && i<4; ++it, ++i) {
+                int eleSize=sizeOf(it->type);
+                entries.push_back( {eleSize, argOffset, it->type, it->name } );
+                sw_sp("$a"+std::to_string(i), argOffset, "store parameter");
+
+                argOffset-=eleSize;
+
+            }
+
+            // element after forth
+            for (; it != asCallee_paras.end() ; ++it) {
+                int eleSize=sizeOf(it->type);
+                entries.push_back( {eleSize, argOffset, it->type, it->name } );
+                argOffset-=eleSize;
+            }
+            std::reverse(entries.begin(),entries.end());
+
+
+
+        }
+
+        //reset function arg set up name (as caller)
         arg_max_size=20;
-
-        asCallee=context.getFunc(name);
     //    args.clear();
     //    arg_top_id=0;
 
@@ -64,15 +98,15 @@ extern std::ofstream ffout;
         }
 
         //write back dirty register (not needed, for test only)
-        writeBackAll();
+//        writeBackAll();
 
 /*
  * flush buffer
  */
         // frame setup
-        ffout<< ".globl "<<(asCallee->first)<<'\n';
-        ffout<<".ent "<<(asCallee->first)<<'\n';
-        ffout<< (asCallee->first) <<":\n";
+        ffout<< ".globl "<<(asCallee_name)<<'\n';
+        ffout<<".ent "<<(asCallee_name)<<'\n';
+        ffout<< (asCallee_name) <<":\n";
         ffout<< ".frame $fp,"<<stack_size<<",$31\n";
         ffout<<"addiu $sp, $sp, -"<<stack_size<<'\n'; // allocate stack
         ffout<<"sw $31, "<<arg_max_size<<"($sp)"<<'\n';
@@ -108,7 +142,7 @@ extern std::ofstream ffout;
         ffout<<"lw $31, "<<arg_max_size<<"($sp)"<<'\n';
         ffout<<"addiu $sp, $sp, "<<stack_size<<'\n'; // deallocate stack
         ffout<<"j $31\n";
-        ffout<<".end "<<(asCallee->first)<<"\n\n";
+        ffout<<".end "<<(asCallee_name)<<"\n\n";
 
         //logging and exit
         if(logging)
@@ -121,7 +155,7 @@ extern std::ofstream ffout;
 
     void Mp::dump() {
 
-        std::cerr<<"\n#############################\n# Dump for function "<< asCallee->first <<" #\n#############################\n";
+        std::cerr<<"\n#############################\n# Dump for function "<< asCallee_name <<" #\n#############################\n";
         std::cerr<<"# # Entry dump #\n#\t# top_id #,\t# size(byte) #,\t# type(MSB -- LSB) #,\t\t\t# variable name #\n";
         for(std::vector<Entry>::reverse_iterator rit = entries.rbegin();rit!= entries.rend(); ++rit){
             std::cerr<<"#\t"<< rit->top_id <<",\t\t"<< rit->size <<",\t\t"<< std::bitset<32>(rit->type)<< ",\t" <<rit->name <<",\n";
@@ -251,8 +285,8 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         for(int i=0; i<T_GENERAL_REG_SIZE; ++i){
             if( isRegDirty(tGeneralReg[i].type) ){
                 sw_sp(tGenRegName(i),tGeneralReg[i].id,"write back id "+std::to_string(tGeneralReg[i].id));
-                setRegSync(tGeneralReg[i].type);
             }
+            setRegEmpty(tGeneralReg[i].type);
         }
 
 
@@ -260,27 +294,61 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     }
 
     int Mp::getId(std::string identifier, int offset) {
+
         //find matching name from top of the stack (itr backwards)
-        int i =entries.size()-1;
+        {
+            int i = entries.size() - 1;
 
-        // whill throw out of rang exception if not found
-        // todo: need handel global
-        while (entries.at(i).name!=identifier){
-            --i;
-        }
+            // whill throw out of rang exception if not found
+            // todo: need handel global
 
-        if(offset!=0){
-            if( isArray(entries[i].type) && (entries[i].size>offset) ){
-                //is array
-                return entries[i].top_id - offset; //SUB here
-            } else{
-                // is not array OR index out of range
-                throw std::runtime_error(identifier+" is not an array, or index out of range");
+            while (entries.at(i).name != identifier && i >0){
+                --i;
+            }
+
+            //if found in current stack frame
+            if (i >= 0) {
+
+                // if is array
+                if (offset != 0) {
+                    if (isArray(entries[i].type) && (entries[i].size > offset)) {
+                        //is array
+                        return entries[i].top_id - offset; //SUB here
+                    } else {
+                        // is not array OR index out of range
+                        throw std::runtime_error(identifier + " is not an array, or index out of range");
+                    }
+                }
+
+                //not array
+                return entries[i].top_id;
             }
         }
 
-        //not array
-        return entries[i].top_id;
+//        //check if is in parameter (shown as entry with negative id)
+//        {
+//            int argOffset;
+//            Paras::const_iterator it= asCallee_paras.begin();
+//            for ( ;it != asCallee_paras.end() && identifier != it->name; ++it ){
+//                argOffset += sizeOf(it->type);
+//            }
+//
+//            if(it!=asCallee_paras.end()){
+//                // is parameter
+//                return -argOffset;
+//            }
+//        }
+
+        //check if is global
+        {
+
+        }
+
+        //undeclared variable
+        throw std::runtime_error("undeclared variable "+identifier);
+
+
+
     }
 
     EntryPtr Mp::getInfo(int id) const {
@@ -434,7 +502,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
         }else{
             //same type, override id
-            _comment("assign _"+std::to_string(r1->id)+"_ to _"+std::to_string(dst)+"_ in reg "+tRegName(r1));
+            comment("assign _"+std::to_string(r1->id)+"_ to _"+std::to_string(dst)+"_ in reg "+tRegName(r1));
             r1->id=dst;
             setRegDirty(r1->type);
         }
@@ -451,7 +519,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
         if( !isBasicTypeEqual(e1->type, e2->type) ){
             //type promotion
-            //..../
+            //
             throw std::runtime_error("type promotion not done");
 
         }else{
@@ -472,61 +540,340 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     void Mp::_algebra(enum_algebra operation, RegPtr dst, RegPtr op1, RegPtr op2, std::string comment) {
         switch (operation){
             case ADD:
+            {
+                Type temp=dst->type;
+                if(isUnsignedInt(temp)||isSignedInt(temp)){
                 _addu(tRegName(dst), tRegName(op1), tRegName(op2),comment);
+                }
+                else if(isSingleFloat(temp)){
+                //single floating
+                }
+                else if(isDoubleFloat(temp)){
+                //double floating
+                }
+                else if (isArray(temp)){
+                //array
+                }
+            }
                 break;
-//            case MUL:
-//                break;
-//
-//            case DIV:
-//                break;
-//
-//            case MOD:
-//                break;
-//
-//            case SUB:
-//                break;
-//
-//            case LEFT_:
-//                break;
-//
-//            case RIGHT_:
-//                break;
-//
-//            case SMALLER:
-//                break;
-//
-//            case GREATER:
-//                break;
-//
-//            case LE_:
-//                break;
-//
-//            case GE_:
-//                break;
-//
-//            case EQ_:
-//                break;
-//
-//            case NE_:
-//                break;
-//
-//            case AND:
-//                break;
-//
-//            case XOR:
-//                break;
-//
-//            case OR:
-//                break;
-//
-//            case AND_:
-//                //short circuit
-//                break;
-//
-//            case OR_:
-//                //short circuit
-//                break;
-//
+           case MUL:
+           {
+               Type temp=dst->type;
+               if(isInt(temp)){
+               _mul(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case DIV:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)){
+                 _divu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if (isSignedInt(temp)){
+                 _div(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case MOD:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)){
+                 _modu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if (isSignedInt(temp)){
+                 _mod(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case SUB:
+           {
+               Type temp=dst->type;
+               if(isInt(temp)){
+                _subu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case LEFT_:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)||isSignedInt(temp)){
+               _sll(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               throw std::runtime_error("Floating not supported");
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               throw std::runtime_error("Floating not supported");
+               }
+               else if (isArray(temp)){
+               //array
+               throw std::runtime_error("Array not supported");
+               }
+           }
+               break;
+
+           case RIGHT_:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)){
+                 _srl(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if (isSignedInt(temp)){
+                 _sra(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               throw std::runtime_error("Floating not supported");
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               throw std::runtime_error("Floating not supported");
+               }
+               else if (isArray(temp)){
+               //array
+               throw std::runtime_error("Array not supported");
+               }
+           }
+               break;
+
+           case SMALLER:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)){
+                 _sltu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if (isSignedInt(temp)){
+                 _slt(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case GREATER:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)){
+                 _sltu(tRegName(dst),tRegName(op2), tRegName(op1),comment);
+               }
+               else if (isSignedInt(temp)){
+                 _slt(tRegName(dst),tRegName(op2), tRegName(op1),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case LE_:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)){
+                 _LEu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if (isSignedInt(temp)){
+                 _LE(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case GE_:
+           {
+               Type temp=dst->type;
+               if(isUnsignedInt(temp)){
+                 _LEu(tRegName(dst),tRegName(op2), tRegName(op1),comment);
+               }
+               else if (isSignedInt(temp)){
+                 _LE(tRegName(dst),tRegName(op2), tRegName(op1),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case EQ_:
+           {
+               Type temp=dst->type;
+               if(isInt(temp)){
+                 _EQ(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case NE_:
+           {
+               Type temp=dst->type;
+               if(isInt(temp)){
+                 _NE(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case AND:
+           {
+               Type temp=dst->type;
+               if(isInt(temp)){
+                 _and(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case XOR:
+           {
+               Type temp=dst->type;
+               if(isInt(temp)){
+                 _xor(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+           case OR:
+           {
+               Type temp=dst->type;
+               if(isInt(temp)){
+                 _or(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+               }
+               else if(isSingleFloat(temp)){
+               //single floating
+               }
+               else if(isDoubleFloat(temp)){
+               //double floating
+               }
+               else if (isArray(temp)){
+               //array
+               }
+           }
+               break;
+
+          //  case AND_:
+          //  {
+          //      Type temp=dst->type;
+          //      if(isUnsignedInt(temp)||isSignedInt(temp))){
+          //      _and(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+          //      }
+          //      else if(isSingleFloat(temp)){
+          //      //single floating
+          //      }
+          //      else if(isDoubleFloat(temp)){
+          //      //double floating
+          //      }
+          //      else if (isArray(temp)){
+          //      //array
+          //      }
+          //  }
+          //      break;
+           //
+          //  case OR_:
+          //      //short circuit
+          //      break;
             default:
                 throw std::runtime_error("Not implemented.");
         }
@@ -568,14 +915,18 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
 
             //doing the actual assignment
+            //BUG :) @ ALAN
             switch (operation){
                 case MULA: // *=
+                _algebra(MUL,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
                 case DIVA: // /=
+                _algebra(DIV,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
                 case MODA: // %=
+                _algebra(MOD,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
                 case ADDA: // +=
@@ -583,21 +934,27 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                     break;
 
                 case SUBA: // -=
+                _algebra(SUB,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
                 case LEFTA: // <<=
+                _algebra(LEFT_,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
                 case RIGHTA: // >>=
+                _algebra(RIGHT_,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
                 case ANDA: // &=
+                _algebra(AND,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
                 case XORA: // ^=
+                _algebra(XOR,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
-                case ORA: // |=
+                case ORA: // ||=
+                _algebra(OR,rDst,r_op1,rDst,"+="+std::to_string(op1) );
                     break;
 
             }
@@ -647,30 +1004,39 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
     }
 
-    int Mp::addi(bool selfAssign, int op1, std::string integer,bool free1, std::string comment) {
-        RegPtr r1,rResult;
+    int Mp::addi(bool perfix, int op1, std::string integer) {
+        RegPtr r1;
         r1=loadGenReg(op1);
 
-        int resultId;
 
-        if(selfAssign){
-            rResult=r1;
-            resultId=op1;
+
+        if(perfix){
+            //per increment
+            _addi(tRegName(r1), tRegName(r1), integer, "per increment of id _"+std::to_string(op1)+"_");
+            setRegDirty(r1->type);
+            return op1;
+
         } else{
-            int resultId=reserveId(4,r1->type,comment);
-            rResult=loadGenReg(resultId, false);
+            //if if post increment, return a copy before increment
+
+            int orgCopy;
+            RegPtr rOrgCopy;
+
+            orgCopy=reserveId(4,r1->type,"org copy of _"+std::to_string(op1)+"_");
+            rOrgCopy=loadGenReg(orgCopy, false);
+
+            _addi(tRegName(rOrgCopy), tRegName(r1), integer, "add, swap org copy & org");
+
+            r1->id=orgCopy;
+            rOrgCopy->id=op1;
+
+            setRegDirty(r1->type);
+            setRegDirty(rOrgCopy->type);
+
+            return orgCopy;
         }
 
 
-        _addiu(tRegName(rResult), tRegName(r1), integer, comment);
-
-        setRegDirty(rResult->type);
-
-        if( !selfAssign && free1){
-            //ignore free flag if is self assign
-            discardGenReg(op1);
-        }
-        return resultId;
     }
 
 //    int Mp::makeCopy(int id, bool free1) {
@@ -687,25 +1053,124 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
 
     /*
+            } else{
      * make function calls
      */
+
+    void Mp::callFunc(const std::string &funcName) {
+
+        asCaller_name=funcName;
+        paraIdx=1;
+        para_offset=0;
+
+
+        Functions::const_iterator asCaller;
+        implicitCall = context.getFunc(funcName, asCaller); //have side effect
+
+        if(implicitCall){
+            context.addFunc(funcName, TYPE_SIGNED_INT); //implicit function declaration
+        } else{
+            asCaller_args=asCaller->second;
+        }
+
+    }
+
+    void Mp::addArg(int id) {
+        //todo only work for int
+
+//        EntryPtr info=getInfo(id);
+        RegPtr reg;
+
+        if(implicitCall){
+            // convert GPR -> INT
+            // convert CP! -> DOUBLE
+            reg=loadGenReg(id);
+
+            context.addFuncPara(TYPE_SIGNED_INT,"");
+
+            if(para_offset<16){
+                _move("$a"+std::to_string(para_offset/4), tRegName(reg), "implicit call, int type");
+            }else{
+                sw_sp(tRegName(reg),std::to_string(para_offset),"implicit call, int type");
+            };
+
+
+
+            para_offset+=sizeOf(reg->type);
+
+        }else{
+            reg=loadGenReg(id);
+
+            if(para_offset<16){
+                _move("$a"+std::to_string(para_offset/4), tRegName(reg), "implicit call, int type");
+            }else{
+                sw_sp(tRegName(reg),std::to_string(para_offset),"implicit call, int type");
+            };
+
+            para_offset+=sizeOf(reg->type);
+
+        }
+
+
+
+    }
+
+
+    int Mp::commitCall() {
+        int resultId;
+
+        //update system state
+        if(implicitCall){
+            // commit implicit function declaration
+            context.commitFunc();
+        }
+
+        //save all reg before calls
+        writeBackAll();
+
+        //JAL to function
+        _jal(asCaller_name);
+
+        //get return result
+        if(implicitCall || !isFloat(asCaller_args[0].type)){
+            // in GPR
+            Type returnType = implicitCall ? TYPE_SIGNED_INT : asCaller_args[0].type;
+            resultId=reserveId(4,returnType,asCaller_name+" return");
+            RegPtr rReg= loadGenReg(resultId, false);
+            _move(tRegName(rReg), "$v0", "mv return to tReg _"+std::to_string(resultId)+"_");
+            setRegDirty(rReg->type);
+
+        }else{
+            //in cp1
+
+        }
+
+        if(para_offset>arg_max_size)
+            arg_max_size=para_offset;
+
+        return resultId;
+
+    }
 
 
 
     /*
      * current function
      */
-    std::string Mp::mkLable(const std::string &name) {
-        std::string label = name + "_"+std::to_string(uniqueCounter)+"_"+asCallee->first;
-        buffer.push_back(label + ":\n");
+    std::string Mp::mkLabel(const std::string &name) {
+        std::string label = name + "_"+std::to_string(uniqueCounter)+"_"+asCallee_name;
         ++uniqueCounter;
         return label;
+    }
+
+    void Mp::insertLabel(const std::string &label) {
+        buffer.push_back(label + ":\n");
     }
 
     void Mp::Return(int id) {
 
         //TODO: get return type
-        Type returnType=asCallee->second[0].type;
+        Type returnType=asCallee_paras[0].type;
 
 
         int dst = reserveId(sizeOf(returnType),returnType, "FUNC RETURN");
@@ -727,4 +1192,46 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
     void Mp::Return(){
         _b(RETURN_LABEL);
+    }
+
+    /*
+     *  BLOCK control
+     */
+
+    void Mp::bZero(bool onTrue, int id, std::string label) {
+        EntryPtr entry=getInfo(id);
+
+        if(isFloat(entry->type)){
+            //is on cp1
+            throw std::runtime_error("Not implemented.");
+        }else{
+            //is on genReg
+            RegPtr reg=loadGenReg(id);
+            if(onTrue){
+                //branch on true (on 1, -ne $0)
+                _bne(tRegName(reg), "$0", label );
+            }else{
+                //branch on false (on 0, -eq $0)
+                _beq(tRegName(reg), "$0", label );
+            }
+        }
+    }
+
+  void Mp::branch(std::string label){
+    _b(label);
+  }
+
+  void Mp::beq(int id1,int id2,std::string label){
+    EntryPtr entry1=getInfo(id1);
+    EntryPtr entry2=getInfo(id2);
+    //TODO check both ?
+    if(isFloat(entry1->type)||isFloat(entry2->type)){
+        //is on cp1
+        throw std::runtime_error("Not implemented.");
+    }else{
+        //is on genReg
+        RegPtr reg1=loadGenReg(id1);
+        RegPtr reg2=loadGenReg(id2);
+        _beq(tRegName(reg1),tRegName(reg2),label);
+      }
     }

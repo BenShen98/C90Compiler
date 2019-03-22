@@ -5,7 +5,7 @@
 #include <string>
 /*
 postfix_expression
-0	: primary_expression
+X	: primary_expression
 1	| postfix_expression '[' expression ']'
 2	| postfix_expression '(' ')'
 3	| postfix_expression '(' argument_expression_list ')'
@@ -66,10 +66,39 @@ public:
     }
 
     void mp(Result& result) const override{
+        Result postfix;
         switch (type){
-            case 0:
-                pt->mp(result);
+
+            case 2: //postfix_expression '(' ')'
+            case 3:
+                postfix.type=TYPE_VOID; //set void flag, request str
+                pt->mp(postfix);
+
+                mips.callFunc(postfix.str);
+
+                if(type==3)
+                    op->mp();
+
+                result.id = mips.commitCall();
+                result.freeable= true;
+
                 break;
+
+            case 6: //INC_OP
+
+                pt->mp(postfix);
+                result.id=mips.addi(false,postfix.id,"1");//copy of org
+                result.freeable= true;
+
+                break;
+
+            case 7: //DEC_OP
+                pt->mp(postfix);
+                result.id=mips.addi(false,postfix.id,"1"); //copy of org
+                result.freeable= true;
+
+                break;
+
 
             default:
                 notImplemented();

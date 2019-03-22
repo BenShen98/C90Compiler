@@ -80,11 +80,11 @@ public:
             case 1:
                 //per increment, self assign,
                 //only alter value pointed by id, does not change result.id AND result.freeable
-                mips.addi(true, result.id, "1", false, "per increment id "+ std::to_string(result.id) );
+                mips.addi(true, result.id, "1");
 
                 break;
             case 2:
-                mips.addi(true, result.id, "-1", false, "per decrement id "+ std::to_string(result.id) );
+                mips.addi(true, result.id, "-1");
                 break;
 
             default:

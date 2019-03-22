@@ -12,12 +12,18 @@ CPPFLAGS += -fmax-errors=5 -ggdb
 
 .PHONY: all clean debug
 
-all : clean ./bin/c_compiler
+
+all : clean ./bin/c_compiler r
+
+debug: clean ./bin/c_compiler d
+
+
+r:
 #	 ./bin/c_compiler --translate test.c -o x.py
 	 ./bin/c_compiler -S test.c -o x.s
 	 cat x.s
 
-debug: clean ./bin/c_compiler
+d:
 #	gdb --args ./bin/c_compiler --translate test.c -o x.py
 	gdb --args ./bin/c_compiler -S test.c -o x.s
 
@@ -36,6 +42,7 @@ bin/c_compiler : src/c_compiler.o src/C90_parser.tab.o src/C90_lexer.yy.o src/C9
 
 clean :
 	rm -f src/*.o
+	rm -f include/*.o
 	rm -f bin/*
 	rm -f src/*.tab.cpp
 	rm -f src/*.yy.cpp

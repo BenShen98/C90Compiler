@@ -9,6 +9,7 @@ rm -rf ${DUMP}
 mkdir -p ${OUTPUT}
 mkdir -p ${EXEC}
 mkdir -p ${DUMP}
+mkdir -p ${ANSI_BIN}
 PASS=0
 COUNT=0
 
@@ -37,6 +38,9 @@ for i in ${TESTDIRECTORY}/*.c; do
   base=$(basename $i)
   base=${base%.c}
 
+  echo "********************TEST ${base}********************"
+
+
   #Run compiler on test case
   ${TESTCOMPILER} -S $i -o ${OUTPUT}/${base}.s 2> ${DUMP}/${base}.stderr 1> ${DUMP}/${base}.stdout
   #${MIPS_CC} ${MIPSFLAG} -S $i -o ${OUTPUT}/${base}.s 2> ${DUMP}/${base}.stderr 1> ${DUMP}/${base}.stdout
@@ -59,13 +63,12 @@ for i in ${TESTDIRECTORY}/*.c; do
 
   if [[ "$RETURNCODE" -eq "0" ]];then
     let "PASS++"
-    echo "=>PASS TEST ${base}.c"
+    echo "=>PASS TEST ${base}.c, get ${RETURNCODE}"
     printf "\n\n"
   else
 
     #print debug info ONLY when test FAIL
-    echo "********************TEST FAIL ${base}********************"
-    echo "=>FAIL TEST ${base}.c"
+    echo "=>FAIL TEST ${base}.c, get ${RETURNCODE}"
     printf "\n\n"
     echo "## C Input: "
     cat ${TESTDIRECTORY}/${base}.c
@@ -79,7 +82,6 @@ for i in ${TESTDIRECTORY}/*.c; do
     echo "## Assembly Disassembly:"
     cat ${DUMP}/${base}.mips.s
     printf "\n\n"
-    printf "********************END FAIL ${base}********************\n\n\n"
   fi
 
 
@@ -89,5 +91,5 @@ done
 
 
 FAIL=$(( ${COUNT}-${PASS} ))
-echo "Exit with ${PASS} test case passed"
+echo "Exit with [ ${PASS} / ${COUNT} ] test case passed"
 exit ${FAIL}

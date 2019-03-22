@@ -1589,7 +1589,7 @@ yyreduce:
 
   case 6:
 #line 57 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new postfix_expression(0, (yyvsp[0].expr)); }
+    { (yyval.expr) = (yyvsp[0].expr); }
 #line 1594 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 

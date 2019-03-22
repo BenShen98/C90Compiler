@@ -143,18 +143,15 @@ public:
         }
     }
 
-//    void mp() const override{
-//        //parent node are expression
-//        if(unary_expression==NULL){
-//            //case like {1+2;}
-//            std::cerr<<"[warning] assignment expression without rvalue\n";
-//        }else{
-//            // case like {x=1+2;}
-//            // call function below
-//            Result dummy; //not actually used
-//            mp(dummy);
-//        }
-//    }
+    //used ONLY by assignment_expression
+    void mp() const override{
+        //parent node are expression
+        Result result;
+        mp(result);
+
+        mips.addArg(result.id);
+
+    }
 
     void mp(Result& result) const override{
         //parent node are assignment_expression
