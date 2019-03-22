@@ -25,11 +25,11 @@ public:
         std::string e;
         switch (type){
             case 3: // RETURN ';'
-                dst="return";
+                dst="return"+'\n' ;
                 break;
             case 4: // RETURN expression ';'
                 exp->py(e);
-                dst="return " + e;
+                dst="return " + e +'\n';
                 break;
 
             default:

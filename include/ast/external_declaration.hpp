@@ -3,7 +3,7 @@
 
 #include "_ast_abs.hpp"
 #include <regex>
-
+#include <boost/algorithm/string.hpp>
 /*
 external_declaration
 0	: function_definition
@@ -38,15 +38,11 @@ public:
 }
 
   void mp() const override{
-    switch (type){
-
-
-      default:
-      notImplemented();
-    }
+      data->mp();
   }
 
   inline void get_global_variable(std::string& str)const{
+    std::vector<std::string> fields;
      std::regex func_def (".*[(].*[)].*");
      if (std::regex_match(str,func_def)){
          // when is function defination
@@ -54,16 +50,18 @@ public:
      str= "";
 
      }else{
+         boost::split(fields,str,boost::is_any_of("\n"));
          // when is NOT function defination
-         int equal_idx=str.find("=");
-             //str.erase(equal_idx,str.size());
-         std::string tempstr(str,0,equal_idx);
-        //std::cout << "global var pushback, " << tempstr<<"\n";
-        globalvar.push_back(tempstr);
+         //str.erase(equal_idx,str.size());
+         for (int i=0;i<fields.size();i++){
+           int equal_idx=fields[i].find("=");
+           std::string tempstr(fields[i],0,equal_idx);
+           //std::cout << "global var pushback, " << tempstr<<"\n";
+           globalvar.push_back(tempstr);
+           //std::cout<<fields[i]<<std::endl;
+         }
      }
    }
-
-
 
 };
 

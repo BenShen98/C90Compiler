@@ -1,13 +1,28 @@
+def foo(x,y,z):
+	
+	if (x<0x2):
+		
+		y=0o1
+		return y
+		
+		pass
+	else:
+		
+		z=34
+		return z
+		
+		pass
+	
 
-x=0
-y=0
+	pass
 def main():
-	global x
-	global y
-	x=0
-	return 0
+	a=0
+	b=0
+	c=0
+	return foo(a,b,c)
+	
 
-
+	pass
 
 # Invoke main as the starting point
 if __name__ == "__main__":

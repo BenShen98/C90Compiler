@@ -50,11 +50,11 @@ for i in ${input_dir}/*.c ; do
         GOT_P_OUT=$?
     fi
 
-    if [[ $REF_C_OUT -ne $REF_P_OUT ]] ; then
-        echo "$base, REF_FAIL, Expected ${REF_C_OUT}, got ${REF_P_OUT}"
-    elif [[ ${have_compiler} -ne 0 ]] ; then
-        echo "$base, Fail, No C compiler/translator"
-    elif [[ $REF_C_OUT -ne $GOT_P_OUT ]] ; then
+    # if [[ $REF_C_OUT -ne $REF_P_OUT ]] ; then
+    #   #echo "$base, REF_FAIL, Expected ${REF_C_OUT}, got ${REF_P_OUT}"
+    # elif [[ ${have_compiler} -ne 0 ]] ; then
+    #     echo "$base, Fail, No C compiler/translator"
+    if [[ $REF_C_OUT -ne $GOT_P_OUT ]] ; then
         echo "$base, Fail, Expected ${REF_C_OUT}, got ${GOT_P_OUT}"
     else
         echo "$base, Pass"

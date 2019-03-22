@@ -39,7 +39,7 @@ public:
 
         switch (type){
             case 0:
-                dst = "while " + c + ":\n" + s;
+                dst = "while " + c + ":\n" + s +"\n\tpass";
                 break;
 
             default:
