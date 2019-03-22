@@ -1,6 +1,5 @@
 int addflow();
-int genran();
 int main(){
-  int a=genran();
+  abi_setup();
   return addflow();
 }

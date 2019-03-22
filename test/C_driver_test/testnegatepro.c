@@ -1,4 +1,5 @@
 int testnegatepro();
 int main(){
-  return !(testnegatepro()==241);
+  abi_setup();
+  return !(testnegatepro()==0xfffffff1);
 }

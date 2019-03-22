@@ -12,14 +12,18 @@ MIPS_OBJDUMP="mips-linux-gnu-objdump"
 GCC_ANSI="gcc -ansi"
 
 #MIPS flag
-MIPS_CPPFLAGS="-mfp32"
-#MIPS_LDFLAGS="-nostdlib -mfp32  -static --entry=0000000000400110" #entry address was used to remote warning
-MIPS_LDFLAGS="-nostdlib -mfp32  -static --entry=0000000000400110" #entry address was used to remote warning
+MIPS_LINK_FLAGS="-static -ansi"
+MIPS_FLAGS="-mfp32"
+MIPS_LDFLAGS="-nostdlib -mfp32  -static --entry=0000000000400110" #for disassembly
 
 #testbench config
-TESTDIRECTORY="test/C_test"
-TESTDRIVER="test/C_driver_test"
-OUTPUT="test/C_output"
-EXEC="test/C_mips_bin"
-DUMP="test/C_log"
-ANSI_BIN="test/ansi"
+TEST_ROOT=test
+
+TESTDIRECTORY="${TEST_ROOT}/C_test"
+TESTDRIVER="${TEST_ROOT}/C_driver_test"
+OUTPUT="${TEST_ROOT}/C_output"
+EXEC="${TEST_ROOT}/C_mips_bin"
+DUMP="${TEST_ROOT}/C_log"
+ANSI_BIN="${TEST_ROOT}/ansi"
+
+ABI_COMPLIANCE_SRC=${TEST_ROOT}/abi.s

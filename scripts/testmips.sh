@@ -43,17 +43,17 @@ for i in ${TESTDIRECTORY}/*.c; do
 
   #Run compiler on test case
   ${TESTCOMPILER} -S $i -o ${OUTPUT}/${base}.s 2> ${DUMP}/${base}.stderr 1> ${DUMP}/${base}.stdout
-  #${MIPS_CC} ${MIPSFLAG} -S $i -o ${OUTPUT}/${base}.s 2> ${DUMP}/${base}.stderr 1> ${DUMP}/${base}.stdout
+  #${MIPS_CC} ${MIPS_FLAGS} -S $i -o ${OUTPUT}/${base}.s 2> ${DUMP}/${base}.stderr 1> ${DUMP}/${base}.stdout
 
   #GCC assemble .s to object file
-  ${MIPS_CC} ${MIPSFLAG} -c ${OUTPUT}/${base}.s -o ${OUTPUT}/${base}.o
+  ${MIPS_CC} ${MIPS_FLAGS} -c ${OUTPUT}/${base}.s -o ${OUTPUT}/${base}.o
 
-  #Generate disassembly
-  ${MIPS_CC} ${MIPS_CPPFLAGS} ${MIPS_LDFLAGS} ${OUTPUT}/${base}.o -o ${DUMP}/${base}.elf
+  #Generate disassembly (for debug log)
+  ${MIPS_CC} ${MIPS_FLAGS} ${MIPS_LDFLAGS} ${OUTPUT}/${base}.o -o ${DUMP}/${base}.elf
   ${MIPS_OBJDUMP} -j .text -D ${DUMP}/${base}.elf > ${DUMP}/${base}.mips.s
 
-  #Link object file with test driver using gcc MIPS FLAG on
-  ${MIPS_CC} ${MIPSFLAG} -static -o ${EXEC}/${base} ${OUTPUT}/${base}.o ./test/genran.o ${TESTDRIVER}/${base}.c
+  #Link object file, test driver, setup file using gcc MIPS FLAG on
+  ${MIPS_CC} ${MIPS_FLAGS} ${MIPS_LINK_FLAGS} -o  ${EXEC}/${base} ${ABI_COMPLIANCE_SRC} ${OUTPUT}/${base}.o ${TESTDRIVER}/${base}.c
 
   #Run execuable on QEMU virtual
   qemu-mips ${EXEC}/${base}

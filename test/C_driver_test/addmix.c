@@ -1,6 +1,6 @@
 int addmix();
-int genran();
 int main(){
-  int a=genran();
+  abi_setup();
+
   return !(addmix()==5);
 }
