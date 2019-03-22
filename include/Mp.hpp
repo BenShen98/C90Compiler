@@ -360,7 +360,7 @@ public:
 
     //find id (offset used for array ONLY)
     //todo IF offset is 0, AND is array, DO SOMETHING (return ptr?)
-    int getId(std::string identifier, int offset=0);
+    int getId(std::string identifier);
 
     // get info about the id
 

@@ -5,6 +5,7 @@
 #ifndef C90_MP_TYPE_HPP
 #define C90_MP_TYPE_HPP
 
+#include <vector>
 
 
 /*
@@ -23,7 +24,9 @@
  *
  */
 
-// type register
+// address type
+typedef std::vector<int> AddressType;
+
 typedef enum _type{
     /*
      * basic data type
@@ -41,11 +44,9 @@ typedef enum _type{
     MASK_IS_FLOAT=  0x2,
     MASK_IS_VOID=TYPE_VOID,
 
-    /*
-     * advanced data type
-     */
-    MASK_IS_ARRAY=  0x8,
-
+    //advandd type
+    FLAG_IS_ADDRESS=  0x8,
+    CHECK_ADDR_FLAG_N=~FLAG_IS_ADDRESS,
 
     /*
      * for register only (only [31:30] bit matter)
@@ -185,26 +186,88 @@ inline void setRegSync(Type& t){
 }
 
 /*
- *  sizeOf
+ * advanced data flag
  */
-inline int sizeOf(Type type) {
-    if( isDoubleFloat(type) ){
-        //only double is 8 byte
-        return 8;
-    }else if(isVoid(type)){
-        return 0;
-    }else{
-        //all other is 4 byte wide (ptr, int, float, etc
-        return 4;
-    }
+
+inline bool isAddressFlagSet(Type t){
+    return t&FLAG_IS_ADDRESS;
+}
+
+inline void setAddressFlag(Type& t){
+    t= t|FLAG_IS_ADDRESS;
+}
+
+inline void resetAddressFlag(Type& t){
+    t= t & CHECK_ADDR_FLAG_N;
 }
 
 
 /*
- * advanced data type
+ *  sizeOf
  */
-inline bool isArray(Type t){
-    return t&MASK_IS_ARRAY;
+inline int sizeOf(Type type) {
+//    if( isDoubleFloat(type) ){
+//        //only double is 8 byte
+//        return 8;
+//    }else if(isVoid(type)){
+//        return 0;
+//    }else{
+//        //all other is 4 byte wide (ptr, int, float, etc
+//        return 4;
+//    }
+
+    return 4;
+}
+
+
+
+inline int sizeOf(Type t, const AddressType& v) {
+    AddressType::const_reverse_iterator ritr = v.rbegin();
+    //does not work for double
+    //need check if is a pointer of pointer
+    int size=4;
+
+    if(isAddressFlagSet(t) && !v.empty()){
+        for( ; ritr!=v.rend() ; ++ritr){
+            if(*ritr==-1)
+                break;
+
+            size *= *ritr;
+        }
+    }
+
+    return size;
+}
+
+//return true if is still address, return false if is fully deference
+inline void deference(Type& t, AddressType& v) {
+
+    if(v.size()<=1){
+        resetAddressFlag(t);
+    }
+
+    if(!v.empty()){
+        v.pop_back();
+    }
+
+}
+
+
+inline int squareBraket(Type& t, AddressType& v){
+    deference(t, v);
+    return sizeOf(t, v);
+};
+
+inline std::ostream& operator << (std::ostream& os, const AddressType v)
+{
+    AddressType::const_iterator i = v.begin();
+    os<<'{';
+    for ( ; i != v.end(); ++i)
+    {
+        os <<*i<<", ";
+    }
+    os<<'}';
+    return os;
 }
 
 
@@ -217,6 +280,7 @@ typedef struct _reg{
     Type type=REG_EMPTY;
     int id; //negative id means it is free register
     int freshness; // the higher the value, the more resent it had been used
+    AddressType addr;
 } Reg;
 
 typedef Reg* RegPtr;
@@ -227,6 +291,7 @@ typedef struct _entry{
     int top_id;
     Type type;
     std::string name;
+    AddressType addr;
 } Entry;
 
 typedef const Entry * const EntryPtr;
@@ -244,6 +309,8 @@ typedef struct _result{
     std::string str;// this field need refactor
 
     bool freeable=false;
+
+    AddressType addr;
 
 } Result;
 

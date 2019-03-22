@@ -293,7 +293,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         //TODO write back all FP register
     }
 
-    int Mp::getId(std::string identifier, int offset) {
+    int Mp::getId(std::string identifier) {
 
         //find matching name from top of the stack (itr backwards)
         {
@@ -309,16 +309,16 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             //if found in current stack frame
             if (i >= 0) {
 
-                // if is array
-                if (offset != 0) {
-                    if (isArray(entries[i].type) && (entries[i].size > offset)) {
-                        //is array
-                        return entries[i].top_id - offset; //SUB here
-                    } else {
-                        // is not array OR index out of range
-                        throw std::runtime_error(identifier + " is not an array, or index out of range");
-                    }
-                }
+//                // if is array
+//                if (offset != 0) {
+//                    if (isArray(entries[i].type) && (entries[i].size > offset)) {
+//                        //is array
+//                        return entries[i].top_id - offset; //SUB here
+//                    } else {
+//                        // is not array OR index out of range
+//                        throw std::runtime_error(identifier + " is not an array, or index out of range");
+//                    }
+//                }
 
                 //not array
                 return entries[i].top_id;
@@ -523,12 +523,12 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         EntryPtr e2=getInfo(op2);
 
 
-        if( !isBasicTypeEqual(e1->type, e2->type) ){
-            //type promotion
-            //
-            throw std::runtime_error("type promotion not done");
-
-        }else{
+//        if( !isBasicTypeEqual(e1->type, e2->type) ){
+//            //type promotion
+//            //
+//            throw std::runtime_error("type promotion not done");
+//
+//        }else{
 
             //no type promotion
             if( isFloat(e1->type) ){
@@ -537,7 +537,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             }else{
                 return std::make_pair( loadGenReg(op1), loadGenReg(op2) );
             }
-        }
+//        }
 
     }
 
@@ -557,9 +557,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                 else if(isDoubleFloat(temp)){
                 //double floating
                 }
-                else if (isArray(temp)){
-                //array
-                }
+
             }
                 break;
            case MUL:
@@ -574,9 +572,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                else if(isDoubleFloat(temp)){
                //double floating
                }
-               else if (isArray(temp)){
-               //array
-               }
+
            }
                break;
 
@@ -595,9 +591,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                else if(isDoubleFloat(temp)){
                //double floating
                }
-               else if (isArray(temp)){
-               //array
-               }
+
            }
                break;
 
@@ -616,9 +610,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                else if(isDoubleFloat(temp)){
                //double floating
                }
-               else if (isArray(temp)){
-               //array
-               }
+
            }
                break;
 
@@ -634,9 +626,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                else if(isDoubleFloat(temp)){
                //double floating
                }
-               else if (isArray(temp)){
-               //array
-               }
+
            }
                break;
 
@@ -653,10 +643,6 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                else if(isDoubleFloat(temp)){
                //double floating
                throw std::runtime_error("Floating not supported");
-               }
-               else if (isArray(temp)){
-               //array
-               throw std::runtime_error("Array not supported");
                }
            }
                break;
@@ -678,10 +664,6 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                //double floating
                throw std::runtime_error("Floating not supported");
                }
-               else if (isArray(temp)){
-               //array
-               throw std::runtime_error("Array not supported");
-               }
            }
                break;
 
@@ -700,9 +682,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                else if(isDoubleFloat(temp)){
                //double floating
                }
-               else if (isArray(temp)){
-               //array
-               }
+
            }
                break;
 
@@ -721,9 +701,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                else if(isDoubleFloat(temp)){
                //double floating
                }
-               else if (isArray(temp)){
-               //array
-               }
+
            }
                break;
 
@@ -742,9 +720,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                else if(isDoubleFloat(temp)){
                //double floating
                }
-               else if (isArray(temp)){
-               //array
-               }
+
            }
                break;
 
@@ -763,9 +739,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                else if(isDoubleFloat(temp)){
                //double floating
                }
-               else if (isArray(temp)){
-               //array
-               }
+
            }
                break;
 
@@ -781,9 +755,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                else if(isDoubleFloat(temp)){
                //double floating
                }
-               else if (isArray(temp)){
-               //array
-               }
+
            }
                break;
 
@@ -799,9 +771,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                else if(isDoubleFloat(temp)){
                //double floating
                }
-               else if (isArray(temp)){
-               //array
-               }
+
            }
                break;
 
@@ -817,9 +787,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                else if(isDoubleFloat(temp)){
                //double floating
                }
-               else if (isArray(temp)){
-               //array
-               }
+
            }
                break;
 
@@ -835,9 +803,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                else if(isDoubleFloat(temp)){
                //double floating
                }
-               else if (isArray(temp)){
-               //array
-               }
+
            }
                break;
 
@@ -853,9 +819,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                else if(isDoubleFloat(temp)){
                //double floating
                }
-               else if (isArray(temp)){
-               //array
-               }
+
            }
                break;
 
