@@ -77,7 +77,13 @@ public:
                 break;
 
             case 1: //char, int, float
-                result.id = cConst2Mp(*str);
+
+                if(isVoid(result.type)){
+                    result.id = std::stoi(*str);  //return dec, compile time constant
+                }else{
+                    result.id = cConst2Mp(*str); //return stack id, imm in register
+                }
+
 
                 //its a letral
                 result.freeable = true;

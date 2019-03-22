@@ -156,9 +156,9 @@ extern std::ofstream ffout;
     void Mp::dump() {
 
         std::cerr<<"\n#############################\n# Dump for function "<< asCallee_name <<" #\n#############################\n";
-        std::cerr<<"# # Entry dump #\n#\t# top_id #,\t# size(byte) #,\t# type(MSB -- LSB) #,\t\t\t# variable name #\n";
+        std::cerr<<"# # Entry dump #\n#\t# top_id #,\t# size(byte) #,\t# type(MSB -- LSB) {} #,\t\t\t# variable name #\n";
         for(std::vector<Entry>::reverse_iterator rit = entries.rbegin();rit!= entries.rend(); ++rit){
-            std::cerr<<"#\t"<< rit->top_id <<",\t\t"<< rit->size <<",\t\t"<< std::bitset<32>(rit->type)<< ",\t" <<rit->name <<",\n";
+            std::cerr<<"#\t"<< rit->top_id <<",\t\t"<< rit->size <<",\t\t"<< std::bitset<32>(rit->type)<<" "<<rit->addr<< ",\t" <<rit->name <<",\n";
         }
         std::cerr<<"\n# # TGenReg dump #\n#\t# regName #,\t# StackID #,\t# type(MSB -- LSB) #\n";
         for(int i=0;i<T_GENERAL_REG_SIZE;++i){
@@ -214,6 +214,12 @@ extern std::ofstream ffout;
  */
 
 //TODO:: array type
+int Mp::reserveArray(Type type, const AddressType& v, std::string identifier) {
+    int id = reserveId(sizeOf(type,v), type, identifier,v);
+
+    return id;
+}
+
 int Mp::immediate(int size, std::string data, Type type, std::string identifier) {
     int id = reserveId(size, type, identifier);
 
@@ -235,10 +241,10 @@ int Mp::immediate(int size, std::string data, Type type, std::string identifier)
     return id;
 }
 
-int Mp::reserveId(int size, Type type, std::string identifier){
+int Mp::reserveId(int size, Type type, std::string identifier,const AddressType& address){
         //gen id, allocate space on heap
         top_id+=size;
-        entries.push_back({size,top_id,type&CHECK_REG_N ,identifier});
+        entries.push_back({size,top_id,type&CHECK_REG_N ,identifier,address});
 
         //does not allocate register
 

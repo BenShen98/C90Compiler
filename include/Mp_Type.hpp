@@ -44,9 +44,14 @@ typedef enum _type{
     MASK_IS_FLOAT=  0x2,
     MASK_IS_VOID=TYPE_VOID,
 
-    //advandd type
+    //advanced type
     FLAG_IS_ADDRESS=  0x8,
     CHECK_ADDR_FLAG_N=~FLAG_IS_ADDRESS,
+
+    TYPE_SIGNED_INT_PTR=    FLAG_IS_ADDRESS | TYPE_SIGNED_INT,
+    TYPE_UNSIGNED_INT_PTR=  FLAG_IS_ADDRESS | TYPE_UNSIGNED_INT,
+    TYPE_SINGLE_FLOAT_PTR=  FLAG_IS_ADDRESS | TYPE_SINGLE_FLOAT,
+    TYPE_DOUBLE_FLOAT_PTR=  FLAG_IS_ADDRESS | TYPE_DOUBLE_FLOAT,
 
     /*
      * for register only (only [31:30] bit matter)
@@ -229,7 +234,7 @@ inline int sizeOf(Type t, const AddressType& v) {
 
     if(isAddressFlagSet(t) && !v.empty()){
         for( ; ritr!=v.rend() ; ++ritr){
-            if(*ritr==-1)
+            if(*ritr<0)
                 break;
 
             size *= *ritr;
@@ -262,9 +267,11 @@ inline std::ostream& operator << (std::ostream& os, const AddressType v)
 {
     AddressType::const_iterator i = v.begin();
     os<<'{';
-    for ( ; i != v.end(); ++i)
-    {
-        os <<*i<<", ";
+    if(!v.empty()){
+        for ( ; i != v.end(); ++i)
+        {
+            os <<*i<<", ";
+        }
     }
     os<<'}';
     return os;
@@ -280,7 +287,6 @@ typedef struct _reg{
     Type type=REG_EMPTY;
     int id; //negative id means it is free register
     int freshness; // the higher the value, the more resent it had been used
-    AddressType addr;
 } Reg;
 
 typedef Reg* RegPtr;

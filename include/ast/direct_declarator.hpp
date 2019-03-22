@@ -90,9 +90,21 @@ public:
                 //do nothing
                 break;
 
-            case 2:
-            case 3:
-                notImplemented();
+            case 2://'[' constant_expression ']'
+            case 3://'[' ']'
+                left->mp(result);
+
+                setAddressFlag(result.type);
+                if(right!=NULL){
+                    Result r;
+                    right->mp(r); //use id field to pass constant_expression VALUE, r will have type VOID in constant_expression
+                    result.addr.push_back(r.id);
+
+                } else{
+                    result.addr.push_back(-2);
+                }
+
+
                 break;
 
             case 4: //direct_declarator '(' parameter_type_list ')'

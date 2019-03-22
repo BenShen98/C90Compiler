@@ -1,6 +1,4 @@
-int oneLif()
+int main()
 {
-    int x=5;
-    int y = x==6 ? 6 : 4;
-    return y;
+    int ***(*x)[3][2+3];
 }

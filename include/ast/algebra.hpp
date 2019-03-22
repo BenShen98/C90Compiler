@@ -246,11 +246,100 @@ public:
     virtual void mp(Result& result) const override{
 
         Result op1,op2;
-        left->mp(op1);
-        right->mp(op2);
 
-        result.id = mips.algebra(type, op1.id, op2.id, op1.freeable, op2.freeable,"=op(" + std::to_string(type) + ") " + std::to_string(op1.id) + " " +std::to_string(op2.id)) ;
-        result.freeable= true; //this is indeterminate result, no need to store
+        if(!isVoid(result.type)){
+
+            left->mp(op1);
+            right->mp(op2);
+
+            result.id = mips.algebra(type, op1.id, op2.id, op1.freeable, op2.freeable,"=op(" + std::to_string(type) + ") " + std::to_string(op1.id) + " " +std::to_string(op2.id)) ;
+            result.freeable= true; //this is indeterminate result, no need to store
+
+        }else{
+            // compile time constant
+
+            op1.type=TYPE_VOID;
+            op2.type=TYPE_VOID;
+            left->mp(op1);
+            right->mp(op2);
+
+            switch (type){
+                //brackets are redundant but just in case
+                case MUL:
+                    result.id =  op1.id * op2.id;
+                    break;
+
+                case DIV:
+                    result.id =  op1.id / op2.id;
+                    break;
+
+                case MOD:
+                    result.id =  op1.id % op2.id;
+                    break;
+
+                case ADD:
+                    result.id =  op1.id + op2.id;
+                    break;
+
+                case SUB:
+                    result.id =  op1.id - op2.id;
+                    break;
+
+                case LEFT_:
+                    result.id =  op1.id << op2.id;
+                    break;
+
+                case RIGHT_:
+                    result.id =  op1.id >> op2.id;
+                    break;
+
+                case SMALLER:
+                    result.id =  op1.id < op2.id;
+                    break;
+
+                case GREATER:
+                    result.id =  op1.id > op2.id;
+                    break;
+
+                case LE_:
+                    result.id =  op1.id <= op2.id;
+                    break;
+
+                case GE_:
+                    result.id =  op1.id >= op2.id;
+                    break;
+
+                case EQ_:
+                    result.id =  op1.id == op2.id;
+                    break;
+
+                case NE_:
+                    result.id =  op1.id != op2.id;
+                    break;
+
+                case AND:
+                    result.id =  op1.id & op2.id;
+                    break;
+
+                case XOR:
+                    result.id =  op1.id ^ op2.id;
+                    break;
+
+                case OR:
+                    result.id =  op1.id | op2.id;
+                    break;
+
+                case AND_:
+                    result.id =  op1.id && op2.id;
+                    break;
+
+                case OR_:
+                    result.id =  op1.id || op2.id;
+                    break;
+            }
+
+
+        }
 
 
     }

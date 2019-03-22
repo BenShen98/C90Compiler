@@ -311,9 +311,10 @@ public:
      *  reserved data can only be used as RESULT filed for assignment
      *  immediate is the replacement of original push_back
      */
-    int reserveId(int size, Type type, std::string identifier="" );
+    int reserveId(int size, Type type, std::string identifier="", const AddressType& address=AddressType());
 //    void assignImmediate(int id, Type type, std::string data);
     int immediate(int size, std::string data, Type type, std::string identifier="" );
+    int reserveArray(Type type,const AddressType& v,std::string identifier="" );
 
 //    int push_back_array();
 
