@@ -87,6 +87,21 @@ public:
                 mips.addi(true, result.id, "-1");
                 break;
 
+            case '-':
+              result.id=mips.negation('-',result.id,false);
+              break;
+
+            case '+':
+              break;
+
+            case '~':
+              result.id=mips.negation('~',result.id,false);
+              break;
+
+            case '!':
+              result.id=mips.negation('!',result.id,false);
+              break;
+
             default:
                 notImplemented();
         }

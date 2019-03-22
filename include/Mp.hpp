@@ -248,7 +248,9 @@ private:
     void _or(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("or " + d + ',' + s + ',' + t +" #" + comment );
     }
-
+    void _nor(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("nor " + d + ',' + s + ',' + t +" #" + comment );
+    }
 
     void _jal(std::string label){
         buffer.push_back("jal " + label );
@@ -298,7 +300,7 @@ public:
     void endFrame(bool logging=true); //call flush
 
     void dump();//SHOULD be private
-
+    int negation(char type, int op1, bool free1);
 
 
 
