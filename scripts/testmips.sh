@@ -53,7 +53,7 @@ for i in ${TESTDIRECTORY}/*.c; do
   ${MIPS_OBJDUMP} -j .text -D ${DUMP}/${base}.elf > ${DUMP}/${base}.mips.s
 
   #Link object file with test driver using gcc MIPS FLAG on
-  ${MIPS_CC} ${MIPSFLAG} -static -o ${EXEC}/${base} ${OUTPUT}/${base}.o ${TESTDRIVER}/${base}.c
+  ${MIPS_CC} ${MIPSFLAG} -static -o ${EXEC}/${base} ${OUTPUT}/${base}.o ./test/genran.o ${TESTDRIVER}/${base}.c
 
   #Run execuable on QEMU virtual
   qemu-mips ${EXEC}/${base}

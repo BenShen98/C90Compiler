@@ -1048,11 +1048,11 @@ std::string Mp::calOffset(const std::string &str) {//not finished
       Copy=reserveId(4,r1->type,"negating copy of_"+std::to_string(op1)+"_" );
       switch(type){
         case '-':
-          _subu(tRegName(r1),"$t0",tRegName(r1),"negating_"+std::to_string(op1)+"_");
+          _subu(tRegName(r1),"$0",tRegName(r1),"negating_"+std::to_string(op1)+"_");
           //checked with godbolt
         break;
         case '~':
-          _nor(tRegName(r1),"$t0",tRegName(r1),"nor_"+std::to_string(op1)+"_");
+          _nor(tRegName(r1),"$0",tRegName(r1),"nor_"+std::to_string(op1)+"_");
         break;
         case '!':
           _sltu(tRegName(r1),tRegName(r1),"1","sltu_"+std::to_string(op1)+"_");
