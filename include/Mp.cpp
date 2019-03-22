@@ -1011,8 +1011,35 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
             return orgCopy;
         }
+    }
 
-
+    int Mp::negation(char type, int op1, bool free1){
+      RegPtr r1;
+      int Copy;
+      r1=loadGenReg(op1);
+      if(!free1 && isRegDirty(r1->type)){
+        sw_sp(tRegName(r1), r1->id, "save dirty re _"+std::to_string(r1->id)+"_ before negation");
+        setRegSync(r1->type);
+      }
+      Copy=reserveId(4,r1->type,"negating copy of_"+std::to_string(op1)+"_" );
+      switch(type){
+        case '-':
+          _subu(tRegName(r1),"$0",tRegName(r1),"negating_"+std::to_string(op1)+"_");
+          //checked with godbolt
+        break;
+        case '~':
+          _nor(tRegName(r1),"$0",tRegName(r1),"nor_"+std::to_string(op1)+"_");
+        break;
+        case '!':
+          _sltu(tRegName(r1),tRegName(r1),"1","sltu_"+std::to_string(op1)+"_");
+          _and(tRegName(r1),tRegName(r1),"0x00ff","andi_0x00ff"+std::to_string(op1)+"_");
+          break;
+        default:
+          throw std::runtime_error("Not implemented.");
+      }
+      r1->id=Copy;
+      setRegDirty(r1->type);
+      return Copy;
     }
 
 //    int Mp::makeCopy(int id, bool free1) {

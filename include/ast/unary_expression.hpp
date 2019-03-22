@@ -69,6 +69,7 @@ public:
 
     void mp(Result& result) const override{
 
+
         if(!isVoid(result.type)){
 
             pt->mp(result);
@@ -129,6 +130,25 @@ public:
                     break;
 
             }
+
+            case '-':
+              result.id=mips.negation('-',result.id,false);
+              break;
+
+            case '+':
+              break;
+
+            case '~':
+              result.id=mips.negation('~',result.id,false);
+              break;
+
+            case '!':
+              result.id=mips.negation('!',result.id,false);
+              break;
+
+            default:
+                notImplemented();
+
         }
 
     }
