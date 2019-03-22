@@ -65,9 +65,15 @@ public:
 
         switch (type){
             case 0:
-                // load variable, may be referenced latter
-                result.id = mips.getId(*str);
-                result.freeable = false;
+                //use void to refer it's not a variable
+                if(isVoid(result.type)) {
+                    //void flag, need str
+                    result.str=*str;
+                }else{
+                    // load variable, may be referenced latter
+                    result.id = mips.getId(*str);
+                    result.freeable = false;
+                }
                 break;
 
             case 1: //char, int, float

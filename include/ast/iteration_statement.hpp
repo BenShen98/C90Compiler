@@ -49,8 +49,60 @@ public:
 
     }
 
-    void mp(Result& result) const override{
-        notImplemented();
+    void mp() const override{
+        Result expResult;
+        condition->mp(expResult);
+        switch(type){
+          case 0://WHILE '(' expression ')' statement
+          {
+            std::string start=mips.mkLabel("WhileStart");
+            std::string end=mips.mkLabel("WhileEnd");
+            mips.insertLabel(start);
+            mips.bZero(false, expResult.id, end);
+            statement->mp();
+            mips.branch(start);
+            mips.insertLabel(end);
+          }
+          break;
+          case 1://DO statement WHILE '(' expression ')' ';'
+          // {
+          //   std::string start=mips.mkLabel("WhileStart");
+          //   mips.insertLabel(start);
+          //   statement->mp();
+          //   mips.bZero(false, expResult.id, end);
+          // }
+          notImplemented();
+          break;
+          case 2: //FOR '(' expression_statement expression_statement ')' statement
+          {
+            std::string start=mips.mkLabel("ForStart");
+            std::string end=mips.mkLabel("ForEnd");
+            init->mp();
+            mips.insertLabel(start);
+            //branch on false
+            mips.bZero(false, expResult.id, end);
+            statement->mp();
+            mips.branch(start);
+            mips.insertLabel(end);
+          }
+          break;
+          case 3://FOR '(' expression_statement expression_statement expression ')' statement
+          {
+            Result dummy;
+            std::string start=mips.mkLabel("ForStart");
+            std::string end=mips.mkLabel("ForEnd");
+            init->mp();
+            mips.insertLabel(start);
+            //branch on false
+            mips.bZero(false, expResult.id, end);
+            //need dummy var here
+            increment->mp(dummy);
+            statement->mp();
+            mips.branch(start);
+            mips.insertLabel(end);
+          }
+          break;
+        }
     }
 
 };

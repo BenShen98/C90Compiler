@@ -42,10 +42,12 @@ public:
 
     //function declaration/ definition
     void addFunc(std::string name, Type returnType); //return false if function already exist
-    void addFuncPara(Type paraType, std::string paraName);
+    void addFuncPara(const Type& paraType, const std::string& paraName="");
     void commitFunc();
 
-    Functions::const_iterator getFunc(std::string name);
+    bool getFunc(std::string name, Functions::const_iterator& func);
+
+    void dump();
 
 //    // MIPS ???
 //    // function get CURRENT para (negative stack id)

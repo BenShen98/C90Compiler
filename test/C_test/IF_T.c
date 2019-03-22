@@ -1,8 +1,6 @@
-int testif(int x){
-  if(x>2){
-    return 2;
+int testif_t(){
+  if(1){
+    return 21;
   }
-  else{
-    return 1;
-  }
+  return 6;
 }

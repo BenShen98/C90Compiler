@@ -214,7 +214,7 @@ inline bool isArray(Type t){
  */
 
 typedef struct _reg{
-    Type type;
+    Type type=REG_EMPTY;
     int id; //negative id means it is free register
     int freshness; // the higher the value, the more resent it had been used
 } Reg;

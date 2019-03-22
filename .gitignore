@@ -11,3 +11,4 @@ cmake-build-debug
 test/C_output
 test/C_log
 test/ansi
+test/C_mips_bin

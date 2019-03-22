@@ -49,12 +49,24 @@ public:
 
     }
 
-    void mp(Result& result) const override{
-        switch (type){
+    void mp() const override{
+        if(type==1)
+            notImplemented();
 
-            default:
-                notImplemented();
+
+
+        Result info;
+        declaration_specifiers->mp(info); // get basic type
+
+        if(declarator==0){
+            context.addFuncPara(info.type);
+        }else{
+            declarator->mp(info);// set basic_type, get str & type
+            context.addFuncPara(info.type, info.str);
         }
+
+        // pass basic type to declarator
+
     }
 
 };

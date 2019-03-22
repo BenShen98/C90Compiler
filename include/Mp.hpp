@@ -26,7 +26,8 @@ class Mp {
 private:
 
     //funcName of current function
-    Functions::const_iterator asCallee;
+    std::string asCallee_name;
+    Paras asCallee_paras;
 
     int uniqueCounter;
 
@@ -93,6 +94,12 @@ private:
 
     }
 
+    //used when store arguments
+    void sw_sp(std::string reg,std::string offset, std::string comment=""){
+        buffer.push_back("sw " + reg + "," + offset + "($sp) #" + comment);
+
+    }
+
     void lw_sp(std::string reg,int id, std::string comment=""){
         postEditPtr.push_back(buffer.size());//push_back idx of next line
         buffer.push_back("lw " + reg + ",_" + std::to_string(id) + "_($sp) #" + comment);
@@ -106,8 +113,16 @@ private:
     /*
  * make function call
  */
-    int arg_max_size; //minimum size when no arguement
-    Functions::const_iterator asCaller;
+    //max arg size of all function call
+    int arg_max_size;
+
+
+    std::string asCaller_name;
+    Paras asCaller_args; //only used by per-declared function
+    int paraIdx;
+    int para_offset;
+    bool implicitCall;
+
 // TODO START WITH FUNCTION WITHOUT ARGUMENT
 
 
@@ -164,6 +179,96 @@ private:
     void _comment(const std::string& comment ){
         buffer.push_back("# " + comment );
     }
+    void _mul(std::string d,std::string s,std::string t, std::string comment=""){
+      //use $LO
+        buffer.push_back("mult " + s + ',' + t +" #" + comment );
+        buffer.push_back("mflo " + d + '#' + comment );
+    }
+    void _div(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("div " + s + ',' + t +" #" + comment );
+        buffer.push_back("mflo " + d + '#' + comment );
+    }
+    void _divu(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("divu " + s + ',' + t +" #" + comment );
+        buffer.push_back("mflo " + d + '#' + comment );
+    }
+    void _mod(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("div " + s + ',' + t +" #" + comment );
+        buffer.push_back("mfhi " + d + '#' + comment );
+    }
+    void _modu(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("divu " + s + ',' + t +" #" + comment );
+        buffer.push_back("mfhi " + d + '#' + comment );
+    }
+    void _sub(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("sub " + d + ',' + s + ',' + t +" #" + comment );
+    }
+    void _subu(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("subu " + d + ',' + s + ',' + t +" #" + comment );
+    }
+    void _sll(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("sll" + d + ',' + s + ',' + t +" #" + comment );
+    }
+    void _srl(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("srl" + d + ',' + s + ',' + t +" #" + comment );
+    }
+    void _sra(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("sra " + d + ',' + s + ',' + t +" #" + comment );
+    }
+    void _sltu(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("sltu " + d + ',' + s + ',' + t +" #" + comment );
+    }
+    void _slt(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("slt " + d + ',' + s + ',' + t +" #" + comment );
+    }
+    void _LE(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("slt " + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("xori " + d + ',' + d + ',' + "0x1" +" #" + comment );
+    }
+    void _LEu(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("sltu " + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("xori " + d + ',' + d + ',' + "0x1" +" #" + comment );
+    }
+    void _EQ(std::string d,std::string s,std::string t, std::string comment=""){
+        //might need to andi 0x000ff
+
+        buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("sltu " + d + ',' + d + ',' + "0x1" +" #" + comment );
+
+    }
+    void _NE(std::string d,std::string s,std::string t, std::string comment=""){
+      //might need to andi 0x000ff
+        buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("sltu " + d + ',' + "$0" + ',' + d +" #" + comment );
+
+    }
+    void _xor(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
+    }
+    void _or(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("or " + d + ',' + s + ',' + t +" #" + comment );
+    }
+
+
+    void _jal(std::string label){
+        buffer.push_back("jal " + label );
+    }
+
+
+    void _beq(std::string s,std::string t,std::string label){
+        buffer.push_back("beq " + s + ',' +t + ',' + label );
+    }
+
+    void _bne(std::string s,std::string t,std::string label){
+        buffer.push_back("beq " + s + ',' +t + ',' + label );
+    }
+
+    void _move(std::string d,std::string s,std::string comment=""){
+        buffer.push_back("move " + d + ',' +s +" #"+comment);
+    }
+
+
+
 
     /* ... */
 
@@ -196,6 +301,7 @@ public:
 
 
 
+
 /*
  * insertion of new variable/argument
  */
@@ -219,26 +325,31 @@ public:
 
     int getPara(std::string name);
 
-    std::string mkLable(const std::string& name);
+    // generate and insert label
+    std::string mkLabel(const std::string& name);
+    void insertLabel(const std::string &label);
 
+    //block control
+    void bZero(bool onTrue,  int id, std::string label);
 
 /*
  * make function call
  */
 
-
+    void callFunc(const std::string& funcName);
 
 //    //take CONTENT in id as agreement, COPY the whole size in stack
 //    //(use for int; single/double float; ptr; struct) NOT FOR ARRAY e.g. void foo(int* x)
-//    void addArg(int id);
+    void addArg(int id);
 
 //    //take the imm as data
 //    //derive its size and type from function declaration
 //    void addArg_Imm(std::string data);//const argument
 
     //check if all argument had been filled, and issue jal instruction
+    // provide id with return value
     //write back all register
-//    void commitFunc();
+    int commitCall();
 //
 
 
@@ -295,13 +406,20 @@ public:
     void assignment(int dst, int op1,enum_assignment operation=ASSIGN, bool free= false);
     // void assignment(int dst, std::string constant);
 
-    //ONLY for INT, used for a++, a--
-    int addi(bool selfAssign, int op1, std::string integer,bool free1=false, std::string comment="");
+    //ONLY for INT, used for a++, a--, --a, ++a
+    //WHEN prefix=FALSE, a unchanged copy is returned, the original is changed
+    int addi(bool perfix, int op1, std::string integer);
 
     //overwrite regist
 //    int makeCopy(int id, bool free1=true); //use assignment instead
 
+    void comment(const std::string& comment ){
+        buffer.push_back("# " + comment );
+    }
 
+    void branch(std::string label);
+
+    void beq(int id1,int id2,std::string label);
 
 //
 //        // TODO: type promotion
