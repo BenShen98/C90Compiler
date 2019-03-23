@@ -15,12 +15,6 @@ std::vector<std::string> globalvar;
 Mp mips;
 Context context;
 
-//debug dummy
-void dd(){
-    int x;
-}
-
-
 int  main(int argc, char* argv[]){
 
     // check input format is correct
@@ -34,8 +28,6 @@ int  main(int argc, char* argv[]){
     ffout.open(argv[4]);  //output file setup
 
     const ast_abs * root = parseAST();  //phrase tree
-
-    dd();
 
     if( strcmp(argv[1],"--translate")==0 ){
         //logic to translate to python

@@ -55,7 +55,7 @@ private:
     int stack_size;
 
     std::vector<std::string> buffer;
-    std::vector<int> postEditPtr; //line need to replace index _[0-9]_ to top_id-$$
+    std::vector<unsigned > postEditPtr; //line need to replace index _[0-9]_ to top_id-$$
 
     //write current buffer to ffout
     std::string calOffset(const std::string& str);

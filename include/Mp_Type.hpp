@@ -336,7 +336,7 @@ typedef struct _entry{
     AddressType addr;
 } Entry;
 
-typedef const Entry * const EntryPtr;
+typedef const Entry * EntryPtr;
 
 typedef struct _scope{
     std::vector<Entry> entries;

@@ -40,7 +40,6 @@ public:
     {}
 
     //! Tell and expression to print itself to the given stream
-    virtual std::string c() const{};
 
     /* convert ast to python
      *

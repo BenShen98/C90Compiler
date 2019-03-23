@@ -41,7 +41,7 @@ extern std::ofstream ffout;
 
         //reset stack
         scopes.clear();
-        scopes.push_back({});//init first level of scope
+        newScope();
         scope_stats_cumulative.clear();
 
         //function parameter set up (as callee)
@@ -61,7 +61,7 @@ extern std::ofstream ffout;
             //first parameter
             for (int i=0; it != asCallee_paras.end() && i<4; ++it, ++i) {
                 int eleSize=sizeOf(it->type);
-                scopes[0].entries.push_back( {eleSize, argOffset, it->type, it->name } );
+                scopes[0].entries.push_back( {eleSize, argOffset, it->type, it->name, AddressType()} );
                 sw_sp("$a"+std::to_string(i), {0, argOffset}, "store parameter");
 
                 argOffset-=eleSize;
@@ -71,7 +71,7 @@ extern std::ofstream ffout;
             // parameter after fourth
             for (; it != asCallee_paras.end() ; ++it) {
                 int eleSize=sizeOf(it->type);
-                scopes[0].entries.push_back( {eleSize, argOffset, it->type, it->name } );
+                scopes[0].entries.push_back( {eleSize, argOffset, it->type, it->name, AddressType ()} );
                 argOffset-=eleSize;
             }
             std::reverse(scopes[0].entries.begin(),scopes[0].entries.end());
@@ -91,6 +91,7 @@ extern std::ofstream ffout;
      * flush data
      */
     void Mp::endFrame(bool logging) {
+        endScope();
 
         //scope_stats => scope_stats_cumulative
         // {4,8,16} => {0,4,12,28}
@@ -125,7 +126,7 @@ extern std::ofstream ffout;
         //flush content
         std::regex edit("_-?[0-9]*_");
         std::smatch m;
-        int editIdx=0;
+        unsigned editIdx=0;
         unsigned bufIdx=0;
 
 
@@ -173,6 +174,10 @@ extern std::ofstream ffout;
         scopes.push_back({});
         scope_top_id=0;
 
+        if(scope_stats.size()<scopes.size()){
+            scope_stats.push_back(0);
+        }
+
     }
 
     void Mp::endScope() {
@@ -203,7 +208,7 @@ extern std::ofstream ffout;
             std::cerr<<"#\t"<< tGenRegName(i) <<",\t\t"<< tGeneralReg[i].id <<",\t\t"<< std::bitset<32>(tGeneralReg[i].type) <<",\n";
         }
         std::cerr<<"\n# instruction dump #\n";
-        for(int i=0;i<buffer.size();++i){
+        for(unsigned i=0;i<buffer.size();++i){
             std::cerr<< buffer[i]<<"\n";
         }
         std::cerr<<"\n";
@@ -289,7 +294,7 @@ StackId Mp::reserveId(int size, Type type, std::string identifier,const AddressT
 
         //does not allocate register
 
-    StackId top_id;
+    return {(int)scopes.size()-1,scope_top_id};
     }
 
 /*
@@ -460,11 +465,8 @@ std::string Mp::calOffset(const std::string &str) {//not finished
      */
 
     RegPtr Mp::typeDuplicate(StackId dst, StackId op1, bool free1){
-        EntryPtr e1=getInfo(op1);
-        EntryPtr eDst=getInfo(dst);
 
-        //TODO: BUT, the  line below will NOT work for floating
-        RegPtr r1= loadGenReg(op1); //TODO, this line need fix
+        RegPtr r1= loadGenReg(op1);
         discardGenReg(dst); //discard dst id even if it is dirty (have not effect for reserved id)
 
         //only write back if value is not freeable AND is dirty
@@ -474,25 +476,12 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         }
 
 
-        //TODO: type check has been commented
             comment("assign _"+r1->id.str()+"_ to _"+dst.str()+"_ in reg "+tRegName(r1));
             r1->id=dst;
             setRegDirty(r1->type);
-        //TODO: type check has been commented
-//        if (!isBasicTypeEqual(e1->type, eDst->type)){
-//            //type enforcement
-//            //cast type from op1 to dst
-//            std::cerr<<"convert "<<std::bitset<32>(e1->type)<<" to "<<std::bitset<32>(eDst->type)<<std::endl;
-//            throw std::runtime_error("type enforcement not done");
-//
-//    //            if()
-//
-//        }else{
-//            //same type, override id
-//            comment("assign _"+std::to_string(r1->id)+"_ to _"+std::to_string(dst)+"_ in reg "+tRegName(r1));
-//            r1->id=dst;
-//            setRegDirty(r1->type);
-//        }
+
+        //no type check has been commented (only support int, ptr)
+
 
 
         return r1;//now r1 is dst
@@ -685,6 +674,9 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                 _temp=algebra(OR,dst,op1, false,free,"||="+op1.str());
                 break;
 
+            case ASSIGN:
+                //do nothing
+                break;
         }
 
         typeDuplicate(dst,_temp,free);

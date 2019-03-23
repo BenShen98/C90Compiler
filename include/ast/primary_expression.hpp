@@ -156,17 +156,17 @@ inline StackId cConst2Mp(std::string cConst){
             //integer/ floating point decimal literal
             // possible postfix : u,U ,f,F
         {
-            int dot, exp;
-            dot=cConst.find('.');
-            exp=cConst.find('e');
+            auto dot=cConst.find('.');
+            auto exp=cConst.find('e');
 
-            if( dot==std::string::npos && dot==std::string::npos) {
+            if( dot==std::string::npos && exp==std::string::npos) {
                 // input does not contain . nor e
                     return ( mips.immediate(4, std::to_string(std::stoi(cConst,0,0)), TYPE_SIGNED_INT ,"imm "+ cConst ) );
 
             } else{
                 //floating point
                 notImplemented();
+
 //                type=TYPE_DOUBLE_FLOAT;
 //                if( cConst.back()=='F' || cConst.back()='f' ) {
 //                    setUnsignedInt(type);
@@ -178,6 +178,8 @@ inline StackId cConst2Mp(std::string cConst){
             break;
         }
     }
+
+    return {-1,-1}; //remove warning
 }
 
 

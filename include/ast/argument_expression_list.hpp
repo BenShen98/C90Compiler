@@ -19,14 +19,6 @@ public:
   argument_expression_list(astPtr e)
   :left_list(e){}
 
-std::string c() const override{
-    if(list!=NULL){
-      return list->c() + "," + element->c();
-    }else{
-      return element->c();
-  }
-}
-
 
 };
 
