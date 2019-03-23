@@ -40,8 +40,9 @@ extern std::ofstream ffout;
     //    tFloatReg = std::vector<Reg>(T_FLOAT_REG_SIZE,{MASK_IS_FREE,0,0});
 
         //reset stack
-        top_id=0;
-        entries.clear();
+        scopes.clear();
+        scopes.push_back({});//init first level of scope
+        scope_stats_cumulative.clear();
 
         //function parameter set up (as callee)
         {
@@ -57,23 +58,23 @@ extern std::ofstream ffout;
             int argOffset=0;
 
             // todo : pass float & double
-            //first element
+            //first parameter
             for (int i=0; it != asCallee_paras.end() && i<4; ++it, ++i) {
                 int eleSize=sizeOf(it->type);
-                entries.push_back( {eleSize, argOffset, it->type, it->name } );
-                sw_sp("$a"+std::to_string(i), argOffset, "store parameter");
+                scopes[0].entries.push_back( {eleSize, argOffset, it->type, it->name } );
+                sw_sp("$a"+std::to_string(i), {0, argOffset}, "store parameter");
 
                 argOffset-=eleSize;
 
             }
 
-            // element after forth
+            // parameter after fourth
             for (; it != asCallee_paras.end() ; ++it) {
                 int eleSize=sizeOf(it->type);
-                entries.push_back( {eleSize, argOffset, it->type, it->name } );
+                scopes[0].entries.push_back( {eleSize, argOffset, it->type, it->name } );
                 argOffset-=eleSize;
             }
-            std::reverse(entries.begin(),entries.end());
+            std::reverse(scopes[0].entries.begin(),scopes[0].entries.end());
 
 
 
@@ -91,8 +92,17 @@ extern std::ofstream ffout;
      */
     void Mp::endFrame(bool logging) {
 
+        //scope_stats => scope_stats_cumulative
+        // {4,8,16} => {0,4,12,28}
+        scope_stats_cumulative.push_back(0);
+        std::vector<int>::iterator it = scope_stats.begin();
+        for ( ; it != scope_stats.end() ; ++it ){
+            scope_stats_cumulative.push_back( scope_stats_cumulative.back() + *it );
+        }
+
+
         //calculate zone for `local and temporaries` and `args`
-        stack_size = top_id + 4 + arg_max_size; // space for {local},$RA, {opt_place_holder}, {arg_list}
+        stack_size = scope_stats_cumulative.back() + 4 + arg_max_size; // space for SUM{scopes}, $RA, {opt_place_holder}, {arg_list}
 
         if(stack_size&0x4){
             stack_size+=4; //make stack frame 8 byte aligned
@@ -124,6 +134,7 @@ extern std::ofstream ffout;
             if(postEditPtr[editIdx]==bufIdx){
                 //change offset
                 std::regex_search(buffer[bufIdx], m, edit);
+
                 ffout<<m.prefix()<<calOffset(m[0])<<m.suffix()<<'\n';
 
                 //increment id
@@ -154,13 +165,39 @@ extern std::ofstream ffout;
 
     }
 
+    /*
+     * scopes
+     */
+
+    void Mp::newScope() {
+        scopes.push_back({});
+        scope_top_id=0;
+
+    }
+
+    void Mp::endScope() {
+        int newScopeSize=scopes.back().entries.back().top_id;
+        int scopeDepth=scopes.size()-1;
+
+        if(scope_stats[scopeDepth]<newScopeSize)
+            scope_stats[scopeDepth]=newScopeSize;
+
+        scopes.pop_back();
+
+    }
+
     void Mp::dump() {
 
         std::cerr<<"\n#############################\n# Dump for function "<< asCallee_name <<" #\n#############################\n";
         std::cerr<<"# # Entry dump #\n#\t# top_id #,\t# size(byte) #,\t# type(MSB -- LSB) {} #,\t\t\t# variable name #\n";
-        for(std::vector<Entry>::reverse_iterator rit = entries.rbegin();rit!= entries.rend(); ++rit){
-            std::cerr<<"#\t"<< rit->top_id <<",\t\t"<< rit->size <<",\t\t"<< std::bitset<32>(rit->type)<<" "<<rit->addr<< ",\t" <<rit->name <<",\n";
+
+        for (Scopes::reverse_iterator r=scopes.rbegin(); r!=scopes.rend(); ++r){
+            for(std::vector<Entry>::reverse_iterator rit = r->entries.rbegin(); rit!= r->entries.rend(); ++rit){
+                std::cerr<<"#\t"<< rit->top_id <<",\t\t"<< rit->size <<",\t\t"<< std::bitset<32>(rit->type)<<" "<<rit->addr<< ",\t" <<rit->name <<",\n";
+            }
         }
+
+
         std::cerr<<"\n# # TGenReg dump #\n#\t# regName #,\t# StackID #,\t# type(MSB -- LSB) #\n";
         for(int i=0;i<T_GENERAL_REG_SIZE;++i){
             std::cerr<<"#\t"<< tGenRegName(i) <<",\t\t"<< tGeneralReg[i].id <<",\t\t"<< std::bitset<32>(tGeneralReg[i].type) <<",\n";
@@ -200,7 +237,7 @@ extern std::ofstream ffout;
     }
 
 
-    bool Mp::discardGenReg(int id) {
+    bool Mp::discardGenReg(StackId id) {
         for(int i=0;i<T_GENERAL_REG_SIZE;++i){
             if(tGeneralReg[i].id==id){
                 setRegEmpty(tGeneralReg[i].type);
@@ -214,19 +251,18 @@ extern std::ofstream ffout;
  * insertion of new variable/arguement
  */
 
-//TODO:: array type
-int Mp::reserveArray(Type type, const AddressType& v, std::string identifier) {
-    int id = reserveId(sizeOf(type,v), type, identifier,v);
+StackId Mp::reserveArray(Type type, const AddressType& v, std::string identifier) {
+    StackId id = reserveId(sizeOf(type,v), type, identifier,v);
     return id;
 }
 
-int Mp::_reserveTempPtr(Type type, const AddressType& v, std::string identifier) {
-    int id = reserveId(PTR_SZIE, type, identifier,v);
+StackId Mp::_reserveTempPtr(Type type, const AddressType& v, std::string identifier) {
+    StackId id = reserveId(PTR_SZIE, type, identifier,v);
     return id;
 }
 
-int Mp::immediate(int size, std::string data, Type type, std::string identifier) {
-    int id = reserveId(size, type, identifier);
+StackId Mp::immediate(int size, std::string data, Type type, std::string identifier) {
+    StackId id = reserveId(size, type, identifier);
 
     //init value
     if(isFloat(type)){
@@ -235,31 +271,31 @@ int Mp::immediate(int size, std::string data, Type type, std::string identifier)
     }else{
         //use general register
         RegPtr regId=findFreeGenReg();
-        regId->id=top_id;
+        regId->id=id;
         regId->freshness=freshCounter;
         freshCounter++;
 
         setRegDirty(regId->type);
-        _li( tRegName(regId ), data, "imm id _" + std::to_string(id) +"_" );
+        _li( tRegName(regId ), data, "imm id _" + id.str() +"_" );
     }
 
     return id;
 }
 
-int Mp::reserveId(int size, Type type, std::string identifier,const AddressType& address){
+StackId Mp::reserveId(int size, Type type, std::string identifier,const AddressType& address){
         //gen id, allocate space on heap
-        top_id+=size;
-        entries.push_back({size,top_id,type&CHECK_REG_N ,identifier,address});
+        scope_top_id+=size;
+        scopes.back().entries.push_back({size,scope_top_id,type&CHECK_REG_N ,identifier,address});
 
         //does not allocate register
 
-        return top_id;
+    StackId top_id;
     }
 
 /*
  * Buffers for output assembly
  */
-
+/// currently only top_id
 std::string Mp::calOffset(const std::string &str) {//not finished
     int pos=atoi(str.substr(1, str.size()-1).c_str());
     return std::to_string(stack_size-pos); // see my (Ben's) drawing
@@ -269,11 +305,11 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 /*
  * Arg passing
  */
-//void Mp::addArg(int id) {
+//void Mp::addArg(StackId id) {
 //    args.push_back({BY_ID,id,""});
 //}
 //
-//void Mp::addArg_cpArray(int id){
+//void Mp::addArg_cpArray(StackId id){
 //    throw std::runtime_error("not implemented");
 //
 //    args.push_back({BY_CP_ARRAY,id,""});
@@ -295,7 +331,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         //wire back all general register
         for(int i=0; i<T_GENERAL_REG_SIZE; ++i){
             if( isRegDirty(tGeneralReg[i].type) ){
-                sw_sp(tGenRegName(i),tGeneralReg[i].id,"write back id "+std::to_string(tGeneralReg[i].id));
+                sw_sp(tGenRegName(i),tGeneralReg[i].id,"write back id "+tGeneralReg[i].id.str());
             }
             setRegEmpty(tGeneralReg[i].type);
         }
@@ -304,51 +340,24 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         //TODO write back all FP register
     }
 
-    int Mp::getId(std::string identifier) {
+    StackId Mp::getId(std::string identifier) {
 
-        //find matching name from top of the stack (itr backwards)
-        {
-            int i = entries.size() - 1;
+        //find matching name from top of the stack (itr backwards), in each of the scope
+        for(int depth=scopes.size()-1; depth>=0; --depth){
 
-            // whill throw out of rang exception if not found
-            // todo: need handel global
+            //todo: how about enum & typedef?
 
-            while (entries.at(i).name != identifier && i >0){
+            int i = scopes[depth].entries.size() - 1;
+            while (scopes[depth].entries.at(i).name != identifier && i >0){
                 --i;
             }
 
             //if found in current stack frame
             if (i >= 0) {
-
-//                // if is array
-//                if (offset != 0) {
-//                    if (isArray(entries[i].type) && (entries[i].size > offset)) {
-//                        //is array
-//                        return entries[i].top_id - offset; //SUB here
-//                    } else {
-//                        // is not array OR index out of range
-//                        throw std::runtime_error(identifier + " is not an array, or index out of range");
-//                    }
-//                }
-
-                //not array
-                return entries[i].top_id;
+                return {depth, scopes[depth].entries[i].top_id};
             }
-        }
 
-//        //check if is in parameter (shown as entry with negative id)
-//        {
-//            int argOffset;
-//            Paras::const_iterator it= asCallee_paras.begin();
-//            for ( ;it != asCallee_paras.end() && identifier != it->name; ++it ){
-//                argOffset += sizeOf(it->type);
-//            }
-//
-//            if(it!=asCallee_paras.end()){
-//                // is parameter
-//                return -argOffset;
-//            }
-//        }
+        }
 
         //check if is global
         {
@@ -362,18 +371,19 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
     }
 
-    EntryPtr Mp::getInfo(int id) const {
+    EntryPtr Mp::getInfo(StackId id) const {
         int i=0;
 
-        for( ;id>entries[i].size; ++i){
-            id-=entries[i].size;
+
+        for( ;id.top_id > scopes[id.level].entries[i].size; ++i){
+            id.top_id-=scopes[id.level].entries[i].size;
         }
 
-        return &entries[i];
+        return &(scopes[id.level].entries[i]);
 
     }
 
-    RegPtr Mp::loadGenReg(int id, bool load) {
+    RegPtr Mp::loadGenReg(StackId id, bool load) {
         RegPtr regItr=tGeneralReg;
 
 
@@ -409,7 +419,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         freshCounter++;
         // only load data from stack to register when required to
         if(load){
-            lw_sp(tRegName( regItr ), id, "load _"+std::to_string(id) +"_ to" + tRegName( regItr ));
+            lw_sp(tRegName( regItr ), id, "load _"+id.str() +"_ to" + tRegName( regItr ));
             setRegSync(regItr->type);
         }else{
             setRegUnkown(regItr->type);
@@ -443,53 +453,13 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         return spill_regId;
     }
 
-//    std::string Mp::readGenReg(int id) {
-//        return tGenRegName(loadGenReg(id,true));
-//    }
-//
-//    std::string Mp::writeGenReg(int id) {
-//        int regId=loadGenReg(id, false);
-//        setRegDirty(tGeneralReg[regId].type); // unknown/dirty/sync state --> dirty state
-//        return tGenRegName(regId);
-//    }
 
 
     /*
      * C instruction
      */
-    //
-//    void Mp::copyAssign(int dst, int op1, bool free1) {
-//        typeDuplicate(dst,op1,free1);
-//    }
 
-//    RegPtr Mp::typeDuplicate(Type tDst, int op1, bool free1){
-//        EntryPtr e1=getInfo(op1);
-////        EntryPtr eDst=getInfo(dst);
-//
-//        //TODO: BUT, the  line below will NOT work for floating
-//
-//
-//        RegPtr r1= loadGenReg(op1); //TODO, this line need fix, use loadReg()
-//        //only write back if value is not freeable AND is dirty
-//        if( !free1 && isRegDirty(r1->type) ){
-//            sw_sp(tRegName(r1), r1->id, "save dirty register "+std::to_string(r1->id)+" before duplicate");
-//            setRegSync(r1->type);
-//        }
-//
-//        if (!isEqual(op1->type, tDst)){
-//            //type enforcement, make a copy
-//            //cast type from op1 to dst
-//            throw std::runtime_error("type enforcement not done");
-//
-//            int dst=reserveId(sizeOf(tDst), tDst); // make copy
-//
-//        }
-//
-//        return r1;//now r1 is dst
-//
-//    }
-
-    RegPtr Mp::typeDuplicate(int dst, int op1, bool free1){
+    RegPtr Mp::typeDuplicate(StackId dst, StackId op1, bool free1){
         EntryPtr e1=getInfo(op1);
         EntryPtr eDst=getInfo(dst);
 
@@ -499,13 +469,13 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
         //only write back if value is not freeable AND is dirty
         if( !free1 && isRegDirty(r1->type) ){
-            sw_sp(tRegName(r1), r1->id, "save dirty re _"+std::to_string(r1->id)+"_ before duplicate");
+            sw_sp(tRegName(r1), r1->id, "save dirty re _"+r1->id.str()+"_ before duplicate");
             setRegSync(r1->type);
         }
 
 
         //TODO: type check has been commented
-            comment("assign _"+std::to_string(r1->id)+"_ to _"+std::to_string(dst)+"_ in reg "+tRegName(r1));
+            comment("assign _"+r1->id.str()+"_ to _"+dst.str()+"_ in reg "+tRegName(r1));
             r1->id=dst;
             setRegDirty(r1->type);
         //TODO: type check has been commented
@@ -669,50 +639,50 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     //     _li(tRegName(rDst), constant, "assign imm to "+std::to_string(dst));
     // }
 
-    void Mp::assignment(int dst, int op1, enum_assignment operation, bool free){
+    void Mp::assignment(StackId dst, StackId op1, enum_assignment operation, bool free){
 
         // default case for simple assignment
-        int _temp=op1;
+        StackId _temp=op1;
 
         switch (operation){
             case MULA: // *=
-                _temp=algebra(MUL,dst,op1, false,free,"*="+std::to_string(op1));
+                _temp=algebra(MUL,dst,op1, false,free,"*="+op1.str());
                 break;
 
             case DIVA: // /=
-                _temp=algebra(DIV,dst,op1, false,free,"/="+std::to_string(op1));
+                _temp=algebra(DIV,dst,op1, false,free,"/="+op1.str());
                 break;
 
             case MODA: // %=
-                _temp=algebra(MOD,dst,op1, false,free,"%="+std::to_string(op1));
+                _temp=algebra(MOD,dst,op1, false,free,"%="+op1.str());
                 break;
 
             case ADDA: // +=
-                _temp=algebra(ADD,dst,op1, false,free,"+="+std::to_string(op1));
+                _temp=algebra(ADD,dst,op1, false,free,"+="+op1.str());
                 break;
 
             case SUBA: // -=
-                _temp=algebra(SUB,dst,op1, false,free,"-="+std::to_string(op1));
+                _temp=algebra(SUB,dst,op1, false,free,"-="+op1.str());
                 break;
 
             case LEFTA: // <<=
-                _temp=algebra(LEFT_,dst,op1, false,free,"<<="+std::to_string(op1));
+                _temp=algebra(LEFT_,dst,op1, false,free,"<<="+op1.str());
                 break;
 
             case RIGHTA: // >>=
-                _temp=algebra(RIGHT_,dst,op1, false,free,">>="+std::to_string(op1));
+                _temp=algebra(RIGHT_,dst,op1, false,free,">>="+op1.str());
                 break;
 
             case ANDA: // &=
-                _temp=algebra(AND,dst,op1, false,free,"&="+std::to_string(op1));
+                _temp=algebra(AND,dst,op1, false,free,"&="+op1.str());
                 break;
 
             case XORA: // ^=
-                _temp=algebra(XOR,dst,op1, false,free,"^="+std::to_string(op1));
+                _temp=algebra(XOR,dst,op1, false,free,"^="+op1.str());
                 break;
 
             case ORA: // ||=
-                _temp=algebra(OR,dst,op1, false,free,"||="+std::to_string(op1));
+                _temp=algebra(OR,dst,op1, false,free,"||="+op1.str());
                 break;
 
         }
@@ -722,20 +692,20 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     }
 
 
-    RegPtr Mp::getAddrOffset(int idxId, bool idxFreeable, EntryPtr array) {
+    RegPtr Mp::getAddrOffset(StackId idxId, bool idxFreeable, EntryPtr array) {
         RegPtr idx, size, final;
 
         //get sizeOf
-        int sizeId = immediate(PTR_SZIE, std::to_string( sizeOf(array->type,array->addr,true) ),TYPE_SIGNED_INT, "size of inner _"+std::to_string(array->top_id)+"_");
+        StackId sizeId = immediate(PTR_SZIE, std::to_string( sizeOf(array->type,array->addr,true) ),TYPE_SIGNED_INT, "size of inner _x:"+std::to_string(array->top_id)+"_");
         size=loadGenReg(sizeId);
 
         //get idx
         idx=loadGenReg(idxId);
 
         //cal offset
-        int finalId=reserveId(4,TYPE_SIGNED_INT,"offsets");
+        StackId finalId=reserveId(4,TYPE_SIGNED_INT,"offsets");
         final=loadGenReg(finalId, false);
-        _algebra(MUL,final,idx,size,"cal offset _"+std::to_string(finalId));
+        _algebra(MUL,final,idx,size,"cal offset _"+finalId.str());
 
         if(idxFreeable)
             discardGenReg(idxId);
@@ -745,7 +715,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     }
 
 
-    int Mp::algebra(enum_algebra algebra,int op1, int op2, bool free1, bool free2, std::string varName) {
+    StackId Mp::algebra(enum_algebra algebra,StackId op1, StackId op2, bool free1, bool free2, std::string varName) {
 
         RegPtr r1,r2,rResult;
         r1=loadGenReg(op1);
@@ -788,12 +758,12 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
 
         // after promotion
-        int id_result=reserveId(4,resultType,varName,resultAddrType);
+        StackId id_result=reserveId(4,resultType,varName,resultAddrType);
         rResult=loadGenReg(id_result, false);
 
 
         //doing actual calculation
-        _algebra(algebra, rResult, r1, r2, "dst id _" + std::to_string(id_result) + "_");
+        _algebra(algebra, rResult, r1, r2, "dst id _" + id_result.str() + "_");
 
         //free op register
         if(free1){
@@ -808,7 +778,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
     }
 
-    int Mp::addi(bool perfix, int op1, std::string integer) {
+    StackId Mp::addi(bool perfix, StackId op1, std::string integer) {
         RegPtr r1;
         r1=loadGenReg(op1);
 
@@ -816,17 +786,17 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
         if(perfix){
             //per increment
-            _addi(tRegName(r1), tRegName(r1), integer, "per increment of id _"+std::to_string(op1)+"_");
+            _addi(tRegName(r1), tRegName(r1), integer, "per increment of id _"+op1.str()+"_");
             setRegDirty(r1->type);
             return op1;
 
         } else{
             //if if post increment, return a copy before increment
 
-            int orgCopy;
+            StackId orgCopy;
             RegPtr rOrgCopy;
 
-            orgCopy=reserveId(4,r1->type,"org copy of _"+std::to_string(op1)+"_");
+            orgCopy=reserveId(4,r1->type,"org copy of _"+op1.str()+"_");
             rOrgCopy=loadGenReg(orgCopy, false);
 
             _addi(tRegName(rOrgCopy), tRegName(r1), integer, "add, swap org copy & org");
@@ -841,26 +811,28 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         }
     }
 
-    int Mp::negation(char type, int op1, bool free1){
+    StackId Mp::negation(char type, StackId op1, bool free1){
       RegPtr r1;
-      int Copy;
+      StackId Copy;
       r1=loadGenReg(op1);
+
       if(!free1 && isRegDirty(r1->type)){
-        sw_sp(tRegName(r1), r1->id, "save dirty re _"+std::to_string(r1->id)+"_ before negation");
+        sw_sp(tRegName(r1), r1->id, "save dirty re _"+r1->id.str()+"_ before negation");
         setRegSync(r1->type);
       }
-      Copy=reserveId(4,r1->type,"negating copy of_"+std::to_string(op1)+"_" );
+
+      Copy=reserveId(4,r1->type,"negating copy of_"+op1.str()+"_" );
       switch(type){
         case '-':
-          _subu(tRegName(r1),"$0",tRegName(r1),"negating_"+std::to_string(op1)+"_");
+          _subu(tRegName(r1),"$0",tRegName(r1),"negating_"+op1.str()+"_");
           //checked with godbolt
         break;
         case '~':
-          _nor(tRegName(r1),"$0",tRegName(r1),"nor_"+std::to_string(op1)+"_");
+          _nor(tRegName(r1),"$0",tRegName(r1),"nor_"+op1.str()+"_");
         break;
         case '!':
-          _sltu(tRegName(r1),tRegName(r1),"1","sltu_"+std::to_string(op1)+"_");
-          _and(tRegName(r1),tRegName(r1),"0x00ff","andi_0x00ff"+std::to_string(op1)+"_");
+          _sltu(tRegName(r1),tRegName(r1),"1","sltu_"+op1.str()+"_");
+          _and(tRegName(r1),tRegName(r1),"0x00ff","andi_0x00ff"+op1.str()+"_");
           break;
         default:
           throw std::runtime_error("Not implemented.");
@@ -870,12 +842,12 @@ std::string Mp::calOffset(const std::string &str) {//not finished
       return Copy;
     }
 
-//    int Mp::makeCopy(int id, bool free1) {
+//    int Mp::makeCopy(StackId id, bool free1) {
 //        EntryPtr info=getInfo(id);
 //        int resultId;
 //
 //        int size = isDoubleFloat(info->type) ? 8 : 4 ;
-//        resultId=reserveId(size,info->type,"was copy of "+std::to_string(id));
+//        resultId=reserveId(size,info->type,"was copy of "+id.str());
 //
 //        typeDuplicate(resultId,id,free1);
 //
@@ -906,7 +878,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
     }
 
-    void Mp::addArg(int id) {
+    void Mp::addArg(StackId id) {
         //todo only work for int
 
 //        EntryPtr info=getInfo(id);
@@ -922,7 +894,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             if(para_offset<16){
                 _move("$a"+std::to_string(para_offset/4), tRegName(reg), "implicit call, int type");
             }else{
-                sw_sp(tRegName(reg),std::to_string(para_offset),"implicit call, int type");
+                sw_sp_arg(tRegName(reg),std::to_string(para_offset),"implicit call, int type");
             };
 
 
@@ -935,7 +907,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             if(para_offset<16){
                 _move("$a"+std::to_string(para_offset/4), tRegName(reg), "implicit call, int type");
             }else{
-                sw_sp(tRegName(reg),std::to_string(para_offset),"implicit call, int type");
+                sw_sp_arg(tRegName(reg),std::to_string(para_offset),"implicit call, int type");
             };
 
             para_offset+=sizeOf(reg->type);
@@ -947,8 +919,8 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     }
 
 
-    int Mp::commitCall() {
-        int resultId;
+    StackId Mp::commitCall() {
+        StackId resultId;
 
         //update system state
         if(implicitCall){
@@ -968,11 +940,12 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             Type returnType = implicitCall ? TYPE_SIGNED_INT : asCaller_args[0].type;
             resultId=reserveId(4,returnType,asCaller_name+" return");
             RegPtr rReg= loadGenReg(resultId, false);
-            _move(tRegName(rReg), "$v0", "mv return to tReg _"+std::to_string(resultId)+"_");
+            _move(tRegName(rReg), "$v0", "mv return to tReg _"+resultId.str()+"_");
             setRegDirty(rReg->type);
 
         }else{
             //in cp1
+            throw std::runtime_error("floating implemented.");
 
         }
 
@@ -998,13 +971,13 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         buffer.push_back(label + ":\n");
     }
 
-    void Mp::Return(int id) {
+    void Mp::Return(StackId id) {
 
         //TODO: get return type
         Type returnType=asCallee_paras[0].type;
 
 
-        int dst = reserveId(sizeOf(returnType),returnType, "FUNC RETURN");
+        StackId dst = reserveId(sizeOf(returnType),returnType, "FUNC RETURN");
         RegPtr _op1 = typeDuplicate(dst, id, true); // not sure (think is true, because frame will be popped )
         std::string _op1Str=tRegName(_op1);
 
@@ -1029,7 +1002,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
      *  BLOCK control
      */
 
-    void Mp::bZero(bool onTrue, int id, std::string label) {
+    void Mp::bZero(bool onTrue, StackId id, std::string label) {
         EntryPtr entry=getInfo(id);
 
         if(isFloat(entry->type)){
@@ -1052,7 +1025,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     _b(label);
   }
 
-  void Mp::beq(int id1,int id2,std::string label){
+  void Mp::beq(StackId id1,StackId id2,std::string label){
     EntryPtr entry1=getInfo(id1);
     EntryPtr entry2=getInfo(id2);
     //TODO check both ?

@@ -129,15 +129,15 @@ public:
             switch (type){
 
                 case '-':
-                    result.id = -result.id;
+                    result.num = -result.num;
                     break;
 
                 case '~':
-                    result.id = ~result.id;
+                    result.num = ~result.num;
                     break;
 
                 case '!':
-                    result.id = !result.id;
+                    result.num = !result.num;
                     break;
 
                 default:

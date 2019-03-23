@@ -239,6 +239,8 @@ inline int sizeOf(Type t, const AddressType& v, bool getInner = false) {
     if(getInner)
         ++ritr;
 
+    //todo: for inner, need check v.size()>2
+
     if(isAddressFlagSet(t) && !v.empty()){
         for( ; ritr!=v.rend() ; ++ritr){
             if(*ritr<0)
@@ -300,9 +302,26 @@ inline std::ostream& operator << (std::ostream& os, const AddressType v)
  * struct
  */
 
+typedef struct _stackid{
+    int level;
+    int top_id;
+
+    std::string str()const {
+        return std::to_string(top_id);
+//        return std::to_string(level)+":"+id.str();
+
+    }
+
+} StackId;
+
+inline bool operator==(const StackId& lhs, const StackId& rhs)
+{
+    return lhs.level==rhs.level && lhs.top_id==rhs.top_id;
+}
+
 typedef struct _reg{
     Type type=REG_EMPTY;
-    int id; //negative id means it is free register
+    StackId id; //negative id means it is free register
     int freshness; // the higher the value, the more resent it had been used
 } Reg;
 
@@ -319,14 +338,26 @@ typedef struct _entry{
 
 typedef const Entry * const EntryPtr;
 
+typedef struct _scope{
+    std::vector<Entry> entries;
+    //typedef
+    //enum
+
+} Scope;
+
+typedef std::vector<Scope> Scopes;
+
+
+
 typedef struct _result{
 
 //        union{
-//            int id;     // used for operation which have dst register
+//            StackId id;     // used for operation which have dst register
 //            Type type; //used for declaration_specifiers
 //        };
 
-    int id;     // used for operation which have dst register
+    StackId id;     // used for operation which have dst register
+    int num;        // used by constant expression
     Type type=TYPE_SIGNED_INT; //used for declaration_specifiers
 
     std::string str;// this field need refactor
@@ -339,9 +370,16 @@ typedef struct _result{
 
 
 //typedef struct _msg {
-//    int id;
+//    StackId id;
 //    int reg;
 //    Type type;
 //} Msg;
+
+inline std::ostream& operator << (std::ostream& os, const StackId& s)
+{
+    os<<s.str();
+    return os;
+}
+
 
 #endif //C90_MP_MASK_HPP

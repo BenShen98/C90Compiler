@@ -97,7 +97,7 @@ public:
                 if(right!=NULL){
                     Result r;
                     right->mp(r); //use id field to pass constant_expression VALUE, r will have type VOID in constant_expression
-                    result.addr.push_back(r.id);//get array size x[2+3]
+                    result.addr.push_back(r.num);//get array size x[2+3]
 
                 } else{
                     result.addr.push_back(-2); //incomplete tye x[]

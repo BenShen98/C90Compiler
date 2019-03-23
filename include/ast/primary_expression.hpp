@@ -15,7 +15,7 @@ primary_expression      (IDENTIFIER does not contain "", but STRING_LITERAL does
 
 inline bool isDec(char c) { return (c>='0' && c<='9'); }
 inline std::string cConst2pyConst(std::string cConst);
-inline int cConst2Mp(std::string cConst);
+inline StackId cConst2Mp(std::string cConst);
 
 
 class primary_expression: public ast_abs{
@@ -79,7 +79,7 @@ public:
             case 1: //char, int, float
 
                 if(isVoid(result.type)){
-                    result.id = std::stoi(*str);  //return dec, compile time constant
+                    result.num = std::stoi(*str,0,0);  //return dec, compile time constant
                 }else{
                     result.id = cConst2Mp(*str); //return stack id, imm in register
                 }
@@ -99,7 +99,7 @@ public:
                 pt->mp(rst);
 
                 // make temporary duplicate,
-                result.id=mips.reserveId(sizeOf(rst.type),rst.type,"temp copy of "+std::to_string(rst.id));
+                result.id=mips.reserveId(sizeOf(rst.type),rst.type,"temp copy of "+ rst.id.str());
                 mips.assignment(result.id,rst.id,ASSIGN,rst.freeable);
                 result.freeable=true;
 
@@ -131,7 +131,7 @@ inline std::string cConst2pyConst(std::string cConst){
 }
 
 // return id which stored the constant
-inline int cConst2Mp(std::string cConst){
+inline StackId cConst2Mp(std::string cConst){
     // convert string to what ever
 
     //TODO: float,
@@ -149,13 +149,7 @@ inline int cConst2Mp(std::string cConst){
             break;
 
         case '0':
-            // input is either oct(0467), hex(0x2af), binary(0b0101)
-            if( cConst.back()=='U' || cConst.back()=='u' ) {
-                cConst.pop_back(); //remove postfix
-                return ( mips.immediate(4, cConst, TYPE_SIGNED_INT, "imm "+ cConst ) );
-            }else{
-                return ( mips.immediate(4, cConst, TYPE_SIGNED_INT ,"imm "+ cConst ) );
-            }
+                return ( mips.immediate(4, std::to_string(std::stoi(cConst,0,0)), TYPE_SIGNED_INT ,"imm "+ cConst ) );
 
 
         default:
@@ -168,12 +162,7 @@ inline int cConst2Mp(std::string cConst){
 
             if( dot==std::string::npos && dot==std::string::npos) {
                 // input does not contain . nor e
-                if( cConst.back()=='U' || cConst.back()=='u' ) {
-                    cConst.pop_back(); //remove postfix
-                    return ( mips.immediate(4, cConst, TYPE_SIGNED_INT ,"imm "+ cConst ) );
-                }else{
-                    return ( mips.immediate(4, cConst, TYPE_SIGNED_INT ,"imm "+ cConst ) );
-                }
+                    return ( mips.immediate(4, std::to_string(std::stoi(cConst,0,0)), TYPE_SIGNED_INT ,"imm "+ cConst ) );
 
             } else{
                 //floating point
