@@ -318,6 +318,9 @@ public:
     int immediate(int size, std::string data, Type type, std::string identifier="" );
     int reserveArray(Type type,const AddressType& v,std::string identifier="" );
 
+    //this will always reserve size 4, have type int
+    int _reserveTempPtr(Type type,const AddressType& v,std::string identifier="" );
+
 //    int push_back_array();
 
 /*

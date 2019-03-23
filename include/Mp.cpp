@@ -15,6 +15,7 @@
 #include <fstream>
 
 #define RETURN_LABEL "EXIT_"+asCallee_name
+#define PTR_SZIE 4
 
 extern Context context;
 extern std::ofstream ffout;
@@ -216,7 +217,11 @@ extern std::ofstream ffout;
 //TODO:: array type
 int Mp::reserveArray(Type type, const AddressType& v, std::string identifier) {
     int id = reserveId(sizeOf(type,v), type, identifier,v);
+    return id;
+}
 
+int Mp::_reserveTempPtr(Type type, const AddressType& v, std::string identifier) {
+    int id = reserveId(PTR_SZIE, type, identifier,v);
     return id;
 }
 
