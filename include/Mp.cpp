@@ -529,332 +529,133 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
     }
 
-    std::pair<RegPtr , RegPtr> Mp::typePromotion(int op1, int op2) {
-        EntryPtr e1=getInfo(op1);
-        EntryPtr e2=getInfo(op2);
-
-
-//        if( !isBasicTypeEqual(e1->type, e2->type) ){
-//            //type promotion
-//            //
-//            throw std::runtime_error("type promotion not done");
-//
-//        }else{
-
-            //no type promotion
-            if( isFloat(e1->type) ){
-                throw std::runtime_error("single/double float not supported");
-
-            }else{
-                return std::make_pair( loadGenReg(op1), loadGenReg(op2) );
-            }
-//        }
-
-    }
-
 
 
     void Mp::_algebra(enum_algebra operation, RegPtr dst, RegPtr op1, RegPtr op2, std::string comment) {
+        Type resultType=dst->type;
+
         switch (operation){
             case ADD:
-            {
-                Type temp=dst->type;
-                if(isUnsignedInt(temp)||isSignedInt(temp)){
                 _addu(tRegName(dst), tRegName(op1), tRegName(op2),comment);
-                }
-                else if(isSingleFloat(temp)){
-                //single floating
-                }
-                else if(isDoubleFloat(temp)){
-                //double floating
-                }
-
-            }
                 break;
-           case MUL:
-           {
-               Type temp=dst->type;
-               if(isInt(temp)){
-               _mul(tRegName(dst),tRegName(op1), tRegName(op2),comment);
-               }
-               else if(isSingleFloat(temp)){
-               //single floating
-               }
-               else if(isDoubleFloat(temp)){
-               //double floating
-               }
 
-           }
+           case MUL:
+               _mul(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                break;
 
            case DIV:
-           {
-               Type temp=dst->type;
-               if(isUnsignedInt(temp)){
+               if(isUnsignedInt(resultType)){
                  _divu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
-               else if (isSignedInt(temp)){
+               else {
                  _div(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
-               else if(isSingleFloat(temp)){
-               //single floating
-               }
-               else if(isDoubleFloat(temp)){
-               //double floating
-               }
-
-           }
                break;
 
            case MOD:
-           {
-               Type temp=dst->type;
-               if(isUnsignedInt(temp)){
+               if(isUnsignedInt(resultType)){
                  _modu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
-               else if (isSignedInt(temp)){
+               else{
                  _mod(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
-               else if(isSingleFloat(temp)){
-               //single floating
-               }
-               else if(isDoubleFloat(temp)){
-               //double floating
-               }
 
-           }
                break;
 
            case SUB:
-           {
-               Type temp=dst->type;
-               if(isInt(temp)){
                 _subu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
-               }
-               else if(isSingleFloat(temp)){
-               //single floating
-               }
-               else if(isDoubleFloat(temp)){
-               //double floating
-               }
-
-           }
-               break;
+                break;
 
            case LEFT_:
-           {
-               Type temp=dst->type;
-               if(isUnsignedInt(temp)||isSignedInt(temp)){
                _sll(tRegName(dst),tRegName(op1), tRegName(op2),comment);
-               }
-               else if(isSingleFloat(temp)){
-               //single floating
-               throw std::runtime_error("Floating not supported");
-               }
-               else if(isDoubleFloat(temp)){
-               //double floating
-               throw std::runtime_error("Floating not supported");
-               }
-           }
                break;
 
            case RIGHT_:
-           {
-               Type temp=dst->type;
-               if(isUnsignedInt(temp)){
+               if(isUnsignedInt(resultType)){
                  _srl(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
-               else if (isSignedInt(temp)){
+               else{
                  _sra(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
-               else if(isSingleFloat(temp)){
-               //single floating
-               throw std::runtime_error("Floating not supported");
-               }
-               else if(isDoubleFloat(temp)){
-               //double floating
-               throw std::runtime_error("Floating not supported");
-               }
-           }
                break;
 
            case SMALLER:
-           {
-               Type temp=dst->type;
-               if(isUnsignedInt(temp)){
+               if(isUnsignedInt(resultType)){
                  _sltu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
-               else if (isSignedInt(temp)){
+               else{
                  _slt(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
-               else if(isSingleFloat(temp)){
-               //single floating
-               }
-               else if(isDoubleFloat(temp)){
-               //double floating
-               }
-
-           }
                break;
 
            case GREATER:
-           {
-               Type temp=dst->type;
-               if(isUnsignedInt(temp)){
+               if(isUnsignedInt(resultType)){
                  _sltu(tRegName(dst),tRegName(op2), tRegName(op1),comment);
                }
-               else if (isSignedInt(temp)){
+               else{
                  _slt(tRegName(dst),tRegName(op2), tRegName(op1),comment);
                }
-               else if(isSingleFloat(temp)){
-               //single floating
-               }
-               else if(isDoubleFloat(temp)){
-               //double floating
-               }
-
-           }
                break;
 
            case LE_:
-           {
-               Type temp=dst->type;
-               if(isUnsignedInt(temp)){
+               if(isUnsignedInt(resultType)){
                  _LEu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
-               else if (isSignedInt(temp)){
+               else{
                  _LE(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
-               else if(isSingleFloat(temp)){
-               //single floating
-               }
-               else if(isDoubleFloat(temp)){
-               //double floating
-               }
-
-           }
                break;
 
            case GE_:
-           {
-               Type temp=dst->type;
-               if(isUnsignedInt(temp)){
+               if(isUnsignedInt(resultType)){
                  _LEu(tRegName(dst),tRegName(op2), tRegName(op1),comment);
                }
-               else if (isSignedInt(temp)){
+               else{
                  _LE(tRegName(dst),tRegName(op2), tRegName(op1),comment);
                }
-               else if(isSingleFloat(temp)){
-               //single floating
-               }
-               else if(isDoubleFloat(temp)){
-               //double floating
-               }
-
-           }
                break;
 
            case EQ_:
-           {
-               Type temp=dst->type;
-               if(isInt(temp)){
                  _EQ(tRegName(dst),tRegName(op1), tRegName(op2),comment);
-               }
-               else if(isSingleFloat(temp)){
-               //single floating
-               }
-               else if(isDoubleFloat(temp)){
-               //double floating
-               }
-
-           }
                break;
 
            case NE_:
-           {
-               Type temp=dst->type;
-               if(isInt(temp)){
                  _NE(tRegName(dst),tRegName(op1), tRegName(op2),comment);
-               }
-               else if(isSingleFloat(temp)){
-               //single floating
-               }
-               else if(isDoubleFloat(temp)){
-               //double floating
-               }
-
-           }
                break;
 
            case AND:
-           {
-               Type temp=dst->type;
-               if(isInt(temp)){
                  _and(tRegName(dst),tRegName(op1), tRegName(op2),comment);
-               }
-               else if(isSingleFloat(temp)){
-               //single floating
-               }
-               else if(isDoubleFloat(temp)){
-               //double floating
-               }
-
-           }
                break;
 
            case XOR:
-           {
-               Type temp=dst->type;
-               if(isInt(temp)){
                  _xor(tRegName(dst),tRegName(op1), tRegName(op2),comment);
-               }
-               else if(isSingleFloat(temp)){
-               //single floating
-               }
-               else if(isDoubleFloat(temp)){
-               //double floating
-               }
-
-           }
                break;
 
            case OR:
-           {
-               Type temp=dst->type;
-               if(isInt(temp)){
                  _or(tRegName(dst),tRegName(op1), tRegName(op2),comment);
-               }
-               else if(isSingleFloat(temp)){
-               //single floating
-               }
-               else if(isDoubleFloat(temp)){
-               //double floating
-               }
-
-           }
                break;
 
-          //  case AND_:
-          //  {
-          //      Type temp=dst->type;
-          //      if(isUnsignedInt(temp)||isSignedInt(temp))){
-          //      _and(tRegName(dst),tRegName(op1), tRegName(op2),comment);
-          //      }
-          //      else if(isSingleFloat(temp)){
-          //      //single floating
-          //      }
-          //      else if(isDoubleFloat(temp)){
-          //      //double floating
-          //      }
-          //      else if (isArray(temp)){
-          //      //array
-          //      }
-          //  }
-          //      break;
-           //
-          //  case OR_:
-          //      //short circuit
-          //      break;
+//            case AND_:
+//            {
+//                Type temp=dst->type;
+//                if(isUnsignedInt(temp)||isSignedInt(temp))){
+//                _and(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+//                }
+//                else if(isSingleFloat(temp)){
+//                //single floating
+//                }
+//                else if(isDoubleFloat(temp)){
+//                //double floating
+//                }
+//                else if (isArray(temp)){
+//                //array
+//                }
+//            }
+//                break;
+//
+//            case OR_:
+//                //short circuit
+//                break;
             default:
                 throw std::runtime_error("Not implemented.");
         }
@@ -870,107 +671,129 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
     void Mp::assignment(int dst, int op1, enum_assignment operation, bool free){
 
-        // make a copy of op1
-        // NOTE: _op1.id != op1 if type conversion is done
+        // default case for simple assignment
+        int _temp=op1;
 
-        if(operation==ASSIGN){ // =
+        switch (operation){
+            case MULA: // *=
+                _temp=algebra(MUL,dst,op1, false,free,"*="+std::to_string(op1));
+                break;
 
-            // = assign copy of op1 to dst
-            typeDuplicate(dst,op1,free);
+            case DIVA: // /=
+                _temp=algebra(DIV,dst,op1, false,free,"/="+std::to_string(op1));
+                break;
 
-        }else{
-            //case other than simple assign
+            case MODA: // %=
+                _temp=algebra(MOD,dst,op1, false,free,"%="+std::to_string(op1));
+                break;
 
-            EntryPtr destInfo = getInfo(dst);
-            RegPtr rDst;
+            case ADDA: // +=
+                _temp=algebra(ADD,dst,op1, false,free,"+="+std::to_string(op1));
+                break;
 
-            if(isFloat(destInfo->type)){
-                throw std::runtime_error("Not implemented.");
-            } else{
-                rDst=loadGenReg(dst, false);
-            }
+            case SUBA: // -=
+                _temp=algebra(SUB,dst,op1, false,free,"-="+std::to_string(op1));
+                break;
 
-            // make a copy of op1, which have same type as dst
-            int _op1=reserveId(sizeOf(rDst->type),rDst->type,"copy "+std::to_string(op1)+ " to "+std::to_string(op1));
-            RegPtr r_op1=typeDuplicate(_op1,op1, free);
+            case LEFTA: // <<=
+                _temp=algebra(LEFT_,dst,op1, false,free,"<<="+std::to_string(op1));
+                break;
 
+            case RIGHTA: // >>=
+                _temp=algebra(RIGHT_,dst,op1, false,free,">>="+std::to_string(op1));
+                break;
 
-            //doing the actual assignment
-            //BUG :) @ ALAN
-            switch (operation){
-                case MULA: // *=
-                _algebra(MUL,rDst,r_op1,rDst,"+="+std::to_string(op1) );
-                    break;
+            case ANDA: // &=
+                _temp=algebra(AND,dst,op1, false,free,"&="+std::to_string(op1));
+                break;
 
-                case DIVA: // /=
-                _algebra(DIV,rDst,r_op1,rDst,"+="+std::to_string(op1) );
-                    break;
+            case XORA: // ^=
+                _temp=algebra(XOR,dst,op1, false,free,"^="+std::to_string(op1));
+                break;
 
-                case MODA: // %=
-                _algebra(MOD,rDst,r_op1,rDst,"+="+std::to_string(op1) );
-                    break;
-
-                case ADDA: // +=
-                    _algebra(ADD,rDst,r_op1,rDst,"+="+std::to_string(op1) );
-                    break;
-
-                case SUBA: // -=
-                _algebra(SUB,rDst,r_op1,rDst,"+="+std::to_string(op1) );
-                    break;
-
-                case LEFTA: // <<=
-                _algebra(LEFT_,rDst,r_op1,rDst,"+="+std::to_string(op1) );
-                    break;
-
-                case RIGHTA: // >>=
-                _algebra(RIGHT_,rDst,r_op1,rDst,"+="+std::to_string(op1) );
-                    break;
-
-                case ANDA: // &=
-                _algebra(AND,rDst,r_op1,rDst,"+="+std::to_string(op1) );
-                    break;
-
-                case XORA: // ^=
-                _algebra(XOR,rDst,r_op1,rDst,"+="+std::to_string(op1) );
-                    break;
-
-                case ORA: // ||=
-                _algebra(OR,rDst,r_op1,rDst,"+="+std::to_string(op1) );
-                    break;
-
-            }
+            case ORA: // ||=
+                _temp=algebra(OR,dst,op1, false,free,"||="+std::to_string(op1));
+                break;
 
         }
+
+        typeDuplicate(dst,_temp,free);
+
     }
+
+
+    RegPtr Mp::getAddrOffset(int idxId, bool idxFreeable, EntryPtr array) {
+        RegPtr idx, size, final;
+
+        //get sizeOf
+        int sizeId = immediate(PTR_SZIE, std::to_string( sizeOf(array->type,array->addr,true) ),TYPE_SIGNED_INT, "size of inner _"+std::to_string(array->top_id)+"_");
+        size=loadGenReg(sizeId);
+
+        //get idx
+        idx=loadGenReg(idxId);
+
+        //cal offset
+        int finalId=reserveId(4,TYPE_SIGNED_INT,"offsets");
+        final=loadGenReg(finalId, false);
+        _algebra(MUL,final,idx,size,"cal offset _"+std::to_string(finalId));
+
+        if(idxFreeable)
+            discardGenReg(idxId);
+
+        return final;
+
+    }
+
 
     int Mp::algebra(enum_algebra algebra,int op1, int op2, bool free1, bool free2, std::string varName) {
 
-        RegPtr r1, r2,rResult;
-        std::pair<RegPtr, RegPtr> afterPromotion = typePromotion(op1,op2);
-        r1=afterPromotion.first;
-        r2=afterPromotion.second;
+        RegPtr r1,r2,rResult;
+        r1=loadGenReg(op1);
+        r2=loadGenReg(op2);
 
-        int id_result;
+        Type resultType;
+        AddressType resultAddrType;
 
 
-        if(isDoubleFloat(r1->type)){
+        if(isAddressFlagSet(r1->type)){
+            //op1 is ptr
+            resultType=r1->type;
+            resultAddrType=getInfo(op1)->addr;
+            r2 = getAddrOffset( op2,free2, getInfo(op1) );
 
-        }else{
-            id_result=reserveId(4,r1->type,varName);
-            rResult=loadGenReg(id_result, false);
+            //free temp offset
+            free2=true;
+            op2=r2->id;
+
+        } else if(isAddressFlagSet(r2->type)){
+            //op2 is ptr
+            resultType=r2->type;
+            resultAddrType=getInfo(op2)->addr;
+            r1 = getAddrOffset( op1,free1, getInfo(op1) );
+
+            //free temp offset
+            free1=true;
+            op1=r1->id;
+
+        } else if(isBasicTypeEqual(r1->type,r2->type)){
+            // same type
+            resultType=r1->type;
+
+
+        } else{
+            // if op1,2 are not ptr and are different => one singed one unsigned
+            resultType=TYPE_UNSIGNED_INT;
+
         }
+
+
+        // after promotion
+        int id_result=reserveId(4,resultType,varName,resultAddrType);
+        rResult=loadGenReg(id_result, false);
+
 
         //doing actual calculation
         _algebra(algebra, rResult, r1, r2, "dst id _" + std::to_string(id_result) + "_");
-
-        //free extra register caused by promotion
-        if( r1->id != op1 ){
-            discardGenReg(r1->id);
-        }
-
-        if( r2->id != op1 ){
-            discardGenReg(r2->id);
-        }
 
         //free op register
         if(free1){

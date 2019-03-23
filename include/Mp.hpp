@@ -186,18 +186,22 @@ private:
     }
     void _div(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("div " + s + ',' + t +" #" + comment );
+        //need break 7?
         buffer.push_back("mflo " + d + '#' + comment );
     }
     void _divu(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("divu " + s + ',' + t +" #" + comment );
+        //need break 7?
         buffer.push_back("mflo " + d + '#' + comment );
     }
     void _mod(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("div " + s + ',' + t +" #" + comment );
+        //need break 7?
         buffer.push_back("mfhi " + d + '#' + comment );
     }
     void _modu(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("divu " + s + ',' + t +" #" + comment );
+        //need break 7?
         buffer.push_back("mfhi " + d + '#' + comment );
     }
     void _sub(std::string d,std::string s,std::string t, std::string comment=""){
@@ -279,7 +283,9 @@ private:
      */
     //give op1,op2 (id) returns new op1,op2 (RegPtr) after type promotion,
     //new id may be different
-    std::pair<RegPtr, RegPtr> typePromotion(int op1,int op2);
+
+    //convert array index to address offset
+    RegPtr getAddrOffset(int idxId, bool idxFreeable, EntryPtr array);
 
     // if free1=true => convert type in ONE register
     // if free1=false => convert type in ONE register

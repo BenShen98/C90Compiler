@@ -210,6 +210,8 @@ inline void resetAddressFlag(Type& t){
 /*
  *  sizeOf
  */
+
+//asking for type its self
 inline int sizeOf(Type type) {
 //    if( isDoubleFloat(type) ){
 //        //only double is 8 byte
@@ -225,12 +227,17 @@ inline int sizeOf(Type type) {
 }
 
 
+//asking for the underlying type
 
-inline int sizeOf(Type t, const AddressType& v) {
+//      when getInner==True => call on X[2][3] give Size of X[2]
+inline int sizeOf(Type t, const AddressType& v, bool getInner = false) {
     AddressType::const_reverse_iterator ritr = v.rbegin();
     //does not work for double
     //need check if is a pointer of pointer
     int size=4;
+
+    if(getInner)
+        ++ritr;
 
     if(isAddressFlagSet(t) && !v.empty()){
         for( ; ritr!=v.rend() ; ++ritr){
@@ -243,6 +250,8 @@ inline int sizeOf(Type t, const AddressType& v) {
 
     return size;
 }
+
+
 
 //return true if is still address, return false if is fully deference
 inline void deference(Type& t, AddressType& v) {

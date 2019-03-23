@@ -1,7 +1,8 @@
-
-int main()
-{
-    int ***(*x[9])[3][2+3];
-    int (*a[5][7])[3];
+int testfor(){
+    int a=0;
+    int i;
+    for(i=0;0;){
+        a+=1;
+    }
+    return a;
 }
-
