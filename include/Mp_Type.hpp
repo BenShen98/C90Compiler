@@ -257,8 +257,16 @@ inline void deference(Type& t, AddressType& v) {
 
 }
 
+inline void getReference(Type& t, AddressType& v) {
+    // & operator
+    setAddressFlag(t);
+    v.push_back(-1);
+
+}
+
 
 inline int squareBraket(Type& t, AddressType& v){
+    // [ ] operator
     deference(t, v);
     return sizeOf(t, v);
 };
