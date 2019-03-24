@@ -360,7 +360,7 @@ typedef struct _result{
     int num;        // used by constant expression
     Type type=TYPE_SIGNED_INT; //used for declaration_specifiers
 
-    std::string str;// this field need refactor
+    std::string str;
 
     bool freeable=false;
 
@@ -374,6 +374,17 @@ typedef struct _result{
 //    int reg;
 //    Type type;
 //} Msg;
+
+/*
+ * globals
+ */
+typedef struct _global{
+    Type type;
+    AddressType addr;
+} Global;
+
+typedef std::unordered_map<std::string, Global> Globals;
+
 
 inline std::ostream& operator << (std::ostream& os, const StackId& s)
 {

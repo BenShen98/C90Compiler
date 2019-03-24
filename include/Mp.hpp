@@ -21,9 +21,13 @@
 #include "ast/algebra_enum.hpp"
 #include "ast/assignment_operator.hpp"
 
+#include <unordered_map>
+
 class Mp {
 
 private:
+    //global
+    Globals globals;
 
     //funcName of current function
     std::string asCallee_name;
@@ -333,7 +337,7 @@ public:
     StackId reserveId(int size, Type type, std::string identifier="", const AddressType& address=AddressType());
 //    void assignImmediate(StackId id, Type type, std::string data);
     StackId immediate(int size, std::string data, Type type, std::string identifier="" );
-    StackId reserveArray(Type type,const AddressType& v,std::string identifier="" );
+    StackId reserveArray(Type type,const AddressType& v,std::string identifier="", bool global= false );
 
     //this will always reserve size 4, have type int
     StackId _reserveTempPtr(Type type,const AddressType& v,std::string identifier="" );

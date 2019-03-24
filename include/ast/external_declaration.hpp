@@ -38,7 +38,14 @@ public:
 }
 
   void mp() const override{
-      data->mp();
+      if(type==0){
+          data->mp();
+      }else{
+          Result r;
+          r.str="global";
+          data->mp(r);
+      }
+
   }
 
   inline void get_global_variable(std::string& str)const{

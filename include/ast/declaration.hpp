@@ -43,6 +43,16 @@ public:
             std::cerr<<"[warning], useless type name in empty declaration\n";
         }
 
+    }
+
+    void mp(Result r) const override{ //for global variable, str=="global"
+        //get type
+        if(init_declarator_list!=NULL){
+            declaration_specifiers->mp(r);
+            init_declarator_list->mp(r);
+        }else{
+            std::cerr<<"[warning], useless type name in empty declaration\n";
+        }
 
     }
 
