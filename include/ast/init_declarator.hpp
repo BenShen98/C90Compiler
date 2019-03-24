@@ -40,7 +40,7 @@ public:
     }
 
     /*
-     * //make a copy, DO NOT CHANGE basic_type, int x=5, *y;
+     * //make a copy, DO NOT CHANGE basic_type, int x=5, *y, foo();
      */
     void mp(Result& para) const override{
         Result info=para;
@@ -48,7 +48,19 @@ public:
         // pass down basic_type, return str,type
         declarator->mp(info);
 
-        if(!isVoid(info.type)){ //type will be pass back as void to indicate is a function definition
+
+
+        if(isAddressFlagSet(info.type)){
+            // array deceleration
+            if(initializer==NULL){
+                mips.reserveArray(info.type, info.addr, info.str);
+            }else{
+                notImplemented();
+            }
+
+        }else if (!isVoid(info.type)){
+            // basic type deceleration
+
             if(initializer==NULL){
                 //zero init value
                 mips.immediate(sizeOf(info.type), "0", info.type, info.str);
@@ -59,6 +71,8 @@ public:
                 initializer->mp(info);
 
             }
+        }else{
+            //type is void, function deceleration, do nothing
         }
 
 

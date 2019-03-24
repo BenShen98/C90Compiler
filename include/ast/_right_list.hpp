@@ -34,14 +34,6 @@ public:
 
     }
 
-    virtual std::string c() const override{
-      if(list!=NULL){
-        return element->c() + list->c();
-      }else{
-        return element->c();
-      }
-    }
-
     virtual void mp(Result& result) const override{
         list->mp(result);
         element->mp(result);

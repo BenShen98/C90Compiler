@@ -5,6 +5,7 @@
 #ifndef C90_MP_TYPE_HPP
 #define C90_MP_TYPE_HPP
 
+#include <vector>
 
 
 /*
@@ -23,7 +24,9 @@
  *
  */
 
-// type register
+// address type
+typedef std::vector<int> AddressType;
+
 typedef enum _type{
     /*
      * basic data type
@@ -41,11 +44,14 @@ typedef enum _type{
     MASK_IS_FLOAT=  0x2,
     MASK_IS_VOID=TYPE_VOID,
 
-    /*
-     * advanced data type
-     */
-    MASK_IS_ARRAY=  0x8,
+    //advanced type
+    FLAG_IS_ADDRESS=  0x8,
+    CHECK_ADDR_FLAG_N=~FLAG_IS_ADDRESS,
 
+    TYPE_SIGNED_INT_PTR=    FLAG_IS_ADDRESS | TYPE_SIGNED_INT,
+    TYPE_UNSIGNED_INT_PTR=  FLAG_IS_ADDRESS | TYPE_UNSIGNED_INT,
+    TYPE_SINGLE_FLOAT_PTR=  FLAG_IS_ADDRESS | TYPE_SINGLE_FLOAT,
+    TYPE_DOUBLE_FLOAT_PTR=  FLAG_IS_ADDRESS | TYPE_DOUBLE_FLOAT,
 
     /*
      * for register only (only [31:30] bit matter)
@@ -185,26 +191,109 @@ inline void setRegSync(Type& t){
 }
 
 /*
- *  sizeOf
+ * advanced data flag
  */
-inline int sizeOf(Type type) {
-    if( isDoubleFloat(type) ){
-        //only double is 8 byte
-        return 8;
-    }else if(isVoid(type)){
-        return 0;
-    }else{
-        //all other is 4 byte wide (ptr, int, float, etc
-        return 4;
-    }
+
+inline bool isAddressFlagSet(Type t){
+    return t&FLAG_IS_ADDRESS;
+}
+
+inline void setAddressFlag(Type& t){
+    t= t|FLAG_IS_ADDRESS;
+}
+
+inline void resetAddressFlag(Type& t){
+    t= t & CHECK_ADDR_FLAG_N;
 }
 
 
 /*
- * advanced data type
+ *  sizeOf
  */
-inline bool isArray(Type t){
-    return t&MASK_IS_ARRAY;
+
+//asking for type its self
+inline int sizeOf(Type type) {
+//    if( isDoubleFloat(type) ){
+//        //only double is 8 byte
+//        return 8;
+//    }else if(isVoid(type)){
+//        return 0;
+//    }else{
+//        //all other is 4 byte wide (ptr, int, float, etc
+//        return 4;
+//    }
+
+    return 4;
+}
+
+
+//asking for the underlying type
+
+//      when getInner==True => call on X[2][3] give Size of X[2]
+inline int sizeOf(Type t, const AddressType& v, bool getInner = false) {
+    AddressType::const_reverse_iterator ritr = v.rbegin();
+    //does not work for double
+    //need check if is a pointer of pointer
+    int size=4;
+
+    if(getInner)
+        ++ritr;
+
+    //todo: for inner, need check v.size()>2
+
+    if(isAddressFlagSet(t) && !v.empty() && ritr!=v.rend()){ //check is address, check v is not empty, check itr is not pastend
+        for( ; ritr!=v.rend() ; ++ritr){
+            if(*ritr<0)
+                break;
+
+            size *= *ritr;
+        }
+    }
+
+    return size;
+}
+
+
+
+//return true if is still address, return false if is fully deference
+inline void deference(Type& t, AddressType& v) {
+
+    if(v.size()<=1){
+        resetAddressFlag(t);
+    }
+
+    if(!v.empty()){
+        v.pop_back();
+    }
+
+}
+
+inline void getReference(Type& t, AddressType& v) {
+    // & operator
+    setAddressFlag(t);
+    v.push_back(-1);
+
+}
+
+
+inline int squareBraket(Type& t, AddressType& v){
+    // [ ] operator
+    deference(t, v);
+    return sizeOf(t, v);
+};
+
+inline std::ostream& operator << (std::ostream& os, const AddressType v)
+{
+    AddressType::const_iterator i = v.begin();
+    os<<'{';
+    if(!v.empty()){
+        for ( ; i != v.end(); ++i)
+        {
+            os <<*i<<", ";
+        }
+    }
+    os<<'}';
+    return os;
 }
 
 
@@ -213,9 +302,26 @@ inline bool isArray(Type t){
  * struct
  */
 
+typedef struct _stackid{
+    int level;
+    int top_id;
+
+    std::string str()const {
+//        return std::to_string(top_id);
+        return std::to_string(level)+":"+std::to_string(top_id);
+
+    }
+
+} StackId;
+
+inline bool operator==(const StackId& lhs, const StackId& rhs)
+{
+    return lhs.level==rhs.level && lhs.top_id==rhs.top_id;
+}
+
 typedef struct _reg{
     Type type=REG_EMPTY;
-    int id; //negative id means it is free register
+    StackId id; //negative id means it is free register
     int freshness; // the higher the value, the more resent it had been used
 } Reg;
 
@@ -227,31 +333,53 @@ typedef struct _entry{
     int top_id;
     Type type;
     std::string name;
+    AddressType addr;
 } Entry;
 
-typedef const Entry * const EntryPtr;
+typedef const Entry * EntryPtr;
+
+typedef struct _scope{
+    std::vector<Entry> entries;
+    //typedef
+    //enum
+
+} Scope;
+
+typedef std::vector<Scope> Scopes;
+
+
 
 typedef struct _result{
 
 //        union{
-//            int id;     // used for operation which have dst register
+//            StackId id;     // used for operation which have dst register
 //            Type type; //used for declaration_specifiers
 //        };
 
-    int id;     // used for operation which have dst register
+    StackId id;     // used for operation which have dst register
+    int num;        // used by constant expression
     Type type=TYPE_SIGNED_INT; //used for declaration_specifiers
 
     std::string str;// this field need refactor
 
     bool freeable=false;
 
+    AddressType addr;
+
 } Result;
 
 
 //typedef struct _msg {
-//    int id;
+//    StackId id;
 //    int reg;
 //    Type type;
 //} Msg;
+
+inline std::ostream& operator << (std::ostream& os, const StackId& s)
+{
+    os<<s.str();
+    return os;
+}
+
 
 #endif //C90_MP_MASK_HPP

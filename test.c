@@ -1,5 +1,3 @@
-int addneg(){
-  int a=3;
-  int b=-1;
-  return a+b;
+int f6(int a,int b,int c,int d, int e, int f){
+    return a+b+c;
 }

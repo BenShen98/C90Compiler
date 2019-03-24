@@ -56,7 +56,7 @@ public:
 //
 //    // set OTHER function's para (arg area in stack)
 //    void callFunc(std::string funcName);
-//    void setCallArg(int id);
+//    void setCallArg(StackId id);
 //    void commitCall();
 
 
