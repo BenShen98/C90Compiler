@@ -101,23 +101,6 @@ public:
 
         }else{
 
-//            0	: postfix_expression
-//            1	| INC_OP unary_expression
-//            2	| DEC_OP unary_expression
-//                          | unary_operator cast_expression        SPECIAL CASE unary_operator IS TERMINAL
-//            3	| SIZEOF unary_expression
-//            4	| SIZEOF '(' type_name ')'
-//                    ;
-//
-//            special case for unary_operator:
-//            '&'
-//            '*'
-//            '+'
-//            '-'
-//            '~'
-//            '!'
-//            */
-
             pt->mp(result);
 
             switch (type){

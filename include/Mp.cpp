@@ -878,6 +878,13 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         }
     }
 
+//            '&'
+//            '*'
+//            '+'
+//            '-'
+//            '~'
+//            '!'
+
     StackId Mp::unaryOp(char type, StackId op1, bool free1){
       RegPtr r1;
       StackId Copy;
@@ -888,22 +895,50 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         setRegSync(r1->type);
       }
 
-      Copy=reserveId(4,r1->type,"negating copy of_"+op1.str()+"_" );
-      switch(type){
-        case '-':
-          _subu(tRegName(r1),"$0",tRegName(r1),"negating_"+op1.str()+"_");
-          //checked with godbolt
-        break;
-        case '~':
-          _nor(tRegName(r1),"$0",tRegName(r1),"nor_"+op1.str()+"_");
-        break;
-        case '!':
-          _sltu(tRegName(r1),tRegName(r1),"1","sltu_"+op1.str()+"_");
-          _and(tRegName(r1),tRegName(r1),"0x00ff","andi_0x00ff"+op1.str()+"_");
-          break;
-        default:
-          throw std::runtime_error("Not implemented.");
+      if( type=='&' ){
+          AddressType addr=getInfo(op1)->addr;
+          getReference(r1->type,addr);
+          Copy=reserveId(4,r1->type,"addr _"+op1.str()+"_", addr);
+
+      }else if( type=='*' ){
+          AddressType addr=getInfo(op1)->addr;
+          deference(r1->type,addr);
+          Copy=reserveId(4,r1->type,"deref copy of_"+op1.str()+"_", addr);
+
+      }else{
+          Copy=reserveId(4,r1->type,"unary copy of_"+op1.str()+"_" );
       }
+
+
+
+      switch(type){
+            case '-':
+                _subu(tRegName(r1),"$0",tRegName(r1),"negating_"+op1.str()+"_");
+                //checked with godbolt
+                break;
+
+            case '+':
+                break;
+
+            case '~':
+                _nor(tRegName(r1),"$0",tRegName(r1),"nor_"+op1.str()+"_");
+                break;
+
+            case '!':
+                _sltu(tRegName(r1),tRegName(r1),"1","sltu_"+op1.str()+"_");
+                _and(tRegName(r1),tRegName(r1),"0x00ff","andi_0x00ff"+op1.str()+"_");
+                break;
+
+            case '&':
+                addr_sp(tRegName(r1),op1,"get ref");
+              break;
+
+            case '*':
+                _lw(tRegName(r1),"0",tRegName(r1),"de ref");
+                break;
+
+      }
+
       r1->id=Copy;
       setRegDirty(r1->type);
       return Copy;
@@ -1111,4 +1146,9 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         EntryPtr info=getInfo(input);
         int size=sizeOf(info->type,info->addr, false);
         return immediate(4,std::to_string(size),TYPE_SIGNED_INT,"size of"+input.str());
+    }
+
+    StackId Mp::squareBracket(StackId op1, StackId op2, bool free1, bool free2) {
+        StackId resultPtr=algebra(ADD,op1,op2,free1,free2,"square bracket");
+        return unaryOp('*',resultPtr, true); //resultPtr freeable
     }

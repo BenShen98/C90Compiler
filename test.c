@@ -2,8 +2,9 @@ int main(){
     /*
      * dsgfhjkhgfdfgk,j
      */
-    int a[2][3];
-    int (*b)[2][3];
+    int a[3];
+
+    a[2]=1;
 
     return sizeof(a);
 }
