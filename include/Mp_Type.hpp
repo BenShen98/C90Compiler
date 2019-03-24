@@ -307,8 +307,8 @@ typedef struct _stackid{
     int top_id;
 
     std::string str()const {
-        return std::to_string(top_id);
-//        return std::to_string(level)+":"+id.str();
+//        return std::to_string(top_id);
+        return std::to_string(level)+":"+std::to_string(top_id);
 
     }
 

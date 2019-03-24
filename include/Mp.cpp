@@ -124,7 +124,7 @@ extern std::ofstream ffout;
         ffout<<"sw $31, "<<arg_max_size<<"($sp)"<<'\n';
 
         //flush content
-        std::regex edit("_-?[0-9]*_");
+        std::regex edit("_[0-9]*:-?[0-9]*_");
         std::smatch m;
         unsigned editIdx=0;
         unsigned bufIdx=0;
@@ -321,7 +321,11 @@ StackId Mp::reserveId(int size, Type type, std::string identifier,const AddressT
  */
 /// currently only top_id
 std::string Mp::calOffset(const std::string &str) {//not finished
-    int pos=atoi(str.substr(1, str.size()-1).c_str());
+    size_t delimiter = str.find(":");
+    int level=atoi(str.substr(1, delimiter).c_str());
+    int top_id=atoi(str.substr(delimiter+1, str.size()-1).c_str());
+    int pos=scope_stats_cumulative[level]+top_id;
+//    int pos=atoi(str.substr(1, str.size()-1).c_str());
     return std::to_string(stack_size-pos); // see my (Ben's) drawing
 
 }
