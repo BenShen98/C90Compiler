@@ -174,6 +174,8 @@ extern std::ofstream ffout;
         scopes.push_back({});
         scope_top_id=0;
 
+        writeBackAll();
+
         if(scope_stats.size()<scopes.size()){
             scope_stats.push_back(0);
         }
@@ -181,12 +183,27 @@ extern std::ofstream ffout;
     }
 
     void Mp::endScope() {
+
         int newScopeSize=scopes.back().entries.back().top_id;
         int scopeDepth=scopes.size()-1;
+
+
+        //pop register that point to pooped scoped (non reachable)
+        for(int i=0; i<T_GENERAL_REG_SIZE; ++i){
+            if( !isRegEmpty(tGeneralReg[i].type) &&  tGeneralReg[i].id.level>=scopeDepth ){
+                setRegEmpty(tGeneralReg[i].type);
+            }
+        }
+
+        //write back all reachable data
+        writeBackAll();
+
+
 
         if(scope_stats[scopeDepth]<newScopeSize)
             scope_stats[scopeDepth]=newScopeSize;
 
+        //remove the ending scope
         scopes.pop_back();
 
     }
@@ -340,10 +357,9 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             }
             setRegEmpty(tGeneralReg[i].type);
         }
-
-
-        //TODO write back all FP register
     }
+
+
 
     StackId Mp::getId(std::string identifier) {
 

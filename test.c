@@ -1,8 +1,5 @@
-int testfor(){
-    int a=0;
-    int i;
-    for(i=0;0;){
-        a+=1;
-    }
-    return a;
+int addflow(){
+    int a=4294967295;
+    int b=1;
+    return a+b;
 }

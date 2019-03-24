@@ -160,7 +160,7 @@ private:
 
     void _addi(std::string t,std::string s,std::string imm, std::string comment="", AddressType addr=AddressType()){
         if( !addr.empty() ){
-            imm = std::to_string( sizeOf(FLAG_IS_ADDRESS, addr, true) * std::stoi(imm,0,0) );
+            imm = std::to_string( sizeOf(FLAG_IS_ADDRESS, addr, true) * std::stoll(imm,0,0) );
         }
         buffer.push_back("addi " + t + ',' + s + ',' + imm +" #" + comment );
     }

@@ -79,7 +79,7 @@ public:
             case 1: //char, int, float
 
                 if(isVoid(result.type)){
-                    result.num = std::stoi(*str,0,0);  //return dec, compile time constant
+                    result.num = std::stoll(*str,0,0);  //return dec, compile time constant
                 }else{
                     result.id = cConst2Mp(*str); //return stack id, imm in register
                 }
@@ -149,7 +149,7 @@ inline StackId cConst2Mp(std::string cConst){
             break;
 
         case '0':
-                return ( mips.immediate(4, std::to_string(std::stoi(cConst,0,0)), TYPE_SIGNED_INT ,"imm "+ cConst ) );
+                return ( mips.immediate(4, std::to_string(std::stoll(cConst,0,0)), TYPE_SIGNED_INT ,"imm "+ cConst ) );
 
 
         default:
@@ -161,7 +161,7 @@ inline StackId cConst2Mp(std::string cConst){
 
             if( dot==std::string::npos && exp==std::string::npos) {
                 // input does not contain . nor e
-                    return ( mips.immediate(4, std::to_string(std::stoi(cConst,0,0)), TYPE_SIGNED_INT ,"imm "+ cConst ) );
+                    return ( mips.immediate(4, std::to_string(std::stoll(cConst,0,0)), TYPE_SIGNED_INT ,"imm "+ cConst ) );
 
             } else{
                 //floating point

@@ -241,7 +241,7 @@ inline int sizeOf(Type t, const AddressType& v, bool getInner = false) {
 
     //todo: for inner, need check v.size()>2
 
-    if(isAddressFlagSet(t) && !v.empty()){
+    if(isAddressFlagSet(t) && !v.empty() && ritr!=v.rend()){ //check is address, check v is not empty, check itr is not pastend
         for( ; ritr!=v.rend() ; ++ritr){
             if(*ritr<0)
                 break;
