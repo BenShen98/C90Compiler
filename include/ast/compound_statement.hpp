@@ -39,6 +39,8 @@ public:
     }
 
     void mp() const override{
+        mips.newScope();
+
         if(declaration_list!=NULL){
             declaration_list->mp();
         }
@@ -46,6 +48,8 @@ public:
         if(statement_list!=NULL){
             statement_list->mp();
         }
+
+        mips.endScope();
     }
 
 };

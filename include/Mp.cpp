@@ -184,24 +184,25 @@ extern std::ofstream ffout;
 
     void Mp::endScope() {
 
-        int newScopeSize=scopes.back().entries.back().top_id;
-        int scopeDepth=scopes.size()-1;
+        //check scope have entry
+        if( !scopes.back().entries.empty()) {
 
+            int newScopeSize = scopes.back().entries.back().top_id;
+            int scopeDepth = scopes.size() - 1;
 
-        //pop register that point to pooped scoped (non reachable)
-        for(int i=0; i<T_GENERAL_REG_SIZE; ++i){
-            if( !isRegEmpty(tGeneralReg[i].type) &&  tGeneralReg[i].id.level>=scopeDepth ){
-                setRegEmpty(tGeneralReg[i].type);
+            //pop register that point to pooped scoped (non reachable)
+            for (int i = 0; i < T_GENERAL_REG_SIZE; ++i) {
+                if (!isRegEmpty(tGeneralReg[i].type) && tGeneralReg[i].id.level >= scopeDepth) {
+                    setRegEmpty(tGeneralReg[i].type);
+                }
             }
+
+            //write back all reachable data
+            writeBackAll();
+
+            if (scope_stats[scopeDepth] < newScopeSize)
+                scope_stats[scopeDepth] = newScopeSize;
         }
-
-        //write back all reachable data
-        writeBackAll();
-
-
-
-        if(scope_stats[scopeDepth]<newScopeSize)
-            scope_stats[scopeDepth]=newScopeSize;
 
         //remove the ending scope
         scopes.pop_back();
@@ -217,6 +218,7 @@ extern std::ofstream ffout;
             for(std::vector<Entry>::reverse_iterator rit = r->entries.rbegin(); rit!= r->entries.rend(); ++rit){
                 std::cerr<<"#\t"<< rit->top_id <<",\t\t"<< rit->size <<",\t\t"<< std::bitset<32>(rit->type)<<" "<<rit->addr<< ",\t" <<rit->name <<",\n";
             }
+            std::cerr<<"# -- scope seperation --\n";
         }
 
 
@@ -361,21 +363,24 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
 
 
+
+
     StackId Mp::getId(std::string identifier) {
 
-        //find matching name from top of the stack (itr backwards), in each of the scope
         for(int depth=scopes.size()-1; depth>=0; --depth){
 
             //todo: how about enum & typedef?
+            //check if entries are empty
+            if(!scopes[depth].entries.empty()){
+                int i = scopes[depth].entries.size() - 1;
+                while (scopes[depth].entries.at(i).name != identifier && i >0){
+                    --i;
+                }
 
-            int i = scopes[depth].entries.size() - 1;
-            while (scopes[depth].entries.at(i).name != identifier && i >0){
-                --i;
-            }
-
-            //if found in current stack frame
-            if (i >= 0) {
-                return {depth, scopes[depth].entries[i].top_id};
+                //if found in current stack frame
+                if (i >= 0) {
+                    return {depth, scopes[depth].entries[i].top_id};
+                }
             }
 
         }
