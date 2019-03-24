@@ -62,7 +62,7 @@ extern std::ofstream ffout;
             for (int i=0; it != asCallee_paras.end() && i<4; ++it, ++i) {
                 int eleSize=sizeOf(it->type);
                 scopes[0].entries.push_back( {eleSize, argOffset, it->type, it->name, AddressType()} );
-                sw_sp("$a"+std::to_string(i), {0, argOffset}, "store parameter");
+                sw_sp("$a"+std::to_string(i), {0, argOffset}, "store parameter 0:"+std::to_string(argOffset));
 
                 argOffset-=eleSize;
 
@@ -187,7 +187,7 @@ extern std::ofstream ffout;
         //check scope have entry
         if( !scopes.back().entries.empty()) {
 
-            int newScopeSize = scopes.back().entries.back().top_id;
+            int newScopeSize = scopes.back().entries.back().top_id+scopes.back().entries.back().size;
             int scopeDepth = scopes.size() - 1;
 
             //pop register that point to pooped scoped (non reachable)
@@ -376,14 +376,13 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             //todo: how about enum & typedef?
             //check if entries are empty
             if(!scopes[depth].entries.empty()){
-                int i = scopes[depth].entries.size() - 1;
-                while (scopes[depth].entries.at(i).name != identifier && i >0){
-                    --i;
-                }
+                std::vector<Entry>::const_reverse_iterator ritr=scopes[depth].entries.rbegin();
+                for( ; ritr!=scopes[depth].entries.rend(); ++ritr){
 
-                //if found in current stack frame
-                if (i >= 0) {
-                    return {depth, scopes[depth].entries[i].top_id};
+                    if(ritr->name==identifier){
+                        return {depth, ritr->top_id};
+                    }
+
                 }
             }
 

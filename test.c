@@ -1,8 +1,3 @@
-int ifelset(int x, int y){
-    if(x>y){
-        return 0;
-    }
-    else {
-        return 2;
-    }
+int f6(int a,int b,int c,int d, int e, int f){
+    return a+b+c;
 }
