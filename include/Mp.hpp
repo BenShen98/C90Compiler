@@ -220,10 +220,10 @@ private:
         buffer.push_back("subu " + d + ',' + s + ',' + t +" #" + comment );
     }
     void _sll(std::string d,std::string s,std::string t, std::string comment=""){
-        buffer.push_back("sll" + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("sll " + d + ',' + s + ',' + t +" #" + comment );
     }
     void _srl(std::string d,std::string s,std::string t, std::string comment=""){
-        buffer.push_back("srl" + d + ',' + s + ',' + t +" #" + comment );
+        buffer.push_back("srl " + d + ',' + s + ',' + t +" #" + comment );
     }
     void _sra(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("sra " + d + ',' + s + ',' + t +" #" + comment );
@@ -399,6 +399,7 @@ public:
 
 //    no longer needed
     void writeBackAll();//before function call, save all t register
+    void resetReg(int level);
 //    void writeBack(int regIdx);
 
     //given a id, copy its data, and return the copies id

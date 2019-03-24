@@ -1,3 +1,4 @@
-int f6(int a,int b,int c,int d, int e, int f){
-    return a+b+c;
+int f2(){
+    int x;
+    return ((   6 || ++x )<<2)+x;;
 }

@@ -171,6 +171,8 @@ extern std::ofstream ffout;
      */
 
     void Mp::newScope() {
+        comment("Enter scope");
+
         scopes.push_back({});
         scope_top_id=0;
 
@@ -183,7 +185,7 @@ extern std::ofstream ffout;
     }
 
     void Mp::endScope() {
-
+        comment("End scope");
         //check scope have entry
         if( !scopes.back().entries.empty()) {
 
@@ -191,11 +193,8 @@ extern std::ofstream ffout;
             int scopeDepth = scopes.size() - 1;
 
             //pop register that point to pooped scoped (non reachable)
-            for (int i = 0; i < T_GENERAL_REG_SIZE; ++i) {
-                if (!isRegEmpty(tGeneralReg[i].type) && tGeneralReg[i].id.level >= scopeDepth) {
-                    setRegEmpty(tGeneralReg[i].type);
-                }
-            }
+            resetReg(scopeDepth);
+
 
             //write back all reachable data
             writeBackAll();
@@ -361,9 +360,20 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             if( isRegDirty(tGeneralReg[i].type) ){
                 sw_sp(tGenRegName(i),tGeneralReg[i].id,"write back id "+tGeneralReg[i].id.str());
             }
+            //reset all register
             setRegEmpty(tGeneralReg[i].type);
         }
     }
+
+    void Mp::resetReg(int level) {
+        for (int i = 0; i < T_GENERAL_REG_SIZE; ++i) {
+            if (!isRegEmpty(tGeneralReg[i].type) && tGeneralReg[i].id.level >= level) {
+                setRegEmpty(tGeneralReg[i].type);
+            }
+        }
+    }
+
+
 
 
 
@@ -732,61 +742,100 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
 
     StackId Mp::algebra(enum_algebra algebra,StackId op1, StackId op2, bool free1, bool free2, std::string varName) {
+        StackId id_result;
+        RegPtr r1, r2, rResult;
+        r1 = loadGenReg(op1);
+        r2 = loadGenReg(op2);
 
-        RegPtr r1,r2,rResult;
-        r1=loadGenReg(op1);
-        r2=loadGenReg(op2);
+        if( algebra==AND_ ){
+            //short circuit AND &&
+            id_result=reserveId(4,TYPE_SIGNED_INT,"bool ");
+            rResult=loadGenReg(id_result, false);
+            std::string ANDShort=mkLabel("ANDShort");
+            std::string ANDEnd=mkLabel("ANDEnd");
 
-        Type resultType;
-        AddressType resultAddrType;
+            _beq(tRegName(r1),"$0",ANDShort);
+            _beq(tRegName(r2),"$0",ANDShort);
+
+            _li(tRegName(rResult),"1");
+            _b(ANDEnd);
+
+            insertLabel(ANDShort);
+            _move(tRegName(rResult),"$0");
+
+            insertLabel(ANDEnd);
+
+        }else if( algebra==OR_ ){
+            //short circuit OR ||
+            id_result=reserveId(4,TYPE_SIGNED_INT,"bool ");
+            rResult=loadGenReg(id_result, false);
+            std::string ORShort=mkLabel("ORShort");
+            std::string OREnd=mkLabel("OREnd");
+
+            _bne(tRegName(r1),"$0",ORShort);
+            _bne(tRegName(r2),"$0",ORShort);
+
+            _li(tRegName(rResult),"1");
+            _b(OREnd);
+
+            insertLabel(ORShort);
+            _move(tRegName(rResult),"$0");
+
+            insertLabel(OREnd);
+
+        }else {
+
+            Type resultType;
+            AddressType resultAddrType;
 
 
-        if(isAddressFlagSet(r1->type)){
-            //op1 is ptr
-            resultType=r1->type;
-            resultAddrType=getInfo(op1)->addr;
-            r2 = getAddrOffset( op2,free2, getInfo(op1) );
+            if (isAddressFlagSet(r1->type)) {
+                //op1 is ptr
+                resultType = r1->type;
+                resultAddrType = getInfo(op1)->addr;
+                r2 = getAddrOffset(op2, free2, getInfo(op1));
 
-            //free temp offset
-            free2=true;
-            op2=r2->id;
+                //free temp offset
+                free2 = true;
+                op2 = r2->id;
 
-        } else if(isAddressFlagSet(r2->type)){
-            //op2 is ptr
-            resultType=r2->type;
-            resultAddrType=getInfo(op2)->addr;
-            r1 = getAddrOffset( op1,free1, getInfo(op1) );
+            } else if (isAddressFlagSet(r2->type)) {
+                //op2 is ptr
+                resultType = r2->type;
+                resultAddrType = getInfo(op2)->addr;
+                r1 = getAddrOffset(op1, free1, getInfo(op1));
 
-            //free temp offset
-            free1=true;
-            op1=r1->id;
+                //free temp offset
+                free1 = true;
+                op1 = r1->id;
 
-        } else if(isBasicTypeEqual(r1->type,r2->type)){
-            // same type
-            resultType=r1->type;
+            } else if (isBasicTypeEqual(r1->type, r2->type)) {
+                // same type
+                resultType = r1->type;
 
 
-        } else{
-            // if op1,2 are not ptr and are different => one singed one unsigned
-            resultType=TYPE_UNSIGNED_INT;
+            } else {
+                // if op1,2 are not ptr and are different => one singed one unsigned
+                resultType = TYPE_UNSIGNED_INT;
 
+            }
+
+
+            // after promotion
+            id_result = reserveId(4, resultType, varName, resultAddrType);
+            rResult = loadGenReg(id_result, false);
+
+
+            //doing actual calculation
+            _algebra(algebra, rResult, r1, r2, "dst id _" + id_result.str() + "_");
         }
 
-
-        // after promotion
-        StackId id_result=reserveId(4,resultType,varName,resultAddrType);
-        rResult=loadGenReg(id_result, false);
-
-
-        //doing actual calculation
-        _algebra(algebra, rResult, r1, r2, "dst id _" + id_result.str() + "_");
-
         //free op register
-        if(free1){
+        if (free1) {
             discardGenReg(op1);
         }
 
-        if(free2){
+        if (free2) {
             discardGenReg(op2);
         }
 

@@ -1,5 +1,4 @@
 int main(){
     abi_setup();
-
-    return 4!=oneLif();
+    return f()!=5;
 }

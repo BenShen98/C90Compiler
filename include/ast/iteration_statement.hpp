@@ -55,14 +55,15 @@ public:
         if(init!=NULL)
             init->mp();
 
+        mips.writeBackAll();
+
         std::string condi=mips.mkLabel("ItrCondition");
         std::string end=mips.mkLabel("ItrEnd");
 
-        mips.insertLabel(condi);
-
+        //condition
         Result expResult;
+        mips.insertLabel(condi);
         condition->mp(expResult); //condition is expression or expression_statement
-        mips.writeBackAll();
 
         mips.bZero(false, expResult.id, end);
         statement->mp();
@@ -72,7 +73,7 @@ public:
         } else if(type==3){
             //for loop with post increment
             Result dummy;
-            increment->mp( dummy);
+            increment->mp(dummy);
         }
 
         mips.writeBackAll();
