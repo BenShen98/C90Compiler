@@ -56,6 +56,7 @@ public:
     void mp() const override{
         Result expResult;
         exp->mp(expResult);
+        mips.writeBackAll();
 
         switch (type){
             case 0: //IF '(' expression ')' statement
@@ -67,6 +68,7 @@ public:
                 //gen code for s1
                 mips.comment("true case for "+ifEnd);
                 s1->mp(); // no para, is statement
+                mips.writeBackAll();
 
                 mips.insertLabel(ifEnd);
 
@@ -79,16 +81,18 @@ public:
               std::string elsestart=mips.mkLabel("elseStart");
               std::string elseend=mips.mkLabel("elseEnd");
 
-              //if
+              //false branch
               mips.bZero(false, expResult.id, elsestart); //skip s1 when false
 
               //s1
               s1->mp();
               mips.branch(elseend);
+              mips.writeBackAll();
 
               //s2
               mips.insertLabel(elsestart);
               s2->mp();
+              mips.writeBackAll();
 
               //endif
               mips.insertLabel(elseend);

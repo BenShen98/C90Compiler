@@ -9,8 +9,9 @@ li $t0,0 #imm id _4_
 lw $t1,72($sp) #load _0_ to$t1
 xor $t2,$t1,$t0 #dst id _8_
 sltu $t2,$t2,0x1 #dst id _8_
-beq $t2,$0,elseStart_0_Fibonacci
 sw $t2,64($sp) #write back id 8
+lw $t0,64($sp) #load _8_ to$t0
+beq $t0,$0,elseStart_0_Fibonacci
 li $t0,0 #imm id _4_
 # assign _4_ to _8_ in reg $t0
 move $2,$t0
@@ -22,8 +23,9 @@ li $t0,1 #imm id _12_
 lw $t1,68($sp) #load _4_ to$t1
 xor $t2,$t1,$t0 #dst id _16_
 sltu $t2,$t2,0x1 #dst id _16_
-beq $t2,$0,elseStart_2_Fibonacci
 sw $t2,56($sp) #write back id 16
+lw $t0,56($sp) #load _16_ to$t0
+beq $t0,$0,elseStart_2_Fibonacci
 li $t0,1 #imm id _4_
 # assign _4_ to _8_ in reg $t0
 move $2,$t0
