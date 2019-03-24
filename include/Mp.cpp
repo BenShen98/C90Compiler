@@ -90,7 +90,7 @@ extern std::ofstream ffout;
     /*
      * flush data
      */
-    void Mp::endFrame(bool logging) {
+    void Mp::endFrame() {
         endScope();
 
         //scope_stats => scope_stats_cumulative
@@ -157,10 +157,6 @@ extern std::ofstream ffout;
         ffout<<"j $31\n";
         ffout<<".end "<<(asCallee_name)<<"\n\n";
 
-        //logging and exit
-        if(logging)
-            dump();
-
         delete[] tGeneralReg;
 
 
@@ -184,7 +180,10 @@ extern std::ofstream ffout;
 
     }
 
-    void Mp::endScope() {
+    void Mp::endScope(bool logging) {
+        if(logging)
+            dump();
+
         comment("End scope");
         //check scope have entry
         if( !scopes.back().entries.empty()) {
@@ -846,12 +845,15 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     StackId Mp::addi(bool perfix, StackId op1, std::string integer) {
         RegPtr r1;
         r1=loadGenReg(op1);
+        AddressType addr=AddressType();
 
-
+        if(isAddressFlagSet(r1->type)){
+            addr=getInfo(op1)->addr;
+        }
 
         if(perfix){
             //per increment
-            _addi(tRegName(r1), tRegName(r1), integer, "per increment of id _"+op1.str()+"_");
+            _addi(tRegName(r1), tRegName(r1), integer, "per increment of id _"+op1.str()+"_",addr);
             setRegDirty(r1->type);
             return op1;
 
@@ -864,7 +866,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             orgCopy=reserveId(4,r1->type,"org copy of _"+op1.str()+"_");
             rOrgCopy=loadGenReg(orgCopy, false);
 
-            _addi(tRegName(rOrgCopy), tRegName(r1), integer, "add, swap org copy & org");
+            _addi(tRegName(rOrgCopy), tRegName(r1), integer, "add, swap org copy & org",addr);
 
             r1->id=orgCopy;
             rOrgCopy->id=op1;
@@ -876,7 +878,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         }
     }
 
-    StackId Mp::negation(char type, StackId op1, bool free1){
+    StackId Mp::unaryOp(char type, StackId op1, bool free1){
       RegPtr r1;
       StackId Copy;
       r1=loadGenReg(op1);
@@ -1103,4 +1105,10 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         RegPtr reg2=loadGenReg(id2);
         _beq(tRegName(reg1),tRegName(reg2),label);
       }
+    }
+
+    StackId Mp::SIZEOF(StackId input) {
+        EntryPtr info=getInfo(input);
+        int size=sizeOf(info->type,info->addr, false);
+        return immediate(4,std::to_string(size),TYPE_SIGNED_INT,"size of"+input.str());
     }

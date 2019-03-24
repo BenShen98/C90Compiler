@@ -150,6 +150,7 @@ private:
 /*
  * MIPS function
  */
+
     void _li(std::string reg,std::string imm, std::string comment=""){
         buffer.push_back("li "+ reg + ',' + imm + " #" + comment );
     }
@@ -312,13 +313,13 @@ public:
  */
 
     void newFrame(std::string name);
-    void endFrame(bool logging=true); //call flush
+    void endFrame(); //call flush
 
     void dump();//SHOULD be private
-    StackId negation(char type, StackId op1, bool free1);
+    StackId unaryOp(char type, StackId op1, bool free1);
 
     void newScope();
-    void endScope();
+    void endScope(bool logging=true);
 
 
 /*
@@ -443,6 +444,7 @@ public:
 
     void beq(StackId id1,StackId id2,std::string label);
 
+    StackId SIZEOF(StackId input);
 
 };
 

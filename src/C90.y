@@ -74,7 +74,7 @@ unary_expression
 	| INC_OP unary_expression		{ $$ = new unary_expression(1, $2); }
 	| DEC_OP unary_expression		{ $$ = new unary_expression(2, $2); }
 	| unary_operator cast_expression	{ $$ = new unary_expression($1, $2); }
-//	| SIZEOF unary_expression		{ $$ = new unary_expression(3, $2); }
+	| SIZEOF unary_expression		{ $$ = new unary_expression(3, $2); }
 //	| SIZEOF '(' type_name ')'		{ $$ = new unary_expression(4, $3); }
 	;
 
