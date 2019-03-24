@@ -1,4 +1,10 @@
-int f2(){
-    int x;
-    return ((   6 || ++x )<<2)+x;;
+int main(){
+    /*
+     * dsgfhjkhgfdfgk,j
+     */
+    int a[3];
+
+    a[2]=1;
+
+    return sizeof(a);
 }

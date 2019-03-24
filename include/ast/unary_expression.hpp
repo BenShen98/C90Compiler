@@ -79,50 +79,27 @@ public:
                     //per increment, self assign,
                     //only alter value pointed by id, does not change result.id AND result.freeable
                     mips.addi(true, result.id, "1");
-
                     break;
+
                 case 2:
                     mips.addi(true, result.id, "-1");
-
-                    break;
-                case '-':
-                    result.id=mips.negation('-',result.id,false);
                     break;
 
-                case '+':
+                case 3:
+                    result.id=mips.SIZEOF(result.id);
+                    result.freeable= true;
                     break;
 
-                case '~':
-                    result.id=mips.negation('~',result.id,false);
-                    break;
-
-                case '!':
-                    result.id=mips.negation('!',result.id,false);
+                case 4: //todo::
+                    notImplemented();
                     break;
 
                 default:
-                    notImplemented();
-
+                    result.id=mips.unaryOp(type,result.id,result.freeable);
+                    result.freeable= true;
             }
 
         }else{
-
-//            0	: postfix_expression
-//            1	| INC_OP unary_expression
-//            2	| DEC_OP unary_expression
-//                          | unary_operator cast_expression        SPECIAL CASE unary_operator IS TERMINAL
-//            3	| SIZEOF unary_expression
-//            4	| SIZEOF '(' type_name ')'
-//                    ;
-//
-//            special case for unary_operator:
-//            '&'
-//            '*'
-//            '+'
-//            '-'
-//            '~'
-//            '!'
-//            */
 
             pt->mp(result);
 

@@ -112,6 +112,11 @@ private:
 
     }
 
+    void addr_sp(std::string reg,StackId id, std::string comment=""){
+        postEditPtr.push_back(buffer.size());//push_back idx of next line
+        buffer.push_back("addiu " + reg + ",_" + id.str() + "_($sp) #" + comment);
+    }
+
     //ptr will be invalide if element is inserted to the vector
     EntryPtr getInfo(StackId id) const;
 
@@ -150,6 +155,7 @@ private:
 /*
  * MIPS function
  */
+
     void _li(std::string reg,std::string imm, std::string comment=""){
         buffer.push_back("li "+ reg + ',' + imm + " #" + comment );
     }
@@ -282,7 +288,9 @@ private:
         buffer.push_back("move " + d + ',' +s +" #"+comment);
     }
 
-
+    void _lw(std::string d,std::string offset,std::string s, std::string comment=""){
+        buffer.push_back("lw " + d + ',' + offset + '(' +s + ')' +" #"+comment);
+    }
 
 
     /* ... */
@@ -312,13 +320,13 @@ public:
  */
 
     void newFrame(std::string name);
-    void endFrame(bool logging=true); //call flush
+    void endFrame(); //call flush
 
     void dump();//SHOULD be private
-    StackId negation(char type, StackId op1, bool free1);
+    StackId unaryOp(char type, StackId op1, bool free1);
 
     void newScope();
-    void endScope();
+    void endScope(bool logging=true);
 
 
 /*
@@ -337,6 +345,8 @@ public:
 
     //this will always reserve size 4, have type int
     StackId _reserveTempPtr(Type type,const AddressType& v,std::string identifier="" );
+
+    StackId squareBracket(StackId op1, StackId op2, bool free1, bool free2);
 
 //    int push_back_array();
 
@@ -443,6 +453,7 @@ public:
 
     void beq(StackId id1,StackId id2,std::string label);
 
+    StackId SIZEOF(StackId input);
 
 };
 

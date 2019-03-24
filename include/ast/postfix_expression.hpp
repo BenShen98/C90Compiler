@@ -66,8 +66,23 @@ public:
     }
 
     void mp(Result& result) const override{
+
+        result.freeable= true;
+
         Result postfix;
         switch (type){
+
+            case 1:
+            {
+                pt->mp(postfix);
+
+                Result exp;
+                op->mp(exp);
+
+                result.id=mips.squareBracket(postfix.id, exp.id, postfix.freeable, exp.freeable);
+
+            }
+                break;
 
             case 2: //postfix_expression '(' ')'
             case 3:
@@ -80,7 +95,7 @@ public:
                     op->mp();
 
                 result.id = mips.commitCall();
-                result.freeable= true;
+
 
                 break;
 
@@ -88,14 +103,12 @@ public:
 
                 pt->mp(postfix);
                 result.id=mips.addi(false,postfix.id,"1");//copy of org
-                result.freeable= true;
 
                 break;
 
             case 7: //DEC_OP
                 pt->mp(postfix);
                 result.id=mips.addi(false,postfix.id,"1"); //copy of org
-                result.freeable= true;
 
                 break;
 
@@ -103,6 +116,7 @@ public:
             default:
                 notImplemented();
         }
+
     }
 
 };

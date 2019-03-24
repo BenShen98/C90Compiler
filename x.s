@@ -1,36 +1,29 @@
-.globl f2
-.ent f2
-f2:
-.frame $fp,64,$31
-addiu $sp, $sp, -64
+.globl main
+.ent main
+main:
+.frame $fp,72,$31
+addiu $sp, $sp, -72
 sw $31, 20($sp)
 # Enter scope
 # Enter scope
-li $t0,0 #imm id _1:4_
-li $t1,6 #imm id _1:8_
-addi $t0,$t0,1 #per increment of id _1:4_
-beq $t1,$0,ORShort_0_f2
-beq $t0,$0,ORShort_0_f2
-li $t2,1 #
-b OREnd_1_f2
-ORShort_0_f2:
-
-move $t2,$0 #
-OREnd_1_f2:
-
-# assign _1:12_ to _1:16_ in reg $t2
-li $t1,2 #imm id _1:20_
-sll $t3,$t2,$t1 #dst id _1:24_
-# assign _1:24_ to _1:28_ in reg $t3
-addu $t1,$t3,$t0 #dst id _1:32_
-# assign _1:32_ to _1:36_ in reg $t1
-move $2,$t1
-b EXIT_f2
+li $t0,2 #imm id _1:16_
+lw $t1,60($sp) #load _1:12_ to$t1
+li $t2,4 #imm id _1:20_
+mult $t0,$t2 #cal offset _1:24
+mflo $t3#cal offset _1:24
+addu $t0,$t1,$t3 #dst id _1:28_
+lw $t0,0($t0) #de ref
+li $t3,1 #imm id _1:36_
+# assign _1:36_ to _1:32_ in reg $t3
+li $t0,12 #imm id _1:40_
+# assign _1:40_ to _1:44_ in reg $t0
+move $2,$t0
+b EXIT_main
 # End scope
 # End scope
-EXIT_f2:
+EXIT_main:
 lw $31, 20($sp)
-addiu $sp, $sp, 64
+addiu $sp, $sp, 72
 j $31
-.end f2
+.end main
 
