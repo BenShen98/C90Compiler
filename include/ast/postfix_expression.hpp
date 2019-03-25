@@ -57,6 +57,14 @@ public:
                 dst = p + '(' + o + ')';
                 break;
 
+            case 6://++
+              dst=p+"+=1";
+              break;
+
+            case 7://--
+              dst=p+"-=1";
+              break;
+
             default:
                 notImplemented();
                 break;
@@ -109,7 +117,7 @@ public:
 
             case 7: //DEC_OP
                 pt->mp(postfix);
-                result.id=mips.addi(false,postfix.id,"1"); //copy of org
+                result.id=mips.addi(false,postfix.id,"-1"); //copy of org
 
                 break;
 
