@@ -42,7 +42,7 @@ public:
   }
 
   inline void get_global_variable(std::string& str)const{
-    std::vector<std::string> fields;
+     std::vector<std::string> fields;
      std::regex func_def (".*[(].*[)].*");
      if (std::regex_match(str,func_def)){
          // when is function defination
@@ -50,7 +50,12 @@ public:
      str= "";
 
      }else{
-         boost::split(fields,str,boost::is_any_of("\n"));
+         //boost::split(fields,str,boost::is_any_of("\n"));
+         std::string token;
+         std::istringstream tokenstream(str);
+         while(std::getline(tokenstream,token,'\n')){
+           fields.push_back(token);
+         }
          // when is NOT function defination
          //str.erase(equal_idx,str.size());
          for (int i=0;i<fields.size();i++){
@@ -58,7 +63,7 @@ public:
            std::string tempstr(fields[i],0,equal_idx);
            //std::cout << "global var pushback, " << tempstr<<"\n";
            globalvar.push_back(tempstr);
-           //std::cout<<fields[i]<<std::endl;
+           std::cout<<fields[i]<<std::endl;
          }
      }
    }
