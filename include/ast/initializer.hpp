@@ -35,7 +35,7 @@ public:
        if(type==0){
            Result op1;
             data->mp(op1);
-            mips.assignment(para.id, op1.id,ASSIGN, op1.freeable);
+            mips.assignment(para.isIndirection,para.isIndirection,para.id, op1.id,ASSIGN, op1.freeable);
        }else{
            notImplemented();
        }

@@ -1,10 +1,9 @@
-int main(){
-    /*
-     * dsgfhjkhgfdfgk,j
-     */
-    int a[3];
+int f(){
+    int *y,a[2];
 
-    a[2]=1;
+    a[3]=5;
 
-    return sizeof(a);
+    y=&a[0];
+
+    return y;
 }

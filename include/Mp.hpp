@@ -111,12 +111,13 @@ private:
     void lw_sp(std::string reg,StackId id, std::string comment=""){
         postEditPtr.push_back(buffer.size());//push_back idx of next line
         buffer.push_back("lw " + reg + ",_" + id.str() + "_($sp) #" + comment);
+        buffer.push_back("nop");
 
     }
 
     void addr_sp(std::string reg,StackId id, std::string comment=""){
         postEditPtr.push_back(buffer.size());//push_back idx of next line
-        buffer.push_back("addiu " + reg + ",_" + id.str() + "_($sp) #" + comment);
+        buffer.push_back("addiu " + reg + ", $sp, _" + id.str() + "_ #" + comment);
     }
 
     //ptr will be invalide if element is inserted to the vector
@@ -299,6 +300,11 @@ private:
 
     void _lw(std::string d,std::string offset,std::string s, std::string comment=""){
         buffer.push_back("lw " + d + ',' + offset + '(' +s + ')' +" #"+comment);
+        buffer.push_back("nop");
+    }
+
+    void _sw(std::string d,std::string offset,std::string s, std::string comment=""){
+        buffer.push_back("sw " + d + ',' + offset + '(' +s + ')' +" #"+comment);
     }
 
 
@@ -355,7 +361,10 @@ public:
     //this will always reserve size 4, have type int
     StackId _reserveTempPtr(Type type,const AddressType& v,std::string identifier="" );
 
-    StackId squareBracket(StackId op1, StackId op2, bool free1, bool free2);
+    StackId squareBracket(bool indirect1, bool indirect2,StackId op1, StackId op2, bool free1, bool free2);
+
+    StackId getAddress(bool& isIndirection, StackId idx);  // &
+    StackId getIndirection(StackId idx); // *
 
 //    int push_back_array();
 
@@ -363,7 +372,7 @@ public:
  * current function call & block control
  */
     void Return();
-    void Return(StackId id);
+    void Return(StackId id, bool isIndirection);
 
     // generate and insert label
     std::string mkLabel(const std::string& name);
@@ -400,7 +409,7 @@ public:
 
     //find id (offset used for array ONLY)
     //todo IF offset is 0, AND is array, DO SOMETHING (return ptr?)
-    StackId getId(std::string identifier);
+    StackId getId(bool& isIndirection, std::string identifier);
 
     // get info about the id
 
@@ -418,6 +427,7 @@ public:
 
 //    no longer needed
     void writeBackAll();//before function call, save all t register
+    void writeBackReg(StackId id);
     void resetReg(int level);
 //    void writeBack(int regIdx);
 
@@ -441,9 +451,9 @@ public:
  */
 
 
-    StackId algebra(enum_algebra algebra,StackId op1, StackId op2, bool free1=false, bool free2=false, std::string varName="");
+    StackId algebra(bool containIndirection, enum_algebra algebra,StackId op1, StackId op2, bool free1=false, bool free2=false, std::string varName="");
 
-    void assignment(StackId dst, StackId op1,enum_assignment operation=ASSIGN, bool free= false);
+    void assignment(bool dstIndirection, bool opIndirection, StackId dst, StackId op1,enum_assignment operation=ASSIGN, bool free= false);
     // void assignment(int dst, std::string constant);
 
     //ONLY for INT, used for a++, a--, --a, ++a

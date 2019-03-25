@@ -63,7 +63,7 @@ public:
             //s1
             Result r1;
             is_true->mp(r1);//get id & freeable
-            mips.assignment(para.id,r1.id,ASSIGN,r1.freeable);
+            mips.assignment(para.isIndirection,r1.isIndirection,para.id,r1.id,ASSIGN,r1.freeable);
             mips.writeBackAll();
 
             mips.branch(elseend);
@@ -74,7 +74,7 @@ public:
             Result r2;
             mips.insertLabel(elsestart);
             is_false->mp(r2);
-            mips.assignment(para.id,r2.id,ASSIGN,r2.freeable);
+            mips.assignment(para.isIndirection,r2.isIndirection,para.id,r2.id,ASSIGN,r2.freeable);
             mips.writeBackAll();
 
 

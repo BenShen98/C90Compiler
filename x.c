@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+int main()
+{
+        int n=4,m=3;
+        n++;
+    int a[n][m]+=5;
+=======
 /* Check is correct, gcc bug? */
 int f1(){
     int x;
@@ -19,6 +26,7 @@ int f4(){
     int x=1;
     return ((  0 && ++x )<<2)+x;
 }
+>>>>>>> ast2mips
 
 /* Check is correct, gcc bug? */
 int main(){
