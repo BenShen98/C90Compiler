@@ -676,7 +676,8 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     void Mp::assignment(bool dstIndirection, bool opIndirection, StackId dst, StackId op1, enum_assignment operation, bool free){
 
         //write back all register to avid conflict
-        writeBackAll();
+        if(dstIndirection)
+            writeBackAll();
 
         // default case for simple assignment
         StackId _temp;

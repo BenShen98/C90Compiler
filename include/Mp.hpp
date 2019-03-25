@@ -109,12 +109,13 @@ private:
     void lw_sp(std::string reg,StackId id, std::string comment=""){
         postEditPtr.push_back(buffer.size());//push_back idx of next line
         buffer.push_back("lw " + reg + ",_" + id.str() + "_($sp) #" + comment);
+        buffer.push_back("nop");
 
     }
 
     void addr_sp(std::string reg,StackId id, std::string comment=""){
         postEditPtr.push_back(buffer.size());//push_back idx of next line
-        buffer.push_back("addiu " + reg + ",_" + id.str() + "_($sp) #" + comment);
+        buffer.push_back("addiu " + reg + ", $0, _" + id.str() + "_ #" + comment);
     }
 
     //ptr will be invalide if element is inserted to the vector
@@ -290,6 +291,7 @@ private:
 
     void _lw(std::string d,std::string offset,std::string s, std::string comment=""){
         buffer.push_back("lw " + d + ',' + offset + '(' +s + ')' +" #"+comment);
+        buffer.push_back("nop");
     }
 
     void _sw(std::string d,std::string offset,std::string s, std::string comment=""){
