@@ -12,12 +12,18 @@ li $t2,4 #imm id _1:20_
 mult $t0,$t2 #cal offset _1:24
 mflo $t3#cal offset _1:24
 addu $t0,$t1,$t3 #dst id _1:28_
+li $t3,1 #imm id _1:32_
+sw $t0,44($sp) #write back id 1:28
+sw $t2,52($sp) #write back id 1:20
+sw $t3,40($sp) #write back id 1:32
+lw $t0,40($sp) #load _1:32_ to$t0
 lw $t0,0($t0) #de ref
-li $t3,1 #imm id _1:36_
-# assign _1:36_ to _1:32_ in reg $t3
-li $t0,12 #imm id _1:40_
-# assign _1:40_ to _1:44_ in reg $t0
-move $2,$t0
+lw $t1,44($sp) #load _1:28_ to$t1
+lw $t2,40($sp) #load _1:32_ to$t2
+sw $t2,0($t1) #write back via indirection
+li $t3,12 #imm id _1:40_
+# assign _1:40_ to _1:44_ in reg $t3
+move $2,$t3
 b EXIT_main
 # End scope
 # End scope

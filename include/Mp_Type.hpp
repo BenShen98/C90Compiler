@@ -394,6 +394,9 @@ typedef struct _result{
      *         the value of foo is assigned to boo
      *
      */
+
+    // there is no need to reset isIndirection in AST, it dies with the Result struct
+
     bool isIndirection= false;
 
 

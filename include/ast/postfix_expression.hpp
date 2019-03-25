@@ -79,7 +79,8 @@ public:
                 Result exp;
                 op->mp(exp);
 
-                result.id=mips.squareBracket(postfix.id, exp.id, postfix.freeable, exp.freeable);
+                result.id=mips.algebra(postfix.isIndirection||exp.isIndirection,ADD, postfix.id, exp.id, postfix.freeable, exp.freeable);
+                result.isIndirection=true; // mark the existence of *
 
             }
                 break;

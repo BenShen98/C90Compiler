@@ -682,13 +682,16 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         StackId _temp;
 
         if( opIndirection ){
-            op1=getIndirection(true, op1);
+            op1=getIndirection(op1);
             free=true;
         }
 
         if( dstIndirection ){
+
             StackId _dstContent;
-            _dstContent=getIndirection(true, op1);
+
+            if(operation!=ASSIGN)
+                _dstContent=getIndirection(op1); //load data for += etc
 
             switch (operation) {
                 case MULA: // *=
@@ -736,7 +739,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                     break;
             }
 
-            _sw(tRegName(_temp),"0",tRegName(dst),"write back via indirection");
+            _sw(tRegName(loadGenReg(_temp)),"0",tRegName(loadGenReg(dst)),"write back via indirection");
 
 
         }else {
@@ -868,7 +871,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
                 if(containIndirection){
                     //deref * first
-                    op1=getIndirection(true,op1);
+                    op1=getIndirection(op1);
                     r1=loadGenReg(op1); //update reg info
                     free1=true;
                 }
@@ -886,7 +889,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
                 if(containIndirection){
                     //deref * first
-                    op2=getIndirection(true,op2);
+                    op2=getIndirection(op2);
                     r2=loadGenReg(op2); //update reg info
                     free2=true;
 
@@ -1006,7 +1009,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         }
     }
 
-    StackId Mp::getIndirection(bool &isIndirection, StackId idx) {
+    StackId Mp::getIndirection( StackId idx) {
         RegPtr r1=loadGenReg(idx);
 
         if(isRegDirty(r1->type)){
@@ -1018,13 +1021,12 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         AddressType newAddr=info->addr;
         deference(r1->type,newAddr); //set r1->type & newAddr
 
-        StackId newId=reserveId(4,newType,"indirection _"+idx.str(),newAddr);
+        StackId newId=reserveId(4,r1->type,"indirection _"+idx.str(),newAddr);
 
         _lw(tRegName(r1),"0",tRegName(r1),"de ref");
         r1->id=newId;
         setRegDirty(r1->type);
 
-        isIndirection= false;
         return newId;
     }
 

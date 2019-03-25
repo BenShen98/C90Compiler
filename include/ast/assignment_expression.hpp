@@ -111,7 +111,7 @@ public:
             expression->mp(exp);
 
             //perform assignment
-            mips.assignment(result.id,exp.id,assignment_operator,exp.freeable);
+            mips.assignment(result.isIndirection,exp.isIndirection,result.id,exp.id,assignment_operator,exp.freeable);
         }
 
     }

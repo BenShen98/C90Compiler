@@ -353,7 +353,7 @@ public:
 //    StackId squareBracket(StackId op1, StackId op2, bool free1, bool free2);
 
     StackId getAddress(bool& isIndirection, StackId idx);  // &
-    StackId getIndirection(bool& isIndirection, StackId idx); // *
+    StackId getIndirection(StackId idx); // *
 
 //    int push_back_array();
 

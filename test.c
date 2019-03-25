@@ -6,5 +6,5 @@ int main(){
 
     a[2]=1;
 
-    return sizeof(a);
+    return a;
 }
