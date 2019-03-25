@@ -22,11 +22,9 @@ public:
     ~storage_class_specifier()override{}
 
 
-    void py(std::string& dst) const override{
-        //python does not define type, skip
-    }
+    //python does not use this class,not define type
 
-    void mp() const override{
+    void mp(Result& result) const override{
         notImplemented();
     }
 

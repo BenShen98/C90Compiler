@@ -24,8 +24,9 @@ std::string c() const override{
       return list->c() + "," + element->c();
     }else{
       return element->c();
-    }
   }
+}
+
 
 };
 

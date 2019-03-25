@@ -1,4 +1,7 @@
 #include "ast.hpp"
+#include "Mp.hpp"
+#include "Context.hpp"
+
 
 #include <iostream>
 #include <fstream>
@@ -9,6 +12,8 @@ std::ofstream ffout;
 extern FILE *yyin;
 std::vector<std::string> globalvar;
 
+Mp mips;
+Context context;
 
 //debug dummy
 void dd(){
@@ -47,6 +52,10 @@ int  main(int argc, char* argv[]){
 
     }else if( strcmp(argv[1],"-S")==0 || strcmp(argv[1],"-s")==0 ){
         //logic for compile to MIPS I assembly
+        root->mp();
+
+        //output final function states
+        context.dump();
 
     }else{
         std::cerr<<argv[1]<<" is not a valid option, only support --translate for translate OR -S for compile\n";

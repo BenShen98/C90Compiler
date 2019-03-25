@@ -38,8 +38,22 @@ public:
     }
 
     void mp() const override{
-        notImplemented();
 
+        Result result;
+
+        switch (type){
+            case 3: // RETURN ';'
+                mips.Return();
+                break;
+
+            case 4: // RETURN expression ';'
+                exp->mp(result);
+                mips.Return(result.id); // result.id will be freed, since it is the last line of the frame, there is no point write back
+                break;
+
+            default:
+                notImplemented();
+        }
     }
 
 };

@@ -35,12 +35,13 @@ public:
         }
     }
 
-    void mp() const override{
-        notImplemented();
+    void mp(Result& result) const override{
         if(type==NULL){
             //unary_expression
+            exp->mp(result);
         }else{
-            //'(' type_name ')' cast_expression
+            std::cerr<<"only support implicate cast\n";
+            notImplemented();
         }
     }
 

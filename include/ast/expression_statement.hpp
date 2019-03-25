@@ -31,7 +31,16 @@ public:
     }
 
     void mp() const override{
-        notImplemented();
+        if(exp!=NULL) {
+            Result dummy;
+            exp->mp(dummy);
+        }
+    }
+
+    void mp(Result& result)const override{
+      if (exp!=NULL){
+        exp->mp(result);
+      }
     }
 
 };

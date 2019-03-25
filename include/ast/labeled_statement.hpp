@@ -29,8 +29,25 @@ public:
         notImplemented();
     }
 
-    void mp() const override{
-        notImplemented();
+    void mp(Result& result) const override{
+      switch(type){
+        case 0:
+
+        break;
+
+        case 1://case constant_expression : statement
+        {
+          // Result expResult;
+          // exp->mp(expResult);
+          // mips.bne(result.id,expResult.id,label);
+          // //statement mp func
+          // st->mp();
+        }
+        break;
+        case 2:
+
+        break;
+      }
 
     }
 
