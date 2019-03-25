@@ -1,3 +1,4 @@
+
 int f(){
     int *y,a[2];
 
@@ -7,3 +8,4 @@ int f(){
 
     return y;
 }
+

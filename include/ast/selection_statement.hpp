@@ -37,13 +37,13 @@ public:
 
         switch (type){
             case 0:
-                dst = "if " + e + ":\n" + s;
+                dst = "if " + e + ":\n" + s + "\n\tpass"+'\n';
                 break;
 
             case 1:
                 s2->py(s_false);
                 indent(s_false);
-                dst = "if " + e + ":\n" + s + "\nelse:\n" + s_false;
+                dst = "if " + e + ":\n" + s +"\n\tpass"+"\nelse:\n" + s_false+ "\n\tpass"+'\n' ;
                 break;
 
             case 2:

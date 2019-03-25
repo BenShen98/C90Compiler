@@ -57,13 +57,13 @@ public:
                 dst = p + '(' + o + ')';
                 break;
 
-            case 6://++
-              dst=p+"+=1";
-              break;
+            case 6:
+                dst = p + "+=1";
+                break;
 
-            case 7://--
-              dst=p+"-=1";
-              break;
+            case 7:
+                dst = p + "-=1";
+                break;
 
             default:
                 notImplemented();

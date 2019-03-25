@@ -30,6 +30,7 @@ inline void indent(std::string& str){
     while ( ( pos = str.find ('\n',pos+1) ) != std::string::npos ) // replace \n with \n\t
     {
         str.insert ( pos+1, 1,'\t' );
+
     }
 }
 

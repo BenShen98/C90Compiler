@@ -113,7 +113,7 @@ inline std::string cConst2pyConst(std::string cConst){
 
     if( cConst[0]=='0' ){
         // input is either oct(0467), hex(0x2af), binary(0b0101)
-        if( !isDec(cConst[1]) ){
+        if( isDec(cConst[1]) ){
             //input is oct, change format from 0467 to 0o467
             cConst.insert(1,1,'o');
         }

@@ -41,9 +41,10 @@ public:
           //std::cerr<<globalvar[i]<<std::endl;
         }
         body=global+body;
+        //std::cerr << "before indent body" << body<<'\n';
         indent(body);
 
-        dst = "def " + func + ":\n" + body + "\n\n";
+        dst = "def " + func + ":\n" + body + "\n\n\tpass";
         //std::cerr<<"WARNING THIS IS PRINTING"<<dst<<std::endl;
 
     }
