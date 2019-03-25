@@ -117,7 +117,7 @@ private:
 
     void addr_sp(std::string reg,StackId id, std::string comment=""){
         postEditPtr.push_back(buffer.size());//push_back idx of next line
-        buffer.push_back("addiu " + reg + ", $0, _" + id.str() + "_ #" + comment);
+        buffer.push_back("addiu " + reg + ", $sp, _" + id.str() + "_ #" + comment);
     }
 
     //ptr will be invalide if element is inserted to the vector
@@ -372,7 +372,7 @@ public:
  * current function call & block control
  */
     void Return();
-    void Return(StackId id);
+    void Return(StackId id, bool isIndirection);
 
     // generate and insert label
     std::string mkLabel(const std::string& name);

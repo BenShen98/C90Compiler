@@ -1200,14 +1200,18 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         buffer.push_back(label + ":\n");
     }
 
-    void Mp::Return(StackId id) {
+    void Mp::Return(StackId id, bool isIndirection) {
 
         //TODO: get return type
         Type returnType=asCallee_paras[0].type;
 
 
         StackId dst = reserveId(sizeOf(returnType),returnType, "FUNC RETURN");
-        RegPtr _op1 = typeDuplicate(dst, id, true); // not sure (think is true, because frame will be popped )
+
+        assignment(false,isIndirection, dst, id, ASSIGN);
+
+        RegPtr _op1 = loadGenReg(dst); // not sure (think is true, because frame will be popped )
+
         std::string _op1Str=tRegName(_op1);
 
         if(isFloat(returnType)){
