@@ -1,4 +1,5 @@
 int testfor();
 int main(){
-  return !(testfor()==0);
+  abi_setup();
+  return testfor();
 }

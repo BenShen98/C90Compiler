@@ -52,24 +52,31 @@ public:
 
             Result expResult;
             exp->mp(expResult);
+            mips.writeBackAll();
 
             std::string elsestart=mips.mkLabel("elseStart");
             std::string elseend=mips.mkLabel("elseEnd");
 
-            //if
+            //branch on false
             mips.bZero(false, expResult.id, elsestart); //skip s1 when false
 
             //s1
             Result r1;
             is_true->mp(r1);//get id & freeable
             mips.assignment(para.id,r1.id,ASSIGN,r1.freeable);
+            mips.writeBackAll();
+
             mips.branch(elseend);
+
+
 
             //s2
             Result r2;
             mips.insertLabel(elsestart);
             is_false->mp(r2);
             mips.assignment(para.id,r2.id,ASSIGN,r2.freeable);
+            mips.writeBackAll();
+
 
             //endif
             mips.insertLabel(elseend);

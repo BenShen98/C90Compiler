@@ -166,91 +166,103 @@ public:
 
     }
 
-    virtual std::string c() const override {
-        switch (type) {
-            //brackets are redundant but just in case
-            case MUL:
-                return '(' +  left->c() + '*' + right->c() + ')';
-                break;
-
-            case DIV:
-                return  '(' +  left->c()+ '/' + right->c()+ ')';
-                break;
-
-            case MOD:
-                return  '(' +  left->c()+ '%' + right->c()+ ')';
-                break;
-
-            case ADD:
-                return  '(' +  left->c()+ '+' + right->c()+ ')';
-                break;
-
-            case SUB:
-                return  '(' +  left->c()+ '-' + right->c()+ ')';
-                break;
-
-            case LEFT_:
-                return  '(' +  left->c()+ "<<" + right->c()+ ')';
-                break;
-
-            case RIGHT_:
-                return  '(' +  left->c()+ ">>" + right->c()+ ')';
-                break;
-
-            case SMALLER:
-                return  '(' +  left->c()+ '<' + right->c()+ ')';
-                break;
-
-            case GREATER:
-                return  '(' +  left->c()+ '>' + right->c()+ ')';
-                break;
-
-            case LE_:
-                return  '(' +  left->c()+ "<=" + right->c()+ ')';
-                break;
-
-            case GE_:
-                return  '(' +  left->c()+ ">=" + right->c()+ ')';
-                break;
-
-            case EQ_:
-                return  '(' +  left->c()+ "==" + right->c()+ ')';
-                break;
-
-            case NE_:
-                return  '(' +  left->c()+ "!=" + right->c()+ ')';
-                break;
-
-            case AND:
-                return  '(' +  left->c()+ '&' + right->c()+ ')';
-                break;
-
-            case XOR:
-                return  '(' +  left->c()+ '^' + right->c()+ ')';
-                break;
-
-            case OR:
-                return  '(' +  left->c()+ '|' + right->c()+ ')';
-                break;
-
-            case AND_:
-                return  '(' +  left->c()+ "and" + right->c()+ ')';
-                break;
-
-            case OR_:
-                return  '(' +  left->c()+ "or" + right->c()+ ')';
-                break;
-        }
-    }
-
     virtual void mp(Result& result) const override{
 
         Result op1,op2;
-        left->mp(op1);
-        right->mp(op2);
 
-        result.id = mips.algebra(type, op1.id, op2.id, op1.freeable, op2.freeable,"=op(" + std::to_string(type) + ") " + std::to_string(op1.id) + " " +std::to_string(op2.id)) ;
-        result.freeable= true; //this is indeterminate result, no need to store
+        if(!isVoid(result.type)){
+
+            left->mp(op1);
+            right->mp(op2);
+
+            result.id = mips.algebra(type, op1.id, op2.id, op1.freeable, op2.freeable,"=op(" + std::to_string(type) + ") " + op1.id.str() + " " + op2.id.str() );
+            result.freeable= true; //this is indeterminate result, no need to store
+
+        }else{
+            // compile time constant
+
+            op1.type=TYPE_VOID;
+            op2.type=TYPE_VOID;
+            left->mp(op1);
+            right->mp(op2);
+
+            switch (type){
+                //brackets are redundant but just in case
+                case MUL:
+                    result.num =  op1.num * op2.num;
+                    break;
+
+                case DIV:
+                    result.num =  op1.num / op2.num;
+                    break;
+
+                case MOD:
+                    result.num =  op1.num % op2.num;
+                    break;
+
+                case ADD:
+                    result.num =  op1.num + op2.num;
+                    break;
+
+                case SUB:
+                    result.num =  op1.num - op2.num;
+                    break;
+
+                case LEFT_:
+                    result.num =  op1.num << op2.num;
+                    break;
+
+                case RIGHT_:
+                    result.num =  op1.num >> op2.num;
+                    break;
+
+                case SMALLER:
+                    result.num =  op1.num < op2.num;
+                    break;
+
+                case GREATER:
+                    result.num =  op1.num > op2.num;
+                    break;
+
+                case LE_:
+                    result.num =  op1.num <= op2.num;
+                    break;
+
+                case GE_:
+                    result.num =  op1.num >= op2.num;
+                    break;
+
+                case EQ_:
+                    result.num =  op1.num == op2.num;
+                    break;
+
+                case NE_:
+                    result.num =  op1.num != op2.num;
+                    break;
+
+                case AND:
+                    result.num =  op1.num & op2.num;
+                    break;
+
+                case XOR:
+                    result.num =  op1.num ^ op2.num;
+                    break;
+
+                case OR:
+                    result.num =  op1.num | op2.num;
+                    break;
+
+                case AND_:
+                    result.num =  op1.num && op2.num;
+                    break;
+
+                case OR_:
+                    result.num =  op1.num || op2.num;
+                    break;
+            }
+
+
+        }
 
 
     }

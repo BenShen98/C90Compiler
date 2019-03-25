@@ -36,14 +36,15 @@ public:
         declarator->py(func);
 
         compound_statement->py(body);
-        for(int i = 0; i<globalvar.size();i++){
+        for(unsigned i = 0; i<globalvar.size();i++){
           global += "global " + globalvar[i] + '\n';
           //std::cerr<<globalvar[i]<<std::endl;
         }
         body=global+body;
+        //std::cerr << "before indent body" << body<<'\n';
         indent(body);
 
-        dst = "def " + func + ":\n" + body + "\n\n";
+        dst = "def " + func + ":\n" + body + "\n\n\tpass";
         //std::cerr<<"WARNING THIS IS PRINTING"<<dst<<std::endl;
 
     }
@@ -69,7 +70,7 @@ public:
         compound_statement->mp();
 
         //end function
-        mips.endFrame(LOGGING);
+        mips.endFrame();
 
     }
 

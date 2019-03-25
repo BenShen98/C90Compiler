@@ -11,20 +11,19 @@ declarator
  */
 
 class declarator: public ast_abs{
-    astPtr pointer;
+    int ptrCount;
     astPtr direct_declarator;
 
 public:
-    declarator(astPtr t, astPtr d):pointer(t),direct_declarator(d){}
-    declarator(astPtr d):pointer(0),direct_declarator(d){}
+    declarator(int t, astPtr d):ptrCount(t),direct_declarator(d){}
+    declarator(astPtr d):ptrCount(0),direct_declarator(d){}
 
     ~declarator() override{
-        delete pointer;
         delete direct_declarator;
     }
 
     void py(std::string& dst) const override{
-        if(pointer==NULL){
+        if(ptrCount==0){
             //case 1, direct_declarator
             direct_declarator->py(dst);
         }else{
@@ -39,12 +38,14 @@ public:
     }
 
     void mp(Result& para) const override{
-        if(pointer==NULL){
+        if(ptrCount==0){
             //case 1, direct_declarator
             direct_declarator->mp(para);
 
         }else{
-            notImplemented();
+            para.addr.insert(para.addr.end(), ptrCount, -1);
+            setAddressFlag(para.type);
+            direct_declarator->mp(para);
             //case 0, pointer direct_declarator
 
         }

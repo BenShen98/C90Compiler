@@ -37,13 +37,13 @@ public:
 
         switch (type){
             case 0:
-                dst = "if " + e + ":\n" + s;
+                dst = "if " + e + ":\n" + s + "\n\tpass"+'\n';
                 break;
 
             case 1:
                 s2->py(s_false);
                 indent(s_false);
-                dst = "if " + e + ":\n" + s + "\nelse:\n" + s_false;
+                dst = "if " + e + ":\n" + s +"\n\tpass"+"\nelse:\n" + s_false+ "\n\tpass"+'\n' ;
                 break;
 
             case 2:
@@ -54,45 +54,40 @@ public:
     }
 
     void mp() const override{
+        std::string selectionEnd=mips.mkLabel("ifEnd");
+
         Result expResult;
         exp->mp(expResult);
+        mips.writeBackAll();
+
+
 
         switch (type){
             case 0: //IF '(' expression ')' statement
-            {
-                std::string ifEnd=mips.mkLabel("ifEnd");
 
-                mips.bZero(false, expResult.id, ifEnd); //skip s1 when false
+                mips.bZero(false, expResult.id, selectionEnd); //skip s1 when false
 
                 //gen code for s1
-                mips.comment("true case for "+ifEnd);
                 s1->mp(); // no para, is statement
-
-                mips.insertLabel(ifEnd);
-
-
-            }
+                mips.writeBackAll();
                 break;
 
             case 1: //IF '(' expression ')' statement ELSE statement
             {
               std::string elsestart=mips.mkLabel("elseStart");
-              std::string elseend=mips.mkLabel("elseEnd");
-
-              //if
+              //false branch
               mips.bZero(false, expResult.id, elsestart); //skip s1 when false
 
               //s1
               s1->mp();
-              mips.branch(elseend);
+              mips.writeBackAll();
+
+              mips.branch(selectionEnd);
+
 
               //s2
               mips.insertLabel(elsestart);
               s2->mp();
-
-              //endif
-              mips.insertLabel(elseend);
-
             }
                 break;
 
@@ -108,6 +103,10 @@ public:
             }
               break;
         }
+
+        mips.insertLabel(selectionEnd);
+        mips.writeBackAll();
+
     }
 
 };

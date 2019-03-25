@@ -15,7 +15,7 @@ primary_expression      (IDENTIFIER does not contain "", but STRING_LITERAL does
 
 inline bool isDec(char c) { return (c>='0' && c<='9'); }
 inline std::string cConst2pyConst(std::string cConst);
-inline int cConst2Mp(std::string cConst);
+inline StackId cConst2Mp(std::string cConst);
 
 
 class primary_expression: public ast_abs{
@@ -77,7 +77,13 @@ public:
                 break;
 
             case 1: //char, int, float
-                result.id = cConst2Mp(*str);
+
+                if(isVoid(result.type)){
+                    result.num = std::stoll(*str,0,0);  //return dec, compile time constant
+                }else{
+                    result.id = cConst2Mp(*str); //return stack id, imm in register
+                }
+
 
                 //its a letral
                 result.freeable = true;
@@ -89,13 +95,12 @@ public:
 
             case 3:
                 //evaluate the expression
-                Result rst;
-                pt->mp(rst);
+                pt->mp(result);
 
                 // make temporary duplicate,
-                result.id=mips.reserveId(sizeOf(rst.type),rst.type,"temp copy of "+std::to_string(rst.id));
-                mips.assignment(result.id,rst.id,ASSIGN,rst.freeable);
-                result.freeable=true;
+//                result.id=mips.reserveId(sizeOf(rst.type),rst.type,"temp copy of "+ rst.id.str(),);
+//                mips.assignment(result.id,rst.id,ASSIGN,rst.freeable);
+//                result.freeable=true;
 
                 //pass on to parents
                 break;
@@ -109,7 +114,7 @@ inline std::string cConst2pyConst(std::string cConst){
 
     if( cConst[0]=='0' ){
         // input is either oct(0467), hex(0x2af), binary(0b0101)
-        if( !isDec(cConst[1]) ){
+        if( isDec(cConst[1]) ){
             //input is oct, change format from 0467 to 0o467
             cConst.insert(1,1,'o');
         }
@@ -125,7 +130,7 @@ inline std::string cConst2pyConst(std::string cConst){
 }
 
 // return id which stored the constant
-inline int cConst2Mp(std::string cConst){
+inline StackId cConst2Mp(std::string cConst){
     // convert string to what ever
 
     //TODO: float,
@@ -143,35 +148,24 @@ inline int cConst2Mp(std::string cConst){
             break;
 
         case '0':
-            // input is either oct(0467), hex(0x2af), binary(0b0101)
-            if( cConst.back()=='U' || cConst.back()=='u' ) {
-                cConst.pop_back(); //remove postfix
-                return ( mips.immediate(4, cConst, TYPE_SIGNED_INT, "imm "+ cConst ) );
-            }else{
-                return ( mips.immediate(4, cConst, TYPE_SIGNED_INT ,"imm "+ cConst ) );
-            }
+                return ( mips.immediate(4, std::to_string(std::stoll(cConst,0,0)), TYPE_SIGNED_INT ,"imm "+ cConst ) );
 
 
         default:
             //integer/ floating point decimal literal
             // possible postfix : u,U ,f,F
         {
-            int dot, exp;
-            dot=cConst.find('.');
-            exp=cConst.find('e');
+            auto dot=cConst.find('.');
+            auto exp=cConst.find('e');
 
-            if( dot==std::string::npos && dot==std::string::npos) {
+            if( dot==std::string::npos && exp==std::string::npos) {
                 // input does not contain . nor e
-                if( cConst.back()=='U' || cConst.back()=='u' ) {
-                    cConst.pop_back(); //remove postfix
-                    return ( mips.immediate(4, cConst, TYPE_SIGNED_INT ,"imm "+ cConst ) );
-                }else{
-                    return ( mips.immediate(4, cConst, TYPE_SIGNED_INT ,"imm "+ cConst ) );
-                }
+                    return ( mips.immediate(4, std::to_string(std::stoll(cConst,0,0)), TYPE_SIGNED_INT ,"imm "+ cConst ) );
 
             } else{
                 //floating point
                 notImplemented();
+
 //                type=TYPE_DOUBLE_FLOAT;
 //                if( cConst.back()=='F' || cConst.back()='f' ) {
 //                    setUnsignedInt(type);
@@ -183,6 +177,8 @@ inline int cConst2Mp(std::string cConst){
             break;
         }
     }
+
+    return {-1,-1}; //remove warning
 }
 
 

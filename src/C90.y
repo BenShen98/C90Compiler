@@ -40,7 +40,7 @@
 %type <expr> parameter_list conditional_expression assignment_expression expression constant_expression declaration declaration_specifiers init_declarator_list init_declarator
 %type <expr> parameter_type_list  storage_class_specifier type_specifier  declarator direct_declarator initializer initializer_list labeled_statement compound_statement declaration_list statement_list expression_statement selection_statement iteration_statement jump_statement statement translation_unit external_declaration function_definition
 %type <str> IDENTIFIER CONSTANT STRING_LITERAL
-%type <i> unary_operator
+%type <i> unary_operator pointer
 %type <en_ass> assignment_operator
 
 
@@ -70,11 +70,11 @@ argument_expression_list
 	;
 
 unary_expression
-	: postfix_expression			{ $$ = new unary_expression(0, $1); }
+	: postfix_expression			{ $$ = $1; }
 	| INC_OP unary_expression		{ $$ = new unary_expression(1, $2); }
 	| DEC_OP unary_expression		{ $$ = new unary_expression(2, $2); }
 	| unary_operator cast_expression	{ $$ = new unary_expression($1, $2); }
-//	| SIZEOF unary_expression		{ $$ = new unary_expression(3, $2); }
+	| SIZEOF unary_expression		{ $$ = new unary_expression(3, $2); }
 //	| SIZEOF '(' type_name ')'		{ $$ = new unary_expression(4, $3); }
 	;
 
@@ -180,8 +180,7 @@ expression
 	;
 
 constant_expression
-	: conditional_expression	{ $$ = $1; }
-	| declaration {$$ = $1;}
+	: conditional_expression	{ $$ = new constant_expression($1); }
   ;
 
 declaration
@@ -292,7 +291,7 @@ type_specifier
 
 declarator
 	: direct_declarator		{ $$ = new declarator($1); }
-//	| pointer direct_declarator	{ $$ = new declarator($1, $2); }
+	| pointer direct_declarator	{ $$ = new declarator($1, $2); }
 	;
 
 direct_declarator
@@ -305,10 +304,10 @@ direct_declarator
 	| direct_declarator '(' ')'			{ $$ = new direct_declarator(5, $1); }
 	;
 
-//pointer
-//	: '*'
+pointer
+	: '*'                               { $$ = 1; }
 //	| '*' type_qualifier_list
-//	| '*' pointer
+	| '*' pointer                       { $$ = 1 + $2;}
 //	| '*' type_qualifier_list pointer
 	;
 

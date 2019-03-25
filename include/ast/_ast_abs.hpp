@@ -30,6 +30,7 @@ inline void indent(std::string& str){
     while ( ( pos = str.find ('\n',pos+1) ) != std::string::npos ) // replace \n with \n\t
     {
         str.insert ( pos+1, 1,'\t' );
+
     }
 }
 
@@ -40,7 +41,6 @@ public:
     {}
 
     //! Tell and expression to print itself to the given stream
-    virtual std::string c() const{};
 
     /* convert ast to python
      *

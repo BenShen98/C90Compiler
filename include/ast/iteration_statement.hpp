@@ -39,7 +39,7 @@ public:
 
         switch (type){
             case 0:
-                dst = "while " + c + ":\n" + s;
+                dst = "while " + c + ":\n" + s +"\n\tpass";
                 break;
 
             default:
@@ -50,59 +50,38 @@ public:
     }
 
     void mp() const override{
+
+        //condition setup
+        if(init!=NULL)
+            init->mp();
+
+        mips.writeBackAll();
+
+        std::string condi=mips.mkLabel("ItrCondition");
+        std::string end=mips.mkLabel("ItrEnd");
+
+        //condition
         Result expResult;
-        condition->mp(expResult);
-        switch(type){
-          case 0://WHILE '(' expression ')' statement
-          {
-            std::string start=mips.mkLabel("WhileStart");
-            std::string end=mips.mkLabel("WhileEnd");
-            mips.insertLabel(start);
-            mips.bZero(false, expResult.id, end);
-            statement->mp();
-            mips.branch(start);
-            mips.insertLabel(end);
-          }
-          break;
-          case 1://DO statement WHILE '(' expression ')' ';'
-          // {
-          //   std::string start=mips.mkLabel("WhileStart");
-          //   mips.insertLabel(start);
-          //   statement->mp();
-          //   mips.bZero(false, expResult.id, end);
-          // }
-          notImplemented();
-          break;
-          case 2: //FOR '(' expression_statement expression_statement ')' statement
-          {
-            std::string start=mips.mkLabel("ForStart");
-            std::string end=mips.mkLabel("ForEnd");
-            init->mp();
-            mips.insertLabel(start);
-            //branch on false
-            mips.bZero(false, expResult.id, end);
-            statement->mp();
-            mips.branch(start);
-            mips.insertLabel(end);
-          }
-          break;
-          case 3://FOR '(' expression_statement expression_statement expression ')' statement
-          {
+        mips.insertLabel(condi);
+        condition->mp(expResult); //condition is expression or expression_statement
+
+        mips.bZero(false, expResult.id, end);
+        statement->mp();
+
+        if(type==1){// do while loop
+            notImplemented();
+        } else if(type==3){
+            //for loop with post increment
             Result dummy;
-            std::string start=mips.mkLabel("ForStart");
-            std::string end=mips.mkLabel("ForEnd");
-            init->mp();
-            mips.insertLabel(start);
-            //branch on false
-            mips.bZero(false, expResult.id, end);
-            //need dummy var here
             increment->mp(dummy);
-            statement->mp();
-            mips.branch(start);
-            mips.insertLabel(end);
-          }
-          break;
         }
+
+        mips.writeBackAll();
+
+
+        //end of iteration
+        mips.branch(condi);
+        mips.insertLabel(end);
     }
 
 };

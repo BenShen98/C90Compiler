@@ -14,6 +14,7 @@ addons:
     - g++-mips-linux-gnu
     - gdb-multiarch
     - qemu
+    - libboost-all-dev
 
 before_install:
 - echo $LANG
@@ -22,8 +23,9 @@ before_install:
 - ./scripts/dependencies.sh
 script:
 - make
-- ./scripts/testansi.sh
+- ./scripts/verifyTestcase.sh
 - ./scripts/testmips.sh
+- ./scripts/testpy.sh
 branches:
   only:
     - master
