@@ -62,7 +62,7 @@ public:
                 break;
 
             case 7:
-                dst = p "-=1";
+                dst = p + "-=1";
                 break;
 
             default:
