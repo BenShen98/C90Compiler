@@ -591,28 +591,28 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
            case LE_:
                if(isUnsignedInt(resultType)){
-                 _LEu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+                 _leu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
                else{
-                 _LE(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+                 _le(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
                break;
 
            case GE_:
                if(isUnsignedInt(resultType)){
-                 _LEu(tRegName(dst),tRegName(op2), tRegName(op1),comment);
+                 _leu(tRegName(dst),tRegName(op2), tRegName(op1),comment);
                }
                else{
-                 _LE(tRegName(dst),tRegName(op2), tRegName(op1),comment);
+                 _le(tRegName(dst),tRegName(op2), tRegName(op1),comment);
                }
                break;
 
            case EQ_:
-                 _EQ(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+                 _eq(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                break;
 
            case NE_:
-                 _NE(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+                 _ne(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                break;
 
            case AND:
@@ -645,9 +645,10 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 //            }
 //                break;
 //
-//            case OR_:
-//                //short circuit
-//                break;
+           // case OR_:
+           //     //short circuit
+           //      _or(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+           //     break;
             default:
                 throw std::runtime_error("Not implemented.");
         }
@@ -774,11 +775,11 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             _bne(tRegName(r1),"$0",ORShort);
             _bne(tRegName(r2),"$0",ORShort);
 
-            _li(tRegName(rResult),"1");
+            _li(tRegName(rResult),"0");
             _b(OREnd);
 
             insertLabel(ORShort);
-            _move(tRegName(rResult),"$0");
+            _li(tRegName(rResult),"1");
 
             insertLabel(OREnd);
 

@@ -23,6 +23,8 @@
 
 class Mp {
 
+    friend class algebra;
+
 private:
 
     //funcName of current function
@@ -240,27 +242,34 @@ private:
     void _slt(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("slt " + d + ',' + s + ',' + t +" #" + comment );
     }
-    void _LE(std::string d,std::string s,std::string t, std::string comment=""){
-        buffer.push_back("slt " + d + ',' + s + ',' + t +" #" + comment );
+
+    //less equal
+    void _le(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("slt " + d + ',' + t + ',' + s +" #" + comment );
         buffer.push_back("xori " + d + ',' + d + ',' + "0x1" +" #" + comment );
     }
-    void _LEu(std::string d,std::string s,std::string t, std::string comment=""){
-        buffer.push_back("sltu " + d + ',' + s + ',' + t +" #" + comment );
+    void _leu(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("sltu " + d + ',' + t + ',' + s +" #" + comment );
         buffer.push_back("xori " + d + ',' + d + ',' + "0x1" +" #" + comment );
     }
-    void _EQ(std::string d,std::string s,std::string t, std::string comment=""){
+
+    //equal
+    void _eq(std::string d,std::string s,std::string t, std::string comment=""){
         //might need to andi 0x000ff
 
         buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
         buffer.push_back("sltu " + d + ',' + d + ',' + "0x1" +" #" + comment );
 
     }
-    void _NE(std::string d,std::string s,std::string t, std::string comment=""){
+
+    // not equal
+    void _ne(std::string d,std::string s,std::string t, std::string comment=""){
       //might need to andi 0x000ff
         buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
         buffer.push_back("sltu " + d + ',' + "$0" + ',' + d +" #" + comment );
 
     }
+
     void _xor(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
     }
@@ -281,7 +290,7 @@ private:
     }
 
     void _bne(std::string s,std::string t,std::string label){
-        buffer.push_back("beq " + s + ',' +t + ',' + label );
+        buffer.push_back("bne " + s + ',' +t + ',' + label );
     }
 
     void _move(std::string d,std::string s,std::string comment=""){
@@ -431,7 +440,6 @@ public:
  * C instruction
  */
 
-//    //TODO::  {MUL,DIV,MOD ,ADD,SUB, LEFT_,RIGHT_, SMALLER,GREATER, LE_,GE_,EQ_,NE_, AND,XOR,OR, AND_,OR_, };
 
     StackId algebra(enum_algebra algebra,StackId op1, StackId op2, bool free1=false, bool free2=false, std::string varName="");
 
