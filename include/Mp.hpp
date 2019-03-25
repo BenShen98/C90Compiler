@@ -23,6 +23,8 @@
 
 class Mp {
 
+    friend class algebra;
+
 private:
 
     //funcName of current function
