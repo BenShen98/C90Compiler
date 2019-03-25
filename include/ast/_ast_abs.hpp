@@ -6,12 +6,21 @@
 #include <iostream>
 #include <sstream>
 #include "_query_enum.hpp"
+#include "../Mp.hpp"
+#include "../Context.hpp"
+
+#define LOGGING true
 
 class ast_abs;
-extern std::vector<std::string> globalvar;
-
-
 typedef const ast_abs * astPtr;
+
+static Result _dummy_;
+
+extern Mp mips;
+extern std::ofstream ffout;
+extern std::vector<std::string> globalvar;
+extern Context context;
+
 
 inline void notImplemented(){ throw std::runtime_error("Not implemented."); }
 
@@ -34,9 +43,25 @@ public:
     //! Tell and expression to print itself to the given stream
     virtual std::string c() const{};
 
-    //! convert ast to python
+    /* convert ast to python
+     *
+     * dst should ONLY be used as return data
+     */
     virtual void py(std::string& dst) const
     { notImplemented(); }
+
+    /*
+     * convert ast to MIPS
+     *
+     * result is used to pass back data
+     * in SPECIAL CIRCUMSTANCE, it may also use as input variable.
+     * However, it should be transparent to other class
+     */
+//    virtual void mp(Result& result) const
+//    { notImplemented(); }
+
+     virtual void mp(Result& result) const
+     { notImplemented(); }
 
     virtual void mp() const
     { notImplemented(); }

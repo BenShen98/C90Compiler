@@ -6,7 +6,7 @@
 /*
  * left associative list
 LIST
-	: ELEMENT
+X	: ELEMENT {$$=$1}
 	| LIST ELEMENT
 	;
  */
@@ -29,17 +29,20 @@ public:
         std::string e, l;
         element->py(e);
 
-        if(list!=NULL){
-            list->py(l);
-            dst = l + ',' + e;
-        }else{
-            dst=e;
-        }
+        list->py(l);
+        dst = l + ',' + e;
+
     }
 
 
+    virtual void mp(Result& result) const override{
+        list->mp(result);
+        element->mp(result);
+    }
+
     virtual void mp() const override{
-        notImplemented();
+        list->mp();
+        element->mp();
     }
 
 };

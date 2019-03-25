@@ -1,14 +1,14 @@
 #ifndef ast_declaration_specifiers
 #define ast_declaration_specifiers
 
-#include "_left_list.hpp"
+#include "_right_list.hpp"
 
 /*
 declaration_specifiers
-	: storage_class_specifier
-	| storage_class_specifier declaration_specifiers
-	| type_specifier
-	| type_specifier declaration_specifiers
+X	: storage_class_specifier
+	| storage_class_specifier declaration_specifiers { $$ = $1; }
+X	| type_specifier
+	| type_specifier declaration_specifiers { $$ = $1; }
 X	| type_qualifier
 X	| type_qualifier declaration_specifiers
 	;
@@ -22,18 +22,11 @@ public:
 
     declaration_specifiers(astPtr e)
         :right_list(e){}
-    virtual void py(std::string& dst) const override{
-        std::string e, l;
-        element->py(e);
 
-        if(list!=NULL){
-            list->py(l);
-            dst = e + '\n' + l;
-        }else{
-            dst=e;
-        }
+    // py does not use this node
 
-    }
+
+
 };
 
 #endif

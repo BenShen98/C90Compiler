@@ -70,8 +70,22 @@ public:
 
     }
 
-    void mp() const override{
+    void mp(Result& result) const override{
+        pt->mp(result);
+
         switch (type){
+            case 0:
+                //done
+                break;
+            case 1:
+                //per increment, self assign,
+                //only alter value pointed by id, does not change result.id AND result.freeable
+                mips.addi(true, result.id, "1");
+
+                break;
+            case 2:
+                mips.addi(true, result.id, "-1");
+                break;
 
             default:
                 notImplemented();

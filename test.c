@@ -1,17 +1,8 @@
-int foo(int x, int y,int z){
-  if(x<0x2){
-    y=01;
-		return y;
-  }
-  else{
-    z=34;
-		return z;
-  }
+
+int oneLif()
+{
+    int x=5;
+    int y = x==6 ? 6 : 4;
+    return y;
 }
 
-int main(){
-  int a;
-	int b;
-	int c;
-  return foo(a,b,c);
-}

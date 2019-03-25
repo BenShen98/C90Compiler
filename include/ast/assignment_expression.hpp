@@ -143,8 +143,32 @@ public:
         }
     }
 
+    //used ONLY by assignment_expression
     void mp() const override{
-        notImplemented();
+        //parent node are expression
+        Result result;
+        mp(result);
+
+        mips.addArg(result.id);
+
+    }
+
+    void mp(Result& result) const override{
+        //parent node are assignment_expression
+        if(unary_expression==NULL){
+            //base case
+            expression->mp(result);
+        } else{
+            //get lvalue
+            unary_expression->mp(result);
+
+            //eval expression
+            Result exp;
+            expression->mp(exp);
+
+            //perform assignment
+            mips.assignment(result.id,exp.id,assignment_operator,exp.freeable);
+        }
 
     }
 

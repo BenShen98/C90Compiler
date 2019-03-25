@@ -1,0 +1,16 @@
+.globl main
+.ent main
+main:
+.frame $fp,32,$31
+addiu $sp, $sp, -32
+sw $31, 20($sp)
+li $t0,0 #imm id _4_
+# assign _4_ to _8_ in reg $t0
+move $2,$t0
+b EXIT_main
+EXIT_main:
+lw $31, 20($sp)
+addiu $sp, $sp, 32
+j $31
+.end main
+

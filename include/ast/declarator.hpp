@@ -38,12 +38,13 @@ public:
         return direct_declarator->query_declarator_type();
     }
 
-    void mp() const override{
-        notImplemented();
-        if(pointer==0){
+    void mp(Result& para) const override{
+        if(pointer==NULL){
             //case 1, direct_declarator
+            direct_declarator->mp(para);
 
         }else{
+            notImplemented();
             //case 0, pointer direct_declarator
 
         }

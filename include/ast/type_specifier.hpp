@@ -2,7 +2,7 @@
 #define ast_type_specifier
 
 #include "_ast_abs.hpp"
-
+#include <bitset>
 /*
 type_specifier
 0	: VOID
@@ -29,12 +29,41 @@ public:
     ~type_specifier()override{}
 
 
-    void py(std::string& dst) const override{
-        //python does not define type, skip
-    }
+    //python does not define type, skip
 
-    void mp() const override{
-        notImplemented();
+    void mp(Result& result) const override{
+        switch (type){
+            //void
+            case 0:
+                setVoid(result.type);
+                break;
+
+            //int
+            case 3:
+                if( !isUnsignedInt(result.type) ){
+                    //avoid overwrite unsigned int
+                    setSignedInt(result.type);
+                }
+                break;
+            case 7:
+                setSignedInt(result.type);
+                break;
+            case 8:
+                setUnsignedInt(result.type);
+                break;
+
+            //float
+            case 5:
+                setSingleFloat(result.type);
+                break;
+            case 6:
+                setDoubleFloat(result.type);
+                break;
+
+            default:
+                notImplemented();
+        }
+
     }
 
 
