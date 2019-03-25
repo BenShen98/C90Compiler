@@ -45,16 +45,6 @@ public:
         }
     }
 
-    virtual std::string c(){
-      if (type!=NULL){
-        return exp->c();
-      }
-      else {
-        return "(" + type->c()+  ")";
-        // WHAT !
-      }
-    }
-
 
 };
 

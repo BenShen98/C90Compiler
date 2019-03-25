@@ -87,62 +87,6 @@ public:
         }
     }
 
-  virtual std::string c() const override{
-        if(unary_expression==NULL){
-            //conditional_expression
-            return expression->c();
-        } else{
-            //unary_expression assignment_operator assignment_expression;
-            switch (assignment_operator){
-                case ASSIGN:
-                    return unary_expression->c() + '=' + expression->c() ;
-                    break;
-
-                case MULA:
-                    return unary_expression->c() + "*=" + expression->c() ;
-                    break;
-
-                case DIVA:
-                    return unary_expression->c() + "/=" + expression->c() ;
-                    break;
-
-                case MODA:
-                    return unary_expression->c() + "%=" + expression->c() ;
-                    break;
-
-                case ADDA:
-                    return unary_expression->c() + "+=" + expression->c() ;
-                    break;
-
-                case SUBA:
-                    return unary_expression->c() + "-=" + expression->c() ;
-                    break;
-
-                case LEFTA:
-                    return unary_expression->c() + "<<=" + expression->c() ;
-                    break;
-
-                case RIGHTA:
-                    return unary_expression->c() + ">>=" + expression->c() ;
-                    break;
-
-                case ANDA:
-                    return unary_expression->c() + "&=" + expression->c() ;
-                    break;
-
-                case XORA:
-                    return unary_expression->c() + "^=" + expression->c() ;
-                    break;
-
-                case ORA:
-                    return unary_expression->c() + "|=" + expression->c();
-                    break;
-
-            }
-
-        }
-    }
-
     //used ONLY by assignment_expression
     void mp() const override{
         //parent node are expression

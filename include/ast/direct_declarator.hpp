@@ -86,13 +86,26 @@ public:
                 result.str = *identifier;
                 break;
 
-            case 1:
-                //do nothing
+            case 1: //'(' declarator ')'
+                left->mp(result);
                 break;
 
-            case 2:
-            case 3:
-                notImplemented();
+            case 2://'[' constant_expression ']'
+            case 3://'[' ']'
+
+                setAddressFlag(result.type);
+                if(right!=NULL){
+                    Result r;
+                    right->mp(r); //use id field to pass constant_expression VALUE, r will have type VOID in constant_expression
+                    result.addr.push_back(r.num);//get array size x[2+3]
+
+                } else{
+                    result.addr.push_back(-2); //incomplete tye x[]
+                }
+
+                left->mp(result);
+
+
                 break;
 
             case 4: //direct_declarator '(' parameter_type_list ')'

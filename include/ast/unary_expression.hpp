@@ -5,7 +5,7 @@
 #include <string>
 /*CHECKED
 unary_expression
-0	: postfix_expression
+X	: postfix_expression        { $$=$1;}
 1	| INC_OP unary_expression
 2	| DEC_OP unary_expression
 	| unary_operator cast_expression        SPECIAL CASE unary_operator IS TERMINAL
@@ -41,9 +41,6 @@ public:
         pt->py(p);
 
         switch (type){
-            case 0:
-                dst=p;
-                break;
 
             case '+':
                 dst='+' + p;
@@ -71,25 +68,64 @@ public:
     }
 
     void mp(Result& result) const override{
-        pt->mp(result);
 
-        switch (type){
-            case 0:
-                //done
-                break;
-            case 1:
-                //per increment, self assign,
-                //only alter value pointed by id, does not change result.id AND result.freeable
-                mips.addi(true, result.id, "1");
 
-                break;
-            case 2:
-                mips.addi(true, result.id, "-1");
-                break;
+        if(!isVoid(result.type)){
 
-            default:
-                notImplemented();
+            pt->mp(result);
+
+            switch (type){
+                case 1:
+                    //per increment, self assign,
+                    //only alter value pointed by id, does not change result.id AND result.freeable
+                    mips.addi(true, result.id, "1");
+                    break;
+
+                case 2:
+                    mips.addi(true, result.id, "-1");
+                    break;
+
+                case 3:
+                    result.id=mips.SIZEOF(result.id);
+                    result.freeable= true;
+                    break;
+
+                case 4: //todo::
+                    notImplemented();
+                    break;
+
+                default:
+                    result.id=mips.unaryOp(type,result.id,result.freeable);
+                    result.freeable= true;
+            }
+
+        }else{
+
+            pt->mp(result);
+
+            switch (type){
+
+                case '-':
+                    result.num = -result.num;
+                    break;
+
+                case '~':
+                    result.num = ~result.num;
+                    break;
+
+                case '!':
+                    result.num = !result.num;
+                    break;
+
+                default:
+                    notImplemented();
+                    //ignore & * unary_operator
+                    break;
+
+            }
+
         }
+
     }
 
 };

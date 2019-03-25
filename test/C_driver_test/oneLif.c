@@ -1,5 +1,5 @@
-int main()
-{
+int main(){
+    abi_setup();
 
-    return oneLif();
+    return 4!=oneLif();
 }

@@ -1,4 +1,5 @@
 
+
 int oneLif()
 {
     int x=5;

@@ -4,7 +4,7 @@ CC = g++
 
 
 CPPFLAGS += -std=c++11 -g
-# CPPFLAGS += -W -Wall  -Wno-unused-parameter
+CPPFLAGS += -W -Wall  -Wno-unused-parameter
 CPPFLAGS += -I include
 CPPFLAGS += -fmax-errors=5 -ggdb
 # CPPFLAGS += -edantic-errors  -ansi
