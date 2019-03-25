@@ -1,4 +1,4 @@
-# C90Compiler[![Build Status](https://travis-ci.com/BenShen98/C90Compiler.svg?token=MhRupwiszpRvsr3Bhyd3&branch=master)](https://travis-ci.com/BenShen98/C90Compiler)
+# C90Compiler  [![Build Status](https://travis-ci.com/BenShen98/C90Compiler.svg?token=MhRupwiszpRvsr3Bhyd3&branch=master)](https://travis-ci.com/BenShen98/C90Compiler)
 
 
 ## Coursework Requirement
