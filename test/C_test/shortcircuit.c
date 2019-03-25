@@ -1,11 +1,11 @@
 int f1(){
-    int x;
+    int x=0;
     return ((  ++x || 6 )<<2)+x;
 }
 
 int f2(){
-    int x;
-    return ((   6 || ++x )<<2)+x;;
+    int x=0;
+    return (( 6 || ++x )<<2)+x;
 }
 
 
@@ -16,5 +16,5 @@ int f3(){
 
 int f4(){
     int x=1;
-    return ((   0 && ++x )<<2)+x;;
+    return ((  0 && ++x )<<2)+x;
 }

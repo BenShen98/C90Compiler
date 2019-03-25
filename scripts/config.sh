@@ -9,7 +9,7 @@ MIPS_OBJDUMP="mips-linux-gnu-objdump"
 #MIPS_OBJDUMP="mips-linux-gnu-objdump"
 
 #CHECK TEST CASE IS ANSI
-GCC_ANSI="gcc -ansi"
+GCC_ANSI="gcc -ansi -o0"
 
 #MIPS flag
 MIPS_LINK_FLAGS="-static -ansi"
