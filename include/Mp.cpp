@@ -390,7 +390,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
 
 
-    StackId Mp::getId(std::string identifier) {
+    StackId Mp::getId(bool& isIndirection, std::string identifier) {
 
         for(int depth=scopes.size()-1; depth>=0; --depth){
 
@@ -400,8 +400,19 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                 std::vector<Entry>::const_reverse_iterator ritr=scopes[depth].entries.rbegin();
                 for( ; ritr!=scopes[depth].entries.rend(); ++ritr){
 
-                    if(ritr->name==identifier){
-                        return {depth, ritr->top_id};
+                    if(ritr->name==identifier) {
+                        if (!ritr->addr.empty() && ritr->addr.back() > 0) {
+                            // is array type, implicitly convert to pointer
+                            int top_id=ritr->top_id;
+                            StackId addr = reserveId(4, ritr->type, "implicit ptr of " + identifier, ritr->addr); //this line may invalidate itr
+                            std::string regName= tRegName(loadGenReg(addr));
+                            addr_sp(regName, {depth,top_id},"addr of "+identifier);
+                            isIndirection=true;
+                            return addr;
+                        } else {
+                            isIndirection= false;
+                            return {depth, ritr->top_id};
+                        }
                     }
 
                 }
@@ -1279,8 +1290,20 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         return immediate(4,std::to_string(size),TYPE_SIGNED_INT,"size of"+input.str());
     }
 
-//    StackId Mp::squareBracket(StackId op1, StackId op2, bool free1, bool free2) {
-//        StackId resultPtr=algebra(ADD,op1,op2,free1,free2,"square bracket");
-//        return unaryOp('*',resultPtr, true); //resultPtr freeable
-//    }
+    StackId Mp::squareBracket(bool indirect1, bool indirect2,StackId op1, StackId op2, bool free1, bool free2){
+
+        RegPtr r2=loadGenReg(op2);
+
+        if(isAddressFlagSet(r2->type)){
+            op2=getAddress(indirect2,op2); //update indirect2
+            free2= false;
+        }else{
+            op1=getAddress(indirect1,op1); //update indirect2
+            free1= true;
+        }
+
+
+        return algebra(indirect1||indirect2,ADD, op1, op2, free1, free2);
+    }
+
 

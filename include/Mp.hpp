@@ -361,7 +361,7 @@ public:
     //this will always reserve size 4, have type int
     StackId _reserveTempPtr(Type type,const AddressType& v,std::string identifier="" );
 
-//    StackId squareBracket(StackId op1, StackId op2, bool free1, bool free2);
+    StackId squareBracket(bool indirect1, bool indirect2,StackId op1, StackId op2, bool free1, bool free2);
 
     StackId getAddress(bool& isIndirection, StackId idx);  // &
     StackId getIndirection(StackId idx); // *
@@ -409,7 +409,7 @@ public:
 
     //find id (offset used for array ONLY)
     //todo IF offset is 0, AND is array, DO SOMETHING (return ptr?)
-    StackId getId(std::string identifier);
+    StackId getId(bool& isIndirection, std::string identifier);
 
     // get info about the id
 

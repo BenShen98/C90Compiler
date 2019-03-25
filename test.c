@@ -1,11 +1,9 @@
 int f(){
-    int a=5;
-    int c;
-    int *b;
+    int *y,a[2];
 
-    b=&a;
+    a[3]=5;
 
-    c=*b;
+    y=&a[0];
 
-    return c;
+    return y;
 }

@@ -71,7 +71,7 @@ public:
                     result.str=*str;
                 }else{
                     // load variable, may be referenced latter
-                    result.id = mips.getId(*str);
+                    result.id = mips.getId(result.isIndirection,*str);
                     result.freeable = false;
                 }
                 break;
@@ -83,7 +83,6 @@ public:
                 }else{
                     result.id = cConst2Mp(*str); //return stack id, imm in register
                 }
-
 
                 //its a letral
                 result.freeable = true;
