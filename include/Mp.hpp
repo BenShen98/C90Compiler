@@ -292,6 +292,10 @@ private:
         buffer.push_back("lw " + d + ',' + offset + '(' +s + ')' +" #"+comment);
     }
 
+    void _sw(std::string d,std::string offset,std::string s, std::string comment=""){
+        buffer.push_back("sw " + d + ',' + offset + '(' +s + ')' +" #"+comment);
+    }
+
 
     /* ... */
 
@@ -346,7 +350,10 @@ public:
     //this will always reserve size 4, have type int
     StackId _reserveTempPtr(Type type,const AddressType& v,std::string identifier="" );
 
-    StackId squareBracket(StackId op1, StackId op2, bool free1, bool free2);
+//    StackId squareBracket(StackId op1, StackId op2, bool free1, bool free2);
+
+    StackId getAddress(bool& isIndirection, StackId idx);  // &
+    StackId getIndirection(bool& isIndirection, StackId idx); // *
 
 //    int push_back_array();
 
@@ -409,6 +416,7 @@ public:
 
 //    no longer needed
     void writeBackAll();//before function call, save all t register
+    void writeBackReg(StackId id);
     void resetReg(int level);
 //    void writeBack(int regIdx);
 
@@ -433,9 +441,9 @@ public:
 
 //    //TODO::  {MUL,DIV,MOD ,ADD,SUB, LEFT_,RIGHT_, SMALLER,GREATER, LE_,GE_,EQ_,NE_, AND,XOR,OR, AND_,OR_, };
 
-    StackId algebra(enum_algebra algebra,StackId op1, StackId op2, bool free1=false, bool free2=false, std::string varName="");
+    StackId algebra(bool containIndirection, enum_algebra algebra,StackId op1, StackId op2, bool free1=false, bool free2=false, std::string varName="");
 
-    void assignment(StackId dst, StackId op1,enum_assignment operation=ASSIGN, bool free= false);
+    void assignment(bool dstIndirection, bool opIndirection, StackId dst, StackId op1,enum_assignment operation=ASSIGN, bool free= false);
     // void assignment(int dst, std::string constant);
 
     //ONLY for INT, used for a++, a--, --a, ++a
