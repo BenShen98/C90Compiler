@@ -281,7 +281,7 @@ private:
     }
 
     void _bne(std::string s,std::string t,std::string label){
-        buffer.push_back("beq " + s + ',' +t + ',' + label );
+        buffer.push_back("bne " + s + ',' +t + ',' + label );
     }
 
     void _move(std::string d,std::string s,std::string comment=""){
