@@ -95,13 +95,12 @@ public:
 
             case 3:
                 //evaluate the expression
-                Result rst;
-                pt->mp(rst);
+                pt->mp(result);
 
                 // make temporary duplicate,
-                result.id=mips.reserveId(sizeOf(rst.type),rst.type,"temp copy of "+ rst.id.str());
-                mips.assignment(result.id,rst.id,ASSIGN,rst.freeable);
-                result.freeable=true;
+//                result.id=mips.reserveId(sizeOf(rst.type),rst.type,"temp copy of "+ rst.id.str(),);
+//                mips.assignment(result.id,rst.id,ASSIGN,rst.freeable);
+//                result.freeable=true;
 
                 //pass on to parents
                 break;

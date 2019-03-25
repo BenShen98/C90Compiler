@@ -1,6 +1,7 @@
+
 int x;
 
-int f2(){
+int f2() {
     int x;
-    return ((   6 || ++x )<<2)+x;;
+    return ((6 || ++x) << 2) + x;;
 }

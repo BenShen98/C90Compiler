@@ -90,7 +90,7 @@ extern std::ofstream ffout;
     /*
      * flush data
      */
-    void Mp::endFrame(bool logging) {
+    void Mp::endFrame() {
         endScope();
 
         //scope_stats => scope_stats_cumulative
@@ -157,10 +157,6 @@ extern std::ofstream ffout;
         ffout<<"j $31\n";
         ffout<<".end "<<(asCallee_name)<<"\n\n";
 
-        //logging and exit
-        if(logging)
-            dump();
-
         delete[] tGeneralReg;
 
 
@@ -184,7 +180,10 @@ extern std::ofstream ffout;
 
     }
 
-    void Mp::endScope() {
+    void Mp::endScope(bool logging) {
+        if(logging)
+            dump();
+
         comment("End scope");
         //check scope have entry
         if( !scopes.back().entries.empty()) {
@@ -592,28 +591,28 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
            case LE_:
                if(isUnsignedInt(resultType)){
-                 _LEu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+                 _leu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
                else{
-                 _LE(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+                 _le(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
                break;
 
            case GE_:
                if(isUnsignedInt(resultType)){
-                 _LEu(tRegName(dst),tRegName(op2), tRegName(op1),comment);
+                 _leu(tRegName(dst),tRegName(op2), tRegName(op1),comment);
                }
                else{
-                 _LE(tRegName(dst),tRegName(op2), tRegName(op1),comment);
+                 _le(tRegName(dst),tRegName(op2), tRegName(op1),comment);
                }
                break;
 
            case EQ_:
-                 _EQ(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+                 _eq(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                break;
 
            case NE_:
-                 _NE(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+                 _ne(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                break;
 
            case AND:
@@ -646,9 +645,10 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 //            }
 //                break;
 //
-//            case OR_:
-//                //short circuit
-//                break;
+           // case OR_:
+           //     //short circuit
+           //      _or(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+           //     break;
             default:
                 throw std::runtime_error("Not implemented.");
         }
@@ -775,11 +775,11 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             _bne(tRegName(r1),"$0",ORShort);
             _bne(tRegName(r2),"$0",ORShort);
 
-            _li(tRegName(rResult),"1");
+            _li(tRegName(rResult),"0");
             _b(OREnd);
 
             insertLabel(ORShort);
-            _move(tRegName(rResult),"$0");
+            _li(tRegName(rResult),"1");
 
             insertLabel(OREnd);
 
@@ -846,12 +846,15 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     StackId Mp::addi(bool perfix, StackId op1, std::string integer) {
         RegPtr r1;
         r1=loadGenReg(op1);
+        AddressType addr=AddressType();
 
-
+        if(isAddressFlagSet(r1->type)){
+            addr=getInfo(op1)->addr;
+        }
 
         if(perfix){
             //per increment
-            _addi(tRegName(r1), tRegName(r1), integer, "per increment of id _"+op1.str()+"_");
+            _addi(tRegName(r1), tRegName(r1), integer, "per increment of id _"+op1.str()+"_",addr);
             setRegDirty(r1->type);
             return op1;
 
@@ -864,7 +867,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             orgCopy=reserveId(4,r1->type,"org copy of _"+op1.str()+"_");
             rOrgCopy=loadGenReg(orgCopy, false);
 
-            _addi(tRegName(rOrgCopy), tRegName(r1), integer, "add, swap org copy & org");
+            _addi(tRegName(rOrgCopy), tRegName(r1), integer, "add, swap org copy & org",addr);
 
             r1->id=orgCopy;
             rOrgCopy->id=op1;
@@ -876,7 +879,14 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         }
     }
 
-    StackId Mp::negation(char type, StackId op1, bool free1){
+//            '&'
+//            '*'
+//            '+'
+//            '-'
+//            '~'
+//            '!'
+
+    StackId Mp::unaryOp(char type, StackId op1, bool free1){
       RegPtr r1;
       StackId Copy;
       r1=loadGenReg(op1);
@@ -886,22 +896,50 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         setRegSync(r1->type);
       }
 
-      Copy=reserveId(4,r1->type,"negating copy of_"+op1.str()+"_" );
-      switch(type){
-        case '-':
-          _subu(tRegName(r1),"$0",tRegName(r1),"negating_"+op1.str()+"_");
-          //checked with godbolt
-        break;
-        case '~':
-          _nor(tRegName(r1),"$0",tRegName(r1),"nor_"+op1.str()+"_");
-        break;
-        case '!':
-          _sltu(tRegName(r1),tRegName(r1),"1","sltu_"+op1.str()+"_");
-          _and(tRegName(r1),tRegName(r1),"0x00ff","andi_0x00ff"+op1.str()+"_");
-          break;
-        default:
-          throw std::runtime_error("Not implemented.");
+      if( type=='&' ){
+          AddressType addr=getInfo(op1)->addr;
+          getReference(r1->type,addr);
+          Copy=reserveId(4,r1->type,"addr _"+op1.str()+"_", addr);
+
+      }else if( type=='*' ){
+          AddressType addr=getInfo(op1)->addr;
+          deference(r1->type,addr);
+          Copy=reserveId(4,r1->type,"deref copy of_"+op1.str()+"_", addr);
+
+      }else{
+          Copy=reserveId(4,r1->type,"unary copy of_"+op1.str()+"_" );
       }
+
+
+
+      switch(type){
+            case '-':
+                _subu(tRegName(r1),"$0",tRegName(r1),"negating_"+op1.str()+"_");
+                //checked with godbolt
+                break;
+
+            case '+':
+                break;
+
+            case '~':
+                _nor(tRegName(r1),"$0",tRegName(r1),"nor_"+op1.str()+"_");
+                break;
+
+            case '!':
+                _sltu(tRegName(r1),tRegName(r1),"1","sltu_"+op1.str()+"_");
+                _and(tRegName(r1),tRegName(r1),"0x00ff","andi_0x00ff"+op1.str()+"_");
+                break;
+
+            case '&':
+                addr_sp(tRegName(r1),op1,"get ref");
+              break;
+
+            case '*':
+                _lw(tRegName(r1),"0",tRegName(r1),"de ref");
+                break;
+
+      }
+
       r1->id=Copy;
       setRegDirty(r1->type);
       return Copy;
@@ -1103,4 +1141,15 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         RegPtr reg2=loadGenReg(id2);
         _beq(tRegName(reg1),tRegName(reg2),label);
       }
+    }
+
+    StackId Mp::SIZEOF(StackId input) {
+        EntryPtr info=getInfo(input);
+        int size=sizeOf(info->type,info->addr, false);
+        return immediate(4,std::to_string(size),TYPE_SIGNED_INT,"size of"+input.str());
+    }
+
+    StackId Mp::squareBracket(StackId op1, StackId op2, bool free1, bool free2) {
+        StackId resultPtr=algebra(ADD,op1,op2,free1,free2,"square bracket");
+        return unaryOp('*',resultPtr, true); //resultPtr freeable
     }

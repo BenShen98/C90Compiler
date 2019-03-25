@@ -25,6 +25,8 @@
 
 class Mp {
 
+    friend class algebra;
+
 private:
     //global
     Globals globals;
@@ -116,6 +118,11 @@ private:
 
     }
 
+    void addr_sp(std::string reg,StackId id, std::string comment=""){
+        postEditPtr.push_back(buffer.size());//push_back idx of next line
+        buffer.push_back("addiu " + reg + ",_" + id.str() + "_($sp) #" + comment);
+    }
+
     //ptr will be invalide if element is inserted to the vector
     EntryPtr getInfo(StackId id) const;
 
@@ -154,6 +161,7 @@ private:
 /*
  * MIPS function
  */
+
     void _li(std::string reg,std::string imm, std::string comment=""){
         buffer.push_back("li "+ reg + ',' + imm + " #" + comment );
     }
@@ -238,27 +246,34 @@ private:
     void _slt(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("slt " + d + ',' + s + ',' + t +" #" + comment );
     }
-    void _LE(std::string d,std::string s,std::string t, std::string comment=""){
-        buffer.push_back("slt " + d + ',' + s + ',' + t +" #" + comment );
+
+    //less equal
+    void _le(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("slt " + d + ',' + t + ',' + s +" #" + comment );
         buffer.push_back("xori " + d + ',' + d + ',' + "0x1" +" #" + comment );
     }
-    void _LEu(std::string d,std::string s,std::string t, std::string comment=""){
-        buffer.push_back("sltu " + d + ',' + s + ',' + t +" #" + comment );
+    void _leu(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("sltu " + d + ',' + t + ',' + s +" #" + comment );
         buffer.push_back("xori " + d + ',' + d + ',' + "0x1" +" #" + comment );
     }
-    void _EQ(std::string d,std::string s,std::string t, std::string comment=""){
+
+    //equal
+    void _eq(std::string d,std::string s,std::string t, std::string comment=""){
         //might need to andi 0x000ff
 
         buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
         buffer.push_back("sltu " + d + ',' + d + ',' + "0x1" +" #" + comment );
 
     }
-    void _NE(std::string d,std::string s,std::string t, std::string comment=""){
+
+    // not equal
+    void _ne(std::string d,std::string s,std::string t, std::string comment=""){
       //might need to andi 0x000ff
         buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
         buffer.push_back("sltu " + d + ',' + "$0" + ',' + d +" #" + comment );
 
     }
+
     void _xor(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
     }
@@ -279,14 +294,16 @@ private:
     }
 
     void _bne(std::string s,std::string t,std::string label){
-        buffer.push_back("beq " + s + ',' +t + ',' + label );
+        buffer.push_back("bne " + s + ',' +t + ',' + label );
     }
 
     void _move(std::string d,std::string s,std::string comment=""){
         buffer.push_back("move " + d + ',' +s +" #"+comment);
     }
 
-
+    void _lw(std::string d,std::string offset,std::string s, std::string comment=""){
+        buffer.push_back("lw " + d + ',' + offset + '(' +s + ')' +" #"+comment);
+    }
 
 
     /* ... */
@@ -316,13 +333,13 @@ public:
  */
 
     void newFrame(std::string name);
-    void endFrame(bool logging=true); //call flush
+    void endFrame(); //call flush
 
     void dump();//SHOULD be private
-    StackId negation(char type, StackId op1, bool free1);
+    StackId unaryOp(char type, StackId op1, bool free1);
 
     void newScope();
-    void endScope();
+    void endScope(bool logging=true);
 
 
 /*
@@ -341,6 +358,8 @@ public:
 
     //this will always reserve size 4, have type int
     StackId _reserveTempPtr(Type type,const AddressType& v,std::string identifier="" );
+
+    StackId squareBracket(StackId op1, StackId op2, bool free1, bool free2);
 
 //    int push_back_array();
 
@@ -425,7 +444,6 @@ public:
  * C instruction
  */
 
-//    //TODO::  {MUL,DIV,MOD ,ADD,SUB, LEFT_,RIGHT_, SMALLER,GREATER, LE_,GE_,EQ_,NE_, AND,XOR,OR, AND_,OR_, };
 
     StackId algebra(enum_algebra algebra,StackId op1, StackId op2, bool free1=false, bool free2=false, std::string varName="");
 
@@ -447,6 +465,7 @@ public:
 
     void beq(StackId id1,StackId id2,std::string label);
 
+    StackId SIZEOF(StackId input);
 
 };
 

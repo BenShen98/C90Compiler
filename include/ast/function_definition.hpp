@@ -69,7 +69,7 @@ public:
         compound_statement->mp();
 
         //end function
-        mips.endFrame(LOGGING);
+        mips.endFrame();
 
     }
 
