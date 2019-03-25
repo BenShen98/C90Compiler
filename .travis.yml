@@ -23,8 +23,9 @@ before_install:
 - ./scripts/dependencies.sh
 script:
 - make
-- ./scripts/testansi.sh
+- ./scripts/verifyTestcase.sh
 - ./scripts/testmips.sh
+- ./scripts/testpy.sh
 branches:
   only:
     - master
