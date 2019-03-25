@@ -366,6 +366,41 @@ typedef struct _result{
 
     AddressType addr;
 
+    /*
+     * this flag is used only when handling with ptr
+     *  the flag is only true in case where foo = A[b] or b[A] or *(A+b), where A is ptr/array, b is int
+     *
+     *         In such case, operation of foo = A + b * sizeOfInner(A) is done
+     *         BUT NOT the * operation, instead, isIndirection is set to true
+     *         foo WILL have same addr vector as A, since * operation had not been performed
+     *
+     *
+     *         When &foo, isIndirection is reset if it was true
+     *         As the result, it obeys ISO9899, &*E has no effect
+     *
+     *         In case of foo=a, operation sw a, 0(foo) is done
+     *         Existing reg with StackId foo will be emptied.
+     *         isIndirection flag for foo remain unchanged
+     *
+     *         In case of foo+1, * operation was done, reset isIndirection
+     *         then do foo + 1
+     *
+     *         In case of *(foo+1), the same of above step is done
+     *         and isIndirection is set
+     *
+     *         In case of boo = foo, the isIndirection is checked,
+     *         If is true, * operation is done, reset isIndirection for the temporary copy
+     *         Existing reg with StackId boo will be emptied.
+     *         the value of foo is assigned to boo
+     *
+     */
+
+    // there is no need to reset isIndirection in AST, it dies with the Result struct
+
+    bool isIndirection= false;
+
+
+
 } Result;
 
 

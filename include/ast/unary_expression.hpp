@@ -94,6 +94,14 @@ public:
                     notImplemented();
                     break;
 
+                case '&':
+                    result.id = mips.getAddress(result.isIndirection,result.id);
+                    break;
+
+                case '*':
+                    result.isIndirection=true; //mark the existence of *
+                    break;
+
                 default:
                     result.id=mips.unaryOp(type,result.id,result.freeable);
                     result.freeable= true;

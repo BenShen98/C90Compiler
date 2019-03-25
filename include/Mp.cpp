@@ -372,13 +372,25 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         }
     }
 
+    void Mp::writeBackReg(StackId idx) {
+        for(int i=0; i<T_GENERAL_REG_SIZE; ++i){
+            if(  tGeneralReg[i].id==idx ){
+                if( isRegDirty(tGeneralReg[i].type) )
+                    sw_sp(tGenRegName(i),tGeneralReg[i].id,"write back id "+tGeneralReg[i].id.str());
+
+                setRegEmpty(tGeneralReg[i].type);
+                return;
+            }
+        }
+    }
 
 
 
 
 
 
-    StackId Mp::getId(std::string identifier) {
+
+    StackId Mp::getId(bool& isIndirection, std::string identifier) {
 
         for(int depth=scopes.size()-1; depth>=0; --depth){
 
@@ -388,8 +400,19 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                 std::vector<Entry>::const_reverse_iterator ritr=scopes[depth].entries.rbegin();
                 for( ; ritr!=scopes[depth].entries.rend(); ++ritr){
 
-                    if(ritr->name==identifier){
-                        return {depth, ritr->top_id};
+                    if(ritr->name==identifier) {
+                        if (!ritr->addr.empty() && ritr->addr.back() > 0) {
+                            // is array type, implicitly convert to pointer
+                            int top_id=ritr->top_id;
+                            StackId addr = reserveId(4, ritr->type, "implicit ptr of " + identifier, ritr->addr); //this line may invalidate itr
+                            std::string regName= tRegName(loadGenReg(addr));
+                            addr_sp(regName, {depth,top_id},"addr of "+identifier);
+                            isIndirection=true;
+                            return addr;
+                        } else {
+                            isIndirection= false;
+                            return {depth, ritr->top_id};
+                        }
                     }
 
                 }
@@ -591,28 +614,28 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
            case LE_:
                if(isUnsignedInt(resultType)){
-                 _LEu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+                 _leu(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
                else{
-                 _LE(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+                 _le(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                }
                break;
 
            case GE_:
                if(isUnsignedInt(resultType)){
-                 _LEu(tRegName(dst),tRegName(op2), tRegName(op1),comment);
+                 _leu(tRegName(dst),tRegName(op2), tRegName(op1),comment);
                }
                else{
-                 _LE(tRegName(dst),tRegName(op2), tRegName(op1),comment);
+                 _le(tRegName(dst),tRegName(op2), tRegName(op1),comment);
                }
                break;
 
            case EQ_:
-                 _EQ(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+                 _eq(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                break;
 
            case NE_:
-                 _NE(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+                 _ne(tRegName(dst),tRegName(op1), tRegName(op2),comment);
                break;
 
            case AND:
@@ -645,9 +668,10 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 //            }
 //                break;
 //
-//            case OR_:
-//                //short circuit
-//                break;
+           // case OR_:
+           //     //short circuit
+           //      _or(tRegName(dst),tRegName(op1), tRegName(op2),comment);
+           //     break;
             default:
                 throw std::runtime_error("Not implemented.");
         }
@@ -661,58 +685,125 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     //     _li(tRegName(rDst), constant, "assign imm to "+std::to_string(dst));
     // }
 
-    void Mp::assignment(StackId dst, StackId op1, enum_assignment operation, bool free){
+    void Mp::assignment(bool dstIndirection, bool opIndirection, StackId dst, StackId op1, enum_assignment operation, bool free){
+
+        //write back all register to avid conflict
+        writeBackAll();
 
         // default case for simple assignment
-        StackId _temp=op1;
+        StackId _temp;
 
-        switch (operation){
-            case MULA: // *=
-                _temp=algebra(MUL,dst,op1, false,free,"*="+op1.str());
-                break;
-
-            case DIVA: // /=
-                _temp=algebra(DIV,dst,op1, false,free,"/="+op1.str());
-                break;
-
-            case MODA: // %=
-                _temp=algebra(MOD,dst,op1, false,free,"%="+op1.str());
-                break;
-
-            case ADDA: // +=
-                _temp=algebra(ADD,dst,op1, false,free,"+="+op1.str());
-                break;
-
-            case SUBA: // -=
-                _temp=algebra(SUB,dst,op1, false,free,"-="+op1.str());
-                break;
-
-            case LEFTA: // <<=
-                _temp=algebra(LEFT_,dst,op1, false,free,"<<="+op1.str());
-                break;
-
-            case RIGHTA: // >>=
-                _temp=algebra(RIGHT_,dst,op1, false,free,">>="+op1.str());
-                break;
-
-            case ANDA: // &=
-                _temp=algebra(AND,dst,op1, false,free,"&="+op1.str());
-                break;
-
-            case XORA: // ^=
-                _temp=algebra(XOR,dst,op1, false,free,"^="+op1.str());
-                break;
-
-            case ORA: // ||=
-                _temp=algebra(OR,dst,op1, false,free,"||="+op1.str());
-                break;
-
-            case ASSIGN:
-                //do nothing
-                break;
+        if( opIndirection ){
+            op1=getIndirection(op1);
+            free=true;
         }
 
-        typeDuplicate(dst,_temp,free);
+        if( dstIndirection ){
+
+            StackId _dstContent;
+
+            if(operation!=ASSIGN)
+                _dstContent=getIndirection(op1); //load data for += etc
+
+            switch (operation) {
+                case MULA: // *=
+                    _temp = algebra(false,MUL, _dstContent, op1, true, free, "*=" + op1.str());
+                    break;
+
+                case DIVA: // /=
+                    _temp = algebra(false,DIV, _dstContent, op1, true, free, "/=" + op1.str());
+                    break;
+
+                case MODA: // %=
+                    _temp = algebra(false,MOD, _dstContent, op1, true, free, "%=" + op1.str());
+                    break;
+
+                case ADDA: // +=
+                    _temp = algebra(false,ADD, _dstContent, op1, true, free, "+=" + op1.str());
+                    break;
+
+                case SUBA: // -=
+                    _temp = algebra(false,SUB, _dstContent, op1, true, free, "-=" + op1.str());
+                    break;
+
+                case LEFTA: // <<=
+                    _temp = algebra(false,LEFT_, _dstContent, op1, true, free, "<<=" + op1.str());
+                    break;
+
+                case RIGHTA: // >>=
+                    _temp = algebra(false,RIGHT_, _dstContent, op1, true, free, ">>=" + op1.str());
+                    break;
+
+                case ANDA: // &=
+                    _temp = algebra(false,AND, _dstContent, op1, true, free, "&=" + op1.str());
+                    break;
+
+                case XORA: // ^=
+                    _temp = algebra(false,XOR, _dstContent, op1, true, free, "^=" + op1.str());
+                    break;
+
+                case ORA: // ||=
+                    _temp = algebra(false,OR, _dstContent, op1, true, free, "||=" + op1.str());
+                    break;
+
+                case ASSIGN:
+                    _temp = op1;
+                    break;
+            }
+
+            _sw(tRegName(loadGenReg(_temp)),"0",tRegName(loadGenReg(dst)),"write back via indirection");
+
+
+        }else {
+            switch (operation) {
+                case MULA: // *=
+                    _temp = algebra(false,MUL, dst, op1, false, free, "*=" + op1.str());
+                    break;
+
+                case DIVA: // /=
+                    _temp = algebra(false,DIV, dst, op1, false, free, "/=" + op1.str());
+                    break;
+
+                case MODA: // %=
+                    _temp = algebra(false,MOD, dst, op1, false, free, "%=" + op1.str());
+                    break;
+
+                case ADDA: // +=
+                    _temp = algebra(false,ADD, dst, op1, false, free, "+=" + op1.str());
+                    break;
+
+                case SUBA: // -=
+                    _temp = algebra(false,SUB, dst, op1, false, free, "-=" + op1.str());
+                    break;
+
+                case LEFTA: // <<=
+                    _temp = algebra(false,LEFT_, dst, op1, false, free, "<<=" + op1.str());
+                    break;
+
+                case RIGHTA: // >>=
+                    _temp = algebra(false,RIGHT_, dst, op1, false, free, ">>=" + op1.str());
+                    break;
+
+                case ANDA: // &=
+                    _temp = algebra(false,AND, dst, op1, false, free, "&=" + op1.str());
+                    break;
+
+                case XORA: // ^=
+                    _temp = algebra(false,XOR, dst, op1, false, free, "^=" + op1.str());
+                    break;
+
+                case ORA: // ||=
+                    _temp = algebra(false,OR, dst, op1, false, free, "||=" + op1.str());
+                    break;
+
+                case ASSIGN:
+                    _temp = op1;
+                    break;
+            }
+
+            typeDuplicate(dst, _temp, true);
+        }
+
 
     }
 
@@ -740,7 +831,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     }
 
 
-    StackId Mp::algebra(enum_algebra algebra,StackId op1, StackId op2, bool free1, bool free2, std::string varName) {
+    StackId Mp::algebra(bool containIndirection, enum_algebra algebra,StackId op1, StackId op2, bool free1, bool free2, std::string varName) {
         StackId id_result;
         RegPtr r1, r2, rResult;
         r1 = loadGenReg(op1);
@@ -774,11 +865,11 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             _bne(tRegName(r1),"$0",ORShort);
             _bne(tRegName(r2),"$0",ORShort);
 
-            _li(tRegName(rResult),"1");
+            _li(tRegName(rResult),"0");
             _b(OREnd);
 
             insertLabel(ORShort);
-            _move(tRegName(rResult),"$0");
+            _li(tRegName(rResult),"1");
 
             insertLabel(OREnd);
 
@@ -789,6 +880,14 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
 
             if (isAddressFlagSet(r1->type)) {
+
+                if(containIndirection){
+                    //deref * first
+                    op1=getIndirection(op1);
+                    r1=loadGenReg(op1); //update reg info
+                    free1=true;
+                }
+
                 //op1 is ptr
                 resultType = r1->type;
                 resultAddrType = getInfo(op1)->addr;
@@ -799,6 +898,15 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                 op2 = r2->id;
 
             } else if (isAddressFlagSet(r2->type)) {
+
+                if(containIndirection){
+                    //deref * first
+                    op2=getIndirection(op2);
+                    r2=loadGenReg(op2); //update reg info
+                    free2=true;
+
+                }
+
                 //op2 is ptr
                 resultType = r2->type;
                 resultAddrType = getInfo(op2)->addr;
@@ -885,6 +993,55 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 //            '~'
 //            '!'
 
+
+    StackId Mp::getAddress(bool& isIndirection, StackId idx){
+
+        if(isIndirection){
+            // obeys ISO9899, &*E has no effect
+            isIndirection= false;
+            return idx;
+        }else {
+
+            writeBackReg(idx);
+
+            EntryPtr info = getInfo(idx);
+            AddressType newAddr = info->addr;
+            Type newType = info->type;
+            getReference(newType, newAddr);
+
+            StackId newId = reserveId(4, newType, "addr _" + idx.str(), newAddr);
+            RegPtr newReg = loadGenReg(newId, false);
+
+            addr_sp(tRegName(newReg), idx, "get ref");
+            setRegDirty(newReg->type);
+
+            isIndirection = false;
+
+            return newId;
+        }
+    }
+
+    StackId Mp::getIndirection( StackId idx) {
+        RegPtr r1=loadGenReg(idx);
+
+        if(isRegDirty(r1->type)){
+            sw_sp(tRegName(r1), r1->id, "save dirty re _"+r1->id.str()+"_ before negation");
+            setRegSync(r1->type);
+        }
+
+        EntryPtr info=getInfo(idx);
+        AddressType newAddr=info->addr;
+        deference(r1->type,newAddr); //set r1->type & newAddr
+
+        StackId newId=reserveId(4,r1->type,"indirection _"+idx.str(),newAddr);
+
+        _lw(tRegName(r1),"0",tRegName(r1),"de ref");
+        r1->id=newId;
+        setRegDirty(r1->type);
+
+        return newId;
+    }
+
     StackId Mp::unaryOp(char type, StackId op1, bool free1){
       RegPtr r1;
       StackId Copy;
@@ -895,19 +1052,8 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         setRegSync(r1->type);
       }
 
-      if( type=='&' ){
-          AddressType addr=getInfo(op1)->addr;
-          getReference(r1->type,addr);
-          Copy=reserveId(4,r1->type,"addr _"+op1.str()+"_", addr);
 
-      }else if( type=='*' ){
-          AddressType addr=getInfo(op1)->addr;
-          deference(r1->type,addr);
-          Copy=reserveId(4,r1->type,"deref copy of_"+op1.str()+"_", addr);
-
-      }else{
-          Copy=reserveId(4,r1->type,"unary copy of_"+op1.str()+"_" );
-      }
+      Copy=reserveId(4,r1->type,"unary copy of_"+op1.str()+"_" );
 
 
 
@@ -927,14 +1073,6 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             case '!':
                 _sltu(tRegName(r1),tRegName(r1),"1","sltu_"+op1.str()+"_");
                 _and(tRegName(r1),tRegName(r1),"0x00ff","andi_0x00ff"+op1.str()+"_");
-                break;
-
-            case '&':
-                addr_sp(tRegName(r1),op1,"get ref");
-              break;
-
-            case '*':
-                _lw(tRegName(r1),"0",tRegName(r1),"de ref");
                 break;
 
       }
@@ -1073,14 +1211,18 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         buffer.push_back(label + ":\n");
     }
 
-    void Mp::Return(StackId id) {
+    void Mp::Return(StackId id, bool isIndirection) {
 
         //TODO: get return type
         Type returnType=asCallee_paras[0].type;
 
 
         StackId dst = reserveId(sizeOf(returnType),returnType, "FUNC RETURN");
-        RegPtr _op1 = typeDuplicate(dst, id, true); // not sure (think is true, because frame will be popped )
+
+        assignment(false,isIndirection, dst, id, ASSIGN);
+
+        RegPtr _op1 = loadGenReg(dst); // not sure (think is true, because frame will be popped )
+
         std::string _op1Str=tRegName(_op1);
 
         if(isFloat(returnType)){
@@ -1148,7 +1290,20 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         return immediate(4,std::to_string(size),TYPE_SIGNED_INT,"size of"+input.str());
     }
 
-    StackId Mp::squareBracket(StackId op1, StackId op2, bool free1, bool free2) {
-        StackId resultPtr=algebra(ADD,op1,op2,free1,free2,"square bracket");
-        return unaryOp('*',resultPtr, true); //resultPtr freeable
+    StackId Mp::squareBracket(bool indirect1, bool indirect2,StackId op1, StackId op2, bool free1, bool free2){
+
+        RegPtr r2=loadGenReg(op2);
+
+        if(isAddressFlagSet(r2->type)){
+            op2=getAddress(indirect2,op2); //update indirect2
+            free2= false;
+        }else{
+            op1=getAddress(indirect1,op1); //update indirect2
+            free1= true;
+        }
+
+
+        return algebra(indirect1||indirect2,ADD, op1, op2, free1, free2);
     }
+
+

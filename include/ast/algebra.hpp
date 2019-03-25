@@ -172,11 +172,62 @@ public:
 
         if(!isVoid(result.type)){
 
-            left->mp(op1);
-            right->mp(op2);
+            if( type==AND_ ){
+                //short circuit AND &&
+                result.id=mips.reserveId(4,TYPE_SIGNED_INT,"bool ");
+                RegPtr rResult=mips.loadGenReg(result.id, false);
+                std::string ANDShort=mips.mkLabel("ANDShort");
+                std::string ANDEnd=mips.mkLabel("ANDEnd");
 
-            result.id = mips.algebra(type, op1.id, op2.id, op1.freeable, op2.freeable,"=op(" + std::to_string(type) + ") " + op1.id.str() + " " + op2.id.str() );
-            result.freeable= true; //this is indeterminate result, no need to store
+                left->mp(op1);
+                mips._beq(mips.tRegName(mips.loadGenReg(op1.id)),"$0",ANDShort);
+
+                right->mp(op2);
+                mips._beq(mips.tRegName(mips.loadGenReg(op2.id)),"$0",ANDShort);
+
+                mips._li(mips.tRegName(rResult),"1");
+                mips._b(ANDEnd);
+
+                mips.insertLabel(ANDShort);
+                mips._move(mips.tRegName(rResult),"$0");
+
+                mips.insertLabel(ANDEnd);
+
+            }else if( type==OR_ ){
+                //short circuit OR ||
+                result.id=mips.reserveId(4,TYPE_SIGNED_INT,"bool ");
+                RegPtr rResult=mips.loadGenReg(result.id, false);
+                std::string ORShort=mips.mkLabel("ORShort");
+                std::string OREnd=mips.mkLabel("OREnd");
+
+                left->mp(op1);
+                mips._bne(mips.tRegName(mips.loadGenReg(op1.id)),"$0",ORShort);
+
+                right->mp(op2);
+                mips._bne(mips.tRegName(mips.loadGenReg(op2.id)),"$0",ORShort);
+
+
+                mips._move(mips.tRegName(rResult),"$0");
+                mips._b(OREnd);
+
+
+                mips.insertLabel(ORShort);
+                mips._li(mips.tRegName(rResult),"1");
+
+
+                mips.insertLabel(OREnd);
+
+            }else{
+
+                    left->mp(op1);
+                    right->mp(op2);
+
+
+                result.id = mips.algebra( op1.isIndirection||op2.isIndirection ,type, op1.id, op2.id, op1.freeable, op2.freeable,"=op(" + std::to_string(type) + ") " + op1.id.str() + " " + op2.id.str() );
+                result.freeable= true; //this is indeterminate result, no need to store
+
+
+            }
 
         }else{
             // compile time constant

@@ -23,6 +23,8 @@
 
 class Mp {
 
+    friend class algebra;
+
 private:
 
     //funcName of current function
@@ -109,12 +111,13 @@ private:
     void lw_sp(std::string reg,StackId id, std::string comment=""){
         postEditPtr.push_back(buffer.size());//push_back idx of next line
         buffer.push_back("lw " + reg + ",_" + id.str() + "_($sp) #" + comment);
+        buffer.push_back("nop");
 
     }
 
     void addr_sp(std::string reg,StackId id, std::string comment=""){
         postEditPtr.push_back(buffer.size());//push_back idx of next line
-        buffer.push_back("addiu " + reg + ",_" + id.str() + "_($sp) #" + comment);
+        buffer.push_back("addiu " + reg + ", $sp, _" + id.str() + "_ #" + comment);
     }
 
     //ptr will be invalide if element is inserted to the vector
@@ -240,27 +243,34 @@ private:
     void _slt(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("slt " + d + ',' + s + ',' + t +" #" + comment );
     }
-    void _LE(std::string d,std::string s,std::string t, std::string comment=""){
-        buffer.push_back("slt " + d + ',' + s + ',' + t +" #" + comment );
+
+    //less equal
+    void _le(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("slt " + d + ',' + t + ',' + s +" #" + comment );
         buffer.push_back("xori " + d + ',' + d + ',' + "0x1" +" #" + comment );
     }
-    void _LEu(std::string d,std::string s,std::string t, std::string comment=""){
-        buffer.push_back("sltu " + d + ',' + s + ',' + t +" #" + comment );
+    void _leu(std::string d,std::string s,std::string t, std::string comment=""){
+        buffer.push_back("sltu " + d + ',' + t + ',' + s +" #" + comment );
         buffer.push_back("xori " + d + ',' + d + ',' + "0x1" +" #" + comment );
     }
-    void _EQ(std::string d,std::string s,std::string t, std::string comment=""){
+
+    //equal
+    void _eq(std::string d,std::string s,std::string t, std::string comment=""){
         //might need to andi 0x000ff
 
         buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
         buffer.push_back("sltu " + d + ',' + d + ',' + "0x1" +" #" + comment );
 
     }
-    void _NE(std::string d,std::string s,std::string t, std::string comment=""){
+
+    // not equal
+    void _ne(std::string d,std::string s,std::string t, std::string comment=""){
       //might need to andi 0x000ff
         buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
         buffer.push_back("sltu " + d + ',' + "$0" + ',' + d +" #" + comment );
 
     }
+
     void _xor(std::string d,std::string s,std::string t, std::string comment=""){
         buffer.push_back("xor " + d + ',' + s + ',' + t +" #" + comment );
     }
@@ -281,7 +291,7 @@ private:
     }
 
     void _bne(std::string s,std::string t,std::string label){
-        buffer.push_back("beq " + s + ',' +t + ',' + label );
+        buffer.push_back("bne " + s + ',' +t + ',' + label );
     }
 
     void _move(std::string d,std::string s,std::string comment=""){
@@ -290,6 +300,11 @@ private:
 
     void _lw(std::string d,std::string offset,std::string s, std::string comment=""){
         buffer.push_back("lw " + d + ',' + offset + '(' +s + ')' +" #"+comment);
+        buffer.push_back("nop");
+    }
+
+    void _sw(std::string d,std::string offset,std::string s, std::string comment=""){
+        buffer.push_back("sw " + d + ',' + offset + '(' +s + ')' +" #"+comment);
     }
 
 
@@ -346,7 +361,10 @@ public:
     //this will always reserve size 4, have type int
     StackId _reserveTempPtr(Type type,const AddressType& v,std::string identifier="" );
 
-    StackId squareBracket(StackId op1, StackId op2, bool free1, bool free2);
+    StackId squareBracket(bool indirect1, bool indirect2,StackId op1, StackId op2, bool free1, bool free2);
+
+    StackId getAddress(bool& isIndirection, StackId idx);  // &
+    StackId getIndirection(StackId idx); // *
 
 //    int push_back_array();
 
@@ -354,7 +372,7 @@ public:
  * current function call & block control
  */
     void Return();
-    void Return(StackId id);
+    void Return(StackId id, bool isIndirection);
 
     // generate and insert label
     std::string mkLabel(const std::string& name);
@@ -391,7 +409,7 @@ public:
 
     //find id (offset used for array ONLY)
     //todo IF offset is 0, AND is array, DO SOMETHING (return ptr?)
-    StackId getId(std::string identifier);
+    StackId getId(bool& isIndirection, std::string identifier);
 
     // get info about the id
 
@@ -409,6 +427,7 @@ public:
 
 //    no longer needed
     void writeBackAll();//before function call, save all t register
+    void writeBackReg(StackId id);
     void resetReg(int level);
 //    void writeBack(int regIdx);
 
@@ -431,11 +450,10 @@ public:
  * C instruction
  */
 
-//    //TODO::  {MUL,DIV,MOD ,ADD,SUB, LEFT_,RIGHT_, SMALLER,GREATER, LE_,GE_,EQ_,NE_, AND,XOR,OR, AND_,OR_, };
 
-    StackId algebra(enum_algebra algebra,StackId op1, StackId op2, bool free1=false, bool free2=false, std::string varName="");
+    StackId algebra(bool containIndirection, enum_algebra algebra,StackId op1, StackId op2, bool free1=false, bool free2=false, std::string varName="");
 
-    void assignment(StackId dst, StackId op1,enum_assignment operation=ASSIGN, bool free= false);
+    void assignment(bool dstIndirection, bool opIndirection, StackId dst, StackId op1,enum_assignment operation=ASSIGN, bool free= false);
     // void assignment(int dst, std::string constant);
 
     //ONLY for INT, used for a++, a--, --a, ++a

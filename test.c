@@ -1,9 +1,11 @@
 
+int f(){
+    int *y,a[2];
 
-int oneLif()
-{
-    int x=5;
-    int y = x==6 ? 6 : 4;
+    a[3]=5;
+
+    y=&a[0];
+
     return y;
 }
 

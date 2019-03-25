@@ -87,7 +87,8 @@ public:
                 Result exp;
                 op->mp(exp);
 
-                result.id=mips.squareBracket(postfix.id, exp.id, postfix.freeable, exp.freeable);
+                result.id=mips.squareBracket(postfix.isIndirection, exp.isIndirection, postfix.id, exp.id, postfix.freeable, exp.freeable);
+                result.isIndirection=true; // mark the existence of *
 
             }
                 break;
@@ -116,7 +117,7 @@ public:
 
             case 7: //DEC_OP
                 pt->mp(postfix);
-                result.id=mips.addi(false,postfix.id,"1"); //copy of org
+                result.id=mips.addi(false,postfix.id,"-1"); //copy of org
 
                 break;
 
