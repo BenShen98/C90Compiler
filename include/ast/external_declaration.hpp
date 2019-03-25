@@ -63,7 +63,7 @@ public:
            std::string tempstr(fields[i],0,equal_idx);
            //std::cout << "global var pushback, " << tempstr<<"\n";
            globalvar.push_back(tempstr);
-           std::cout<<fields[i]<<std::endl;
+//           std::cout<<fields[i]<<std::endl;
          }
      }
    }
