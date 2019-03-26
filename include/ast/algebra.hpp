@@ -233,7 +233,7 @@ public:
                     right->mp(op2);
 
 
-                result.id = mips.algebra( op1.isIndirection||op2.isIndirection ,type, op1.id, op2.id, op1.freeable, op2.freeable,"=op(" + std::to_string(type) + ") " + op1.id.str() + " " + op2.id.str() );
+                result.id = mips.algebra( op1.isIndirection, op2.isIndirection ,type, op1.id, op2.id, op1.freeable, op2.freeable,"=op(" + std::to_string(type) + ") " + op1.id.str() + " " + op2.id.str() );
                 result.freeable= true; //this is indeterminate result, no need to store
 
 

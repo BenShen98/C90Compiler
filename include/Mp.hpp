@@ -459,7 +459,7 @@ public:
  */
 
 
-    StackId algebra(bool containIndirection, enum_algebra algebra,StackId op1, StackId op2, bool free1=false, bool free2=false, std::string varName="");
+    StackId algebra(bool indirect1, bool indirect2, enum_algebra algebra,StackId op1, StackId op2, bool free1=false, bool free2=false, std::string varName="");
 
     void assignment(bool dstIndirection, bool opIndirection, StackId dst, StackId op1,enum_assignment operation=ASSIGN, bool free= false);
     // void assignment(int dst, std::string constant);

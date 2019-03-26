@@ -718,43 +718,43 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
             switch (operation) {
                 case MULA: // *=
-                    _temp = algebra(false,MUL, _dstContent, op1, true, free, "*=" + op1.str());
+                    _temp = algebra(false,false,MUL, _dstContent, op1, true, free, "*=" + op1.str());
                     break;
 
                 case DIVA: // /=
-                    _temp = algebra(false,DIV, _dstContent, op1, true, free, "/=" + op1.str());
+                    _temp = algebra(false,false,DIV, _dstContent, op1, true, free, "/=" + op1.str());
                     break;
 
                 case MODA: // %=
-                    _temp = algebra(false,MOD, _dstContent, op1, true, free, "%=" + op1.str());
+                    _temp = algebra(false,false,MOD, _dstContent, op1, true, free, "%=" + op1.str());
                     break;
 
                 case ADDA: // +=
-                    _temp = algebra(false,ADD, _dstContent, op1, true, free, "+=" + op1.str());
+                    _temp = algebra(false,false,ADD, _dstContent, op1, true, free, "+=" + op1.str());
                     break;
 
                 case SUBA: // -=
-                    _temp = algebra(false,SUB, _dstContent, op1, true, free, "-=" + op1.str());
+                    _temp = algebra(false,false,SUB, _dstContent, op1, true, free, "-=" + op1.str());
                     break;
 
                 case LEFTA: // <<=
-                    _temp = algebra(false,LEFT_, _dstContent, op1, true, free, "<<=" + op1.str());
+                    _temp = algebra(false,false,LEFT_, _dstContent, op1, true, free, "<<=" + op1.str());
                     break;
 
                 case RIGHTA: // >>=
-                    _temp = algebra(false,RIGHT_, _dstContent, op1, true, free, ">>=" + op1.str());
+                    _temp = algebra(false,false,RIGHT_, _dstContent, op1, true, free, ">>=" + op1.str());
                     break;
 
                 case ANDA: // &=
-                    _temp = algebra(false,AND, _dstContent, op1, true, free, "&=" + op1.str());
+                    _temp = algebra(false,false,AND, _dstContent, op1, true, free, "&=" + op1.str());
                     break;
 
                 case XORA: // ^=
-                    _temp = algebra(false,XOR, _dstContent, op1, true, free, "^=" + op1.str());
+                    _temp = algebra(false,false,XOR, _dstContent, op1, true, free, "^=" + op1.str());
                     break;
 
                 case ORA: // ||=
-                    _temp = algebra(false,OR, _dstContent, op1, true, free, "||=" + op1.str());
+                    _temp = algebra(false,false,OR, _dstContent, op1, true, free, "||=" + op1.str());
                     break;
 
                 case ASSIGN:
@@ -768,43 +768,43 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         }else {
             switch (operation) {
                 case MULA: // *=
-                    _temp = algebra(false,MUL, dst, op1, false, free, "*=" + op1.str());
+                    _temp = algebra(false,false,MUL, dst, op1, false, free, "*=" + op1.str());
                     break;
 
                 case DIVA: // /=
-                    _temp = algebra(false,DIV, dst, op1, false, free, "/=" + op1.str());
+                    _temp = algebra(false,false,DIV, dst, op1, false, free, "/=" + op1.str());
                     break;
 
                 case MODA: // %=
-                    _temp = algebra(false,MOD, dst, op1, false, free, "%=" + op1.str());
+                    _temp = algebra(false,false,MOD, dst, op1, false, free, "%=" + op1.str());
                     break;
 
                 case ADDA: // +=
-                    _temp = algebra(false,ADD, dst, op1, false, free, "+=" + op1.str());
+                    _temp = algebra(false,false,ADD, dst, op1, false, free, "+=" + op1.str());
                     break;
 
                 case SUBA: // -=
-                    _temp = algebra(false,SUB, dst, op1, false, free, "-=" + op1.str());
+                    _temp = algebra(false,false,SUB, dst, op1, false, free, "-=" + op1.str());
                     break;
 
                 case LEFTA: // <<=
-                    _temp = algebra(false,LEFT_, dst, op1, false, free, "<<=" + op1.str());
+                    _temp = algebra(false,false,LEFT_, dst, op1, false, free, "<<=" + op1.str());
                     break;
 
                 case RIGHTA: // >>=
-                    _temp = algebra(false,RIGHT_, dst, op1, false, free, ">>=" + op1.str());
+                    _temp = algebra(false,false,RIGHT_, dst, op1, false, free, ">>=" + op1.str());
                     break;
 
                 case ANDA: // &=
-                    _temp = algebra(false,AND, dst, op1, false, free, "&=" + op1.str());
+                    _temp = algebra(false,false,AND, dst, op1, false, free, "&=" + op1.str());
                     break;
 
                 case XORA: // ^=
-                    _temp = algebra(false,XOR, dst, op1, false, free, "^=" + op1.str());
+                    _temp = algebra(false,false,XOR, dst, op1, false, free, "^=" + op1.str());
                     break;
 
                 case ORA: // ||=
-                    _temp = algebra(false,OR, dst, op1, false, free, "||=" + op1.str());
+                    _temp = algebra(false,false,OR, dst, op1, false, free, "||=" + op1.str());
                     break;
 
                 case ASSIGN:
@@ -842,67 +842,35 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     }
 
 
-    StackId Mp::algebra(bool containIndirection, enum_algebra algebra,StackId op1, StackId op2, bool free1, bool free2, std::string varName) {
+    StackId Mp::algebra(bool indirect1, bool indirect2, enum_algebra algebra,StackId op1, StackId op2, bool free1, bool free2, std::string varName) {
         StackId id_result;
         RegPtr r1, r2, rResult;
         r1 = loadGenReg(op1);
         r2 = loadGenReg(op2);
 
-//        if( algebra==AND_ ){
-//            //short circuit AND &&
-//            id_result=reserveId(4,TYPE_SIGNED_INT,"bool ");
-//            rResult=loadGenReg(id_result, false);
-//            std::string ANDShort=mkLabel("ANDShort");
-//            std::string ANDEnd=mkLabel("ANDEnd");
-//
-//            _beq(tRegName(r1),"$0",ANDShort);
-//            _beq(tRegName(r2),"$0",ANDShort);
-//
-//            _li(tRegName(rResult),"1");
-//            _b(ANDEnd);
-//
-//            insertLabel(ANDShort);
-//            _move(tRegName(rResult),"$0");
-//
-//            insertLabel(ANDEnd);
-//
-//        }else if( algebra==OR_ ){
-//            //short circuit OR ||
-//            id_result=reserveId(4,TYPE_SIGNED_INT,"bool ");
-//            rResult=loadGenReg(id_result, false);
-//            std::string ORShort=mkLabel("ORShort");
-//            std::string OREnd=mkLabel("OREnd");
-//
-//            _bne(tRegName(r1),"$0",ORShort);
-//            _bne(tRegName(r2),"$0",ORShort);
-//
-//            _li(tRegName(rResult),"0");
-//            _b(OREnd);
-//
-//            insertLabel(ORShort);
-//            _li(tRegName(rResult),"1");
-//
-//            insertLabel(OREnd);
-//
-//        }else {
-
             Type resultType;
             AddressType resultAddrType;
 
-            if(isAddressFlagSet(r1->type) && isAddressFlagSet(r2->type)){
+
+            if(isAddressFlagSet(r1->type) && indirect1){
+                op1=getIndirection(op1);
+                r1=loadGenReg(op1); //update reg info
+                free1=true;
+            }
+
+            if(isAddressFlagSet(r2->type) && indirect2){
+                op2=getIndirection(op2);
+                r2=loadGenReg(op2); //update reg info
+                free2=true;
+            }
+
+        if(isAddressFlagSet(r1->type) && isAddressFlagSet(r2->type)){
                 throw std::runtime_error("Not buf.");
 
             }
 
 
             if (isAddressFlagSet(r1->type)) {
-
-                if(containIndirection){
-                    //deref * first
-                    op1=getIndirection(op1);
-                    r1=loadGenReg(op1); //update reg info
-                    free1=true;
-                }
 
                 //op1 is ptr
                 resultType = r1->type;
@@ -914,14 +882,6 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                 op2 = r2->id;
 
             } else if (isAddressFlagSet(r2->type)) {
-
-                if(containIndirection){
-                    //deref * first
-                    op2=getIndirection(op2);
-                    r2=loadGenReg(op2); //update reg info
-                    free2=true;
-
-                }
 
                 //op2 is ptr
                 resultType = r2->type;
@@ -1314,7 +1274,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
          */
 
 
-        return algebra(false,ADD, op1, op2, free1, free2);
+        return algebra(false,false,ADD, op1, op2, free1, free2);
     }
 
 
