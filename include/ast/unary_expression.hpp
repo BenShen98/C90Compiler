@@ -88,6 +88,7 @@ public:
                 case 3:
                     result.id=mips.SIZEOF(result.id);
                     result.freeable= true;
+                    result.isIndirection= false;
                     break;
 
                 case 4: //todo::
