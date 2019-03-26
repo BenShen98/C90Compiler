@@ -170,7 +170,6 @@ extern std::ofstream ffout;
         comment("Enter scope");
 
         scopes.push_back({});
-        scope_top_id=0;
 
         writeBackAll();
 
@@ -188,7 +187,7 @@ extern std::ofstream ffout;
         //check scope have entry
         if( !scopes.back().entries.empty()) {
 
-            int newScopeSize = scopes.back().entries.back().top_id+scopes.back().entries.back().size;
+            int newScopeSize = (scopes.back().entries.back().top_id);
             int scopeDepth = scopes.size() - 1;
 
             //pop register that point to pooped scoped (non reachable)
@@ -205,11 +204,12 @@ extern std::ofstream ffout;
         //remove the ending scope
         scopes.pop_back();
 
+
     }
 
     void Mp::dump() {
 
-        std::cerr<<"\n#############################\n# Dump for function "<< asCallee_name <<" #\n#############################\n";
+        std::cerr<<"\n########################################\n# Dump for function "<< asCallee_name <<", scope level "<<scopes.size()-1 <<" #\n########################################\n";
         std::cerr<<"# # Entry dump #\n#\t# top_id #,\t# size(byte) #,\t# type(MSB -- LSB) {} #,\t\t\t# variable name #\n";
 
         for (Scopes::reverse_iterator r=scopes.rbegin(); r!=scopes.rend(); ++r){
@@ -224,11 +224,8 @@ extern std::ofstream ffout;
         for(int i=0;i<T_GENERAL_REG_SIZE;++i){
             std::cerr<<"#\t"<< tGenRegName(i) <<",\t\t"<< tGeneralReg[i].id <<",\t\t"<< std::bitset<32>(tGeneralReg[i].type) <<",\n";
         }
-        std::cerr<<"\n# instruction dump #\n";
-        for(unsigned i=0;i<buffer.size();++i){
-            std::cerr<< buffer[i]<<"\n";
-        }
-        std::cerr<<"\n";
+        std::cerr<<"\n# End of dump #\n\n";
+
     }
 
 /*
@@ -306,12 +303,17 @@ StackId Mp::immediate(int size, std::string data, Type type, std::string identif
 
 StackId Mp::reserveId(int size, Type type, std::string identifier,const AddressType& address){
         //gen id, allocate space on heap
-        scope_top_id+=size;
-        scopes.back().entries.push_back({size,scope_top_id,type&CHECK_REG_N ,identifier,address});
+        int top_id=0;
+        if(!scopes.back().entries.empty())
+            top_id=scopes.back().entries.back().top_id;
+
+        top_id+=size;
+
+        scopes.back().entries.push_back({size,top_id,type&CHECK_REG_N ,identifier,address});
 
         //does not allocate register
 
-    return {(int)scopes.size()-1,scope_top_id};
+    return {(int)scopes.size()-1,top_id};
     }
 
 /*
@@ -1102,95 +1104,80 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
     void Mp::callFunc(const std::string &funcName) {
 
-        asCaller_name=funcName;
-        paraIdx=1;
-        para_offset=0;
-
-
-        Functions::const_iterator asCaller;
-        implicitCall = context.getFunc(funcName, asCaller); //have side effect
-
-        if(implicitCall){
-            context.addFunc(funcName, TYPE_SIGNED_INT); //implicit function declaration
-        } else{
-            asCaller_args=asCaller->second;
-        }
+        callStacks.push_back({funcName});
 
     }
 
     void Mp::addArg(StackId id) {
-        //todo only work for int
 
-//        EntryPtr info=getInfo(id);
-        RegPtr reg;
+        //keep a log of para id
 
-        if(implicitCall){
-            // convert GPR -> INT
-            // convert CP! -> DOUBLE
-            reg=loadGenReg(id);
+        callStacks.back().args.push_back(id);
 
-            context.addFuncPara(TYPE_SIGNED_INT,"");
-
-            if(para_offset<16){
-                _move("$a"+std::to_string(para_offset/4), tRegName(reg), "implicit call, int type");
-            }else{
-                sw_sp_arg(tRegName(reg),std::to_string(para_offset),"implicit call, int type");
-            };
-
-
-
-            para_offset+=sizeOf(reg->type);
-
-        }else{
-            reg=loadGenReg(id);
-
-            if(para_offset<16){
-                _move("$a"+std::to_string(para_offset/4), tRegName(reg), "implicit call, int type");
-            }else{
-                sw_sp_arg(tRegName(reg),std::to_string(para_offset),"implicit call, int type");
-            };
-
-            para_offset+=sizeOf(reg->type);
-
-        }
-
-
+//        if(para_offset<16){
+//            _move("$a"+std::to_string(para_offset/4), tRegName(reg), "implicit call, int type");
+//        }else{
+//            sw_sp_arg(tRegName(reg),std::to_string(para_offset),"implicit call, int type");
+//        };
 
     }
 
 
     StackId Mp::commitCall() {
-        StackId resultId;
+        //todo only work for int
 
-        //update system state
-        if(implicitCall){
-            // commit implicit function declaration
-            context.commitFunc();
-        }
+        StackId resultId;
+        int argCount=0;
+
 
         //save all reg before calls
         writeBackAll();
 
-        //JAL to function
-        _jal(asCaller_name);
+        //set up call para
+        {
+            std::vector<StackId>::iterator arg=callStacks.back().args.begin();
 
-        //get return result
-        if(implicitCall || !isFloat(asCaller_args[0].type)){
-            // in GPR
-            Type returnType = implicitCall ? TYPE_SIGNED_INT : asCaller_args[0].type;
-            resultId=reserveId(4,returnType,asCaller_name+" return");
-            RegPtr rReg= loadGenReg(resultId, false);
-            _move(tRegName(rReg), "$v0", "mv return to tReg _"+resultId.str()+"_");
-            setRegDirty(rReg->type);
+            //first 4 arg
+            while (argCount<4 && arg!=callStacks.back().args.end()){
 
-        }else{
-            //in cp1
-            throw std::runtime_error("floating implemented.");
+                lw_sp("$a"+std::to_string(argCount),*arg, "load first 4 arg");
+
+                ++argCount;
+                ++arg;
+            }
+
+            // after first 4
+            while (arg!=callStacks.back().args.end()){
+                RegPtr temp=loadGenReg(*arg);
+                sw_sp_arg(tRegName(temp),std::to_string(argCount*4),"load later args");
+                discardGenReg(*arg);
+
+                ++argCount;
+                ++arg;
+            }
 
         }
 
-        if(para_offset>arg_max_size)
-            arg_max_size=para_offset;
+
+        //JAL to function
+        _jal(callStacks.back().name);
+
+        //get return result
+
+        // in GPR
+        Type returnType = TYPE_SIGNED_INT; //ignore func def, need fix if support type other than int
+        resultId=reserveId(4,returnType,callStacks.back().name+" return");
+        RegPtr rReg= loadGenReg(resultId, false);
+        _move(tRegName(rReg), "$v0", "mv return to tReg _"+resultId.str()+"_");
+        setRegDirty(rReg->type);
+//        writeBackReg(resultId);
+
+
+        if(argCount*4 > arg_max_size)
+            arg_max_size=argCount*4;
+
+        //remove the current call stack
+        callStacks.pop_back();
 
         return resultId;
 

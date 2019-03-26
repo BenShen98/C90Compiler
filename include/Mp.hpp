@@ -88,7 +88,6 @@ private:
 /*
  * Stack & Scope
  */
-    int scope_top_id;
     Scopes scopes;
     std::vector<int> scope_stats; //record the max size at each level of scope
     std::vector<int> scope_stats_cumulative;
@@ -130,12 +129,13 @@ private:
     //max arg size of all function call
     int arg_max_size;
 
+    typedef struct _callstack{
+        std::string name;
+        std::vector<StackId> args;
+    }CallStack;
 
-    std::string asCaller_name;
-    Paras asCaller_args; //only used by per-declared function
-    int paraIdx;
-    int para_offset;
-    bool implicitCall;
+    std::vector<CallStack> callStacks;
+
 
 // TODO START WITH FUNCTION WITHOUT ARGUMENT
 
