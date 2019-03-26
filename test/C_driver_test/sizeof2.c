@@ -1,3 +1,7 @@
 int main(){
-    return f()!=108;
+    if(f()==108 || f()==216){
+        return 0;
+    } else{
+        return 1;
+    }
 }
