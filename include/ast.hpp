@@ -51,6 +51,10 @@
 #include "ast/type_specifier.hpp"
 #include "ast/unary_expression.hpp"
 #include "ast/unary_operator.hpp"
+#include "ast/abstract_declarator.hpp"
+#include "ast/direct_abstract_declarator.hpp"
+#include "ast/specifier_qualifier_list.hpp"
+#include "ast/type_name.hpp"
 
 
 

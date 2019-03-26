@@ -42,6 +42,7 @@
 %type <str> IDENTIFIER CONSTANT STRING_LITERAL
 %type <i> unary_operator pointer
 %type <en_ass> assignment_operator
+%type <expr> abstract_declarator direct_abstract_declarator specifier_qualifier_list type_name
 
 
 %%
@@ -341,7 +342,7 @@ parameter_declaration
 
 type_name
 	: specifier_qualifier_list { $$ = new type_name($1); }
-	| specifier_qualifier_list abstract_declarator; { $$ = new type_name($1, $2); }
+	| specifier_qualifier_list abstract_declarator { $$ = new type_name($1, $2); }
 
 abstract_declarator
 	: pointer                               { $$ = new abstract_declarator(0); }
@@ -350,7 +351,7 @@ abstract_declarator
 	;
 
 direct_abstract_declarator
-	: '(' abstract_declarator ')'            { $$ = $1 }
+	: '(' abstract_declarator ')'            { $$ = $2; }
 //	| '[' ']'
 	| '[' constant_expression ']'               { $$ = new direct_abstract_declarator(2, $2); }
 //	| direct_abstract_declarator '[' ']'

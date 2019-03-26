@@ -1,5 +1,5 @@
-#ifndef direct_abstract_declarator
-#define direct_abstract_declarator
+#ifndef direct_abstract_declarator_hpp
+#define direct_abstract_declarator_hpp
 
 #include "_ast_abs.hpp"
 #include <string>
@@ -31,7 +31,7 @@ public:
 
 
 
-    ~postfix_expression() override{
+    ~direct_abstract_declarator() override{
         delete direct;
         delete conExp;
     }

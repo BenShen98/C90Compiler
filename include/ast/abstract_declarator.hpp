@@ -1,5 +1,5 @@
-#ifndef abstract_declarator
-#define abstract_declarator
+#ifndef abstract_declarator_hpp
+#define abstract_declarator_hpp
 
 #include "_ast_abs.hpp"
 #include <string>
@@ -18,7 +18,7 @@ class abstract_declarator: public ast_abs{
 
 
 public:
-    abstract_declarator(int t):type(0),identifier(id){}
+    abstract_declarator(int t):type(0){}
     abstract_declarator(int t, astPtr d):type(t),direct(d){}
 
 

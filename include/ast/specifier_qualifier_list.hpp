@@ -1,5 +1,5 @@
-#ifndef specifier_qualifier_list
-#define specifier_qualifier_list
+#ifndef specifier_qualifier_list_hpp
+#define specifier_qualifier_list_hpp
 
 #include "_right_list.hpp"
 

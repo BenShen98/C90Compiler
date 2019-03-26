@@ -1,5 +1,5 @@
-#ifndef type_name
-#define type_name
+#ifndef type_name_hpp
+#define type_name_hpp
 
 #include "_ast_abs.hpp"
 #include <bitset>
@@ -26,10 +26,10 @@ public:
 
     void mp(Result& result) const override{
         Result declareType;
-        declaration_specifiers->mp(result);
+        specifier_qualifier_list->mp(result);
 
         if(abstract_declarator!=NULL)
-            init_declarator_list->mp(result);
+            abstract_declarator->mp(result);
 
 
 
