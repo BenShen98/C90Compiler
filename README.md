@@ -1,4 +1,5 @@
-# C90Compiler
+# C90Compiler  [![Build Status](https://travis-ci.com/BenShen98/C90Compiler.svg?token=MhRupwiszpRvsr3Bhyd3&branch=master)](https://travis-ci.com/BenShen98/C90Compiler)
+
 
 ## Coursework Requirement
 Write a compiler that is able to translate the C90 to python and also compile to MIPS assembly.\
