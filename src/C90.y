@@ -75,7 +75,7 @@ unary_expression
 	| DEC_OP unary_expression		{ $$ = new unary_expression(2, $2); }
 	| unary_operator cast_expression	{ $$ = new unary_expression($1, $2); }
 	| SIZEOF unary_expression		{ $$ = new unary_expression(3, $2); }
-//	| SIZEOF '(' type_name ')'		{ $$ = new unary_expression(4, $3); }
+	| SIZEOF '(' type_name ')'		{ $$ = new unary_expression(4, $3); }
 	;
 
 unary_operator
@@ -249,14 +249,14 @@ type_specifier
 //struct_declaration
 //	: specifier_qualifier_list struct_declarator_list ';'
 //	;
-//
-//specifier_qualifier_list
-//	: type_specifier specifier_qualifier_list
-//	| type_specifier
+
+specifier_qualifier_list
+	: type_specifier specifier_qualifier_list   { $$ = new specifier_qualifier_list($1,$2); }
+	| type_specifier                            { $$ = new specifier_qualifier_list($1); }
 //	| type_qualifier specifier_qualifier_list
 //	| type_qualifier
-//	;
-//
+	;
+
 //struct_declarator_list
 //	: struct_declarator
 //	| struct_declarator_list ',' struct_declarator
@@ -339,22 +339,22 @@ parameter_declaration
 ////	;
 //
 
-//type_name
-//	: specifier_qualifier_list
-//	| specifier_qualifier_list abstract_declarator;
+type_name
+	: specifier_qualifier_list { $$ = new type_name($1); }
+	| specifier_qualifier_list abstract_declarator; { $$ = new type_name($1, $2); }
 
-//abstract_declarator
-//	: pointer
-//	| direct_abstract_declarator
-//	| pointer direct_abstract_declarator
-//	;
-//
-//direct_abstract_declarator
-//	: '(' abstract_declarator ')'
+abstract_declarator
+	: pointer                               { $$ = new abstract_declarator(0); }
+	| direct_abstract_declarator            { $$ = new abstract_declarator(1, $1); }
+	| pointer direct_abstract_declarator    { $$ = new abstract_declarator(2, $2); }
+	;
+
+direct_abstract_declarator
+	: '(' abstract_declarator ')'            { $$ = $1 }
 //	| '[' ']'
-//	| '[' constant_expression ']'
+	| '[' constant_expression ']'               { $$ = new direct_abstract_declarator(2, $2); }
 //	| direct_abstract_declarator '[' ']'
-//	| direct_abstract_declarator '[' constant_expression ']'
+	| direct_abstract_declarator '[' constant_expression ']'    { $$ = new direct_abstract_declarator(3, $1, $3); }
 //	| '(' ')'
 //	| '(' parameter_type_list ')'
 //	| direct_abstract_declarator '(' ')'
