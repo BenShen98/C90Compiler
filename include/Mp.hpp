@@ -427,7 +427,7 @@ public:
 
 //    no longer needed
     void writeBackAll();//before function call, save all t register
-    void writeBackReg(StackId id);
+    void writeBackReg(StackId id, bool keep=false);
     void resetReg(int level);
 //    void writeBack(int regIdx);
 

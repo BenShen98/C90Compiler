@@ -185,18 +185,24 @@ public:
                 right->mp(op2);
                 mips._beq(mips.tRegName(mips.loadGenReg(op2.id)),"$0",ANDShort);
 
+                rResult=mips.loadGenReg(result.id); //update rResult ptr, in case changed by other code
                 mips._li(mips.tRegName(rResult),"1");
+                setRegDirty(rResult->type);
+                mips.writeBackReg(result.id, true);
                 mips._b(ANDEnd);
 
+                rResult=mips.loadGenReg(result.id); //update rResult ptr, in case changed by other code
                 mips.insertLabel(ANDShort);
                 mips._move(mips.tRegName(rResult),"$0");
+                setRegDirty(rResult->type);
+                mips.writeBackReg(result.id, true);
 
                 mips.insertLabel(ANDEnd);
 
             }else if( type==OR_ ){
                 //short circuit OR ||
                 result.id=mips.reserveId(4,TYPE_SIGNED_INT,"bool ");
-                RegPtr rResult=mips.loadGenReg(result.id, false);
+                RegPtr rResult=mips.loadGenReg(result.id);
                 std::string ORShort=mips.mkLabel("ORShort");
                 std::string OREnd=mips.mkLabel("OREnd");
 
@@ -206,13 +212,17 @@ public:
                 right->mp(op2);
                 mips._bne(mips.tRegName(mips.loadGenReg(op2.id)),"$0",ORShort);
 
-
+                rResult=mips.loadGenReg(result.id); //update rResult ptr, in case changed by other code
                 mips._move(mips.tRegName(rResult),"$0");
+                setRegDirty(rResult->type);
+                mips.writeBackReg(result.id, true);
                 mips._b(OREnd);
 
-
+                rResult=mips.loadGenReg(result.id); //update rResult ptr, in case changed by other code
                 mips.insertLabel(ORShort);
                 mips._li(mips.tRegName(rResult),"1");
+                setRegDirty(rResult->type);
+                mips.writeBackReg(result.id, true);
 
 
                 mips.insertLabel(OREnd);

@@ -358,11 +358,14 @@ std::string Mp::calOffset(const std::string &str) {//not finished
     void Mp::writeBackAll() {
         //wire back all general register
         for(int i=0; i<T_GENERAL_REG_SIZE; ++i){
-            if( isRegDirty(tGeneralReg[i].type) ){
-                sw_sp(tGenRegName(i),tGeneralReg[i].id,"write back id "+tGeneralReg[i].id.str());
+            if(!isRegUnkown(tGeneralReg[i].type)){
+                if( isRegDirty(tGeneralReg[i].type) ){
+                    sw_sp(tGenRegName(i),tGeneralReg[i].id,"write back id "+tGeneralReg[i].id.str());
+                };
+
+                //reset all register (exclude unknown register)
+                setRegEmpty(tGeneralReg[i].type);
             }
-            //reset all register
-            setRegEmpty(tGeneralReg[i].type);
         }
     }
 
@@ -374,13 +377,17 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         }
     }
 
-    void Mp::writeBackReg(StackId idx) {
+    void Mp::writeBackReg(StackId idx, bool keep) {
         for(int i=0; i<T_GENERAL_REG_SIZE; ++i){
             if(  tGeneralReg[i].id==idx ){
                 if( isRegDirty(tGeneralReg[i].type) )
                     sw_sp(tGenRegName(i),tGeneralReg[i].id,"write back id "+tGeneralReg[i].id.str());
 
-                setRegEmpty(tGeneralReg[i].type);
+                if (keep)
+                    setRegSync(tGeneralReg[i].type);
+                else
+                    setRegEmpty(tGeneralReg[i].type);
+
                 return;
             }
         }
@@ -965,6 +972,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             //per increment
             _addi(tRegName(r1), tRegName(r1), integer, "per increment of id _"+op1.str()+"_",addr);
             setRegDirty(r1->type);
+            writeBackReg(op1, false);
             return op1;
 
         } else{
