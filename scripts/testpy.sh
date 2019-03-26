@@ -6,7 +6,7 @@ else
     compiler="bin/c_compiler"
 fi
 
-input_dir="test/c_translator"
+input_dir="test_deliverable/c_translator"
 testcase="tmp/formative/testcase"
 objectfile="tmp/formative/C_output"
 workingpython="tmp/formative/python"

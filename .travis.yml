@@ -22,7 +22,7 @@ before_install:
 - chmod u+x ./scripts/dependencies.sh
 - ./scripts/dependencies.sh
 script:
-- make
+- make bin/c_compiler
 - ./scripts/verifyTestcase.sh
 - ./scripts/testmips.sh
 - ./scripts/testpy.sh

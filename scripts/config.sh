@@ -17,9 +17,9 @@ MIPS_FLAGS="-mfp32"
 MIPS_LDFLAGS="-nostdlib -mfp32  -static --entry=0000000000400110" #for disassembly
 
 #testbench config
-TEST_ROOT=test
+TEST_ROOT=test_deliverable
 
-TESTDIRECTORY="${TEST_ROOT}/C_test"
+TESTDIRECTORY="${TEST_ROOT}/test_cases"
 TESTDRIVER="${TEST_ROOT}/C_driver_test"
 OUTPUT="${TEST_ROOT}/C_output"
 EXEC="${TEST_ROOT}/C_mips_bin"
