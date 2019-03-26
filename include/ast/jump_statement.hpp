@@ -42,6 +42,10 @@ public:
         Result result;
 
         switch (type){
+            case 1:
+                mips.branch( mips.continueStack.back() );
+                break;
+
             case 3: // RETURN ';'
                 mips.Return();
                 break;

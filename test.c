@@ -1,7 +1,10 @@
-int f(){
-    int *b,a[3];
-    b=&a[0];
-    a[2]=5;
+int main()
+{
+    int i=0,sum;
+    for (; i<100; i++) {
+        sum--;
+        continue;
+    }
 
-    return b[2];
+    return sum;
 }

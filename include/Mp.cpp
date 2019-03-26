@@ -848,43 +848,43 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         r1 = loadGenReg(op1);
         r2 = loadGenReg(op2);
 
-        if( algebra==AND_ ){
-            //short circuit AND &&
-            id_result=reserveId(4,TYPE_SIGNED_INT,"bool ");
-            rResult=loadGenReg(id_result, false);
-            std::string ANDShort=mkLabel("ANDShort");
-            std::string ANDEnd=mkLabel("ANDEnd");
-
-            _beq(tRegName(r1),"$0",ANDShort);
-            _beq(tRegName(r2),"$0",ANDShort);
-
-            _li(tRegName(rResult),"1");
-            _b(ANDEnd);
-
-            insertLabel(ANDShort);
-            _move(tRegName(rResult),"$0");
-
-            insertLabel(ANDEnd);
-
-        }else if( algebra==OR_ ){
-            //short circuit OR ||
-            id_result=reserveId(4,TYPE_SIGNED_INT,"bool ");
-            rResult=loadGenReg(id_result, false);
-            std::string ORShort=mkLabel("ORShort");
-            std::string OREnd=mkLabel("OREnd");
-
-            _bne(tRegName(r1),"$0",ORShort);
-            _bne(tRegName(r2),"$0",ORShort);
-
-            _li(tRegName(rResult),"0");
-            _b(OREnd);
-
-            insertLabel(ORShort);
-            _li(tRegName(rResult),"1");
-
-            insertLabel(OREnd);
-
-        }else {
+//        if( algebra==AND_ ){
+//            //short circuit AND &&
+//            id_result=reserveId(4,TYPE_SIGNED_INT,"bool ");
+//            rResult=loadGenReg(id_result, false);
+//            std::string ANDShort=mkLabel("ANDShort");
+//            std::string ANDEnd=mkLabel("ANDEnd");
+//
+//            _beq(tRegName(r1),"$0",ANDShort);
+//            _beq(tRegName(r2),"$0",ANDShort);
+//
+//            _li(tRegName(rResult),"1");
+//            _b(ANDEnd);
+//
+//            insertLabel(ANDShort);
+//            _move(tRegName(rResult),"$0");
+//
+//            insertLabel(ANDEnd);
+//
+//        }else if( algebra==OR_ ){
+//            //short circuit OR ||
+//            id_result=reserveId(4,TYPE_SIGNED_INT,"bool ");
+//            rResult=loadGenReg(id_result, false);
+//            std::string ORShort=mkLabel("ORShort");
+//            std::string OREnd=mkLabel("OREnd");
+//
+//            _bne(tRegName(r1),"$0",ORShort);
+//            _bne(tRegName(r2),"$0",ORShort);
+//
+//            _li(tRegName(rResult),"0");
+//            _b(OREnd);
+//
+//            insertLabel(ORShort);
+//            _li(tRegName(rResult),"1");
+//
+//            insertLabel(OREnd);
+//
+//        }else {
 
             Type resultType;
             AddressType resultAddrType;
@@ -951,7 +951,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
             //doing actual calculation
             _algebra(algebra, rResult, r1, r2, "dst id _" + id_result.str() + "_");
-        }
+//        }
 
         //free op register
         if (free1) {

@@ -33,6 +33,7 @@ private:
 
     int uniqueCounter;
 
+
     /*
  * internal struct
  */
@@ -342,6 +343,13 @@ public:
 
     void newScope();
     void endScope(bool logging=true);
+
+
+    /*
+     * continue and discontinue
+     */
+
+    std::vector<std::string> continueStack;
 
 
 /*

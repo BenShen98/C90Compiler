@@ -52,6 +52,27 @@ public:
         mips.endScope();
     }
 
+    //this function will only be called by iteration statement
+    void mp(Result& dummy) const override{
+        mips.newScope();
+
+        mips.continueStack.push_back( mips.mkLabel("conti") );
+
+        if(declaration_list!=NULL){
+            declaration_list->mp();
+        }
+
+        if(statement_list!=NULL){
+            statement_list->mp();
+        }
+
+        //end of statement
+        mips.insertLabel( mips.continueStack.back() );
+        mips.continueStack.pop_back();
+
+        mips.endScope();
+    }
+
 };
 
 #endif

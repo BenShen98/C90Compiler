@@ -50,6 +50,7 @@ public:
     }
 
     void mp() const override{
+        Result dummy;
 
         //condition setup
         if(init!=NULL)
@@ -66,8 +67,11 @@ public:
         condition->mp(expResult); //condition is expression or expression_statement
 
         mips.bZero(false, expResult.id, end);
-        statement->mp();
+        statement->mp(dummy);
 
+
+
+        //increment
         if(type==1){// do while loop
             notImplemented();
         } else if(type==3){
@@ -76,10 +80,10 @@ public:
             increment->mp(dummy);
         }
 
+
         mips.writeBackAll();
-
-
         //end of iteration
+
         mips.branch(condi);
         mips.insertLabel(end);
     }
