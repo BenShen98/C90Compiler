@@ -1,4 +1,4 @@
 int main(){
   abi_setup();
-  return f();
+  return f()!=5;
 }
