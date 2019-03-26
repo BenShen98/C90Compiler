@@ -1,6 +1,6 @@
-extern x;
+int x=8;
 int y;
 int testglobal(){
-  x=8;
   y=9;
+  x;
 }
