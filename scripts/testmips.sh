@@ -41,7 +41,7 @@ for i in ${TESTDIRECTORY}/*.c; do
   echo "********************TEST ${base}********************"
 
 
-  #Run compiler on test case
+  #Compile .c to .s using TESTCOMPILER
   ${TESTCOMPILER} -S $i -o ${OUTPUT}/${base}.s 2> ${DUMP}/${base}.stderr 1> ${DUMP}/${base}.stdout
   #${MIPS_CC} ${MIPS_FLAGS} -S $i -o ${OUTPUT}/${base}.s 2> ${DUMP}/${base}.stderr 1> ${DUMP}/${base}.stdout
 

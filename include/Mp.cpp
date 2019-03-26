@@ -291,6 +291,7 @@ StackId Mp::immediate(int size, std::string data, Type type, std::string identif
         //use general register
         RegPtr regId=findFreeGenReg();
         regId->id=id;
+        regId->type=type;
         regId->freshness=freshCounter;
         freshCounter++;
 
@@ -414,8 +415,9 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                             // is array type, implicitly convert to pointer
                             int top_id=ritr->top_id;
                             StackId addr = reserveId(4, ritr->type, "implicit ptr of " + identifier, ritr->addr); //this line may invalidate itr
-                            std::string regName= tRegName(loadGenReg(addr));
-                            addr_sp(regName, {depth,top_id},"addr of "+identifier);
+                            RegPtr tempReg=loadGenReg(addr);
+                            addr_sp(tRegName(tempReg), {depth,top_id},"addr of "+identifier);
+                            setRegDirty(tempReg->type);
                             isIndirection=true;
                             return addr;
                         } else {
@@ -887,6 +889,11 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             Type resultType;
             AddressType resultAddrType;
 
+            if(isAddressFlagSet(r1->type) && isAddressFlagSet(r2->type)){
+                throw std::runtime_error("Not buf.");
+
+            }
+
 
             if (isAddressFlagSet(r1->type)) {
 
@@ -900,7 +907,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
                 //op1 is ptr
                 resultType = r1->type;
                 resultAddrType = getInfo(op1)->addr;
-                r2 = getAddrOffset(op2, free2, getInfo(op1));
+                r2 = getAddrOffset(op2, free2, getInfo(op2));
 
                 //free temp offset
                 free2 = true;
@@ -1022,7 +1029,7 @@ std::string Mp::calOffset(const std::string &str) {//not finished
             StackId newId = reserveId(4, newType, "addr _" + idx.str(), newAddr);
             RegPtr newReg = loadGenReg(newId, false);
 
-            addr_sp(tRegName(newReg), idx, "get ref");
+            addr_sp(tRegName(newReg), idx, "get ref of "+idx.str());
             setRegDirty(newReg->type);
 
             isIndirection = false;
@@ -1287,18 +1294,27 @@ std::string Mp::calOffset(const std::string &str) {//not finished
 
     StackId Mp::squareBracket(bool indirect1, bool indirect2,StackId op1, StackId op2, bool free1, bool free2){
 
-        RegPtr r2=loadGenReg(op2);
+//        RegPtr r2=loadGenReg(op2);
+//
+//        if(isAddressFlagSet(r2->type)){
+//            op2=getAddress(indirect2,op2); //update indirect2
+//            free2= false;
+//        }else{
+//            op1=getAddress(indirect1,op1); //update indirect2
+//            free1= true;
+//        }
 
-        if(isAddressFlagSet(r2->type)){
-            op2=getAddress(indirect2,op2); //update indirect2
-            free2= false;
-        }else{
-            op1=getAddress(indirect1,op1); //update indirect2
-            free1= true;
-        }
+        /* In case of one operand  come from array, indirect will be true, op is the address of array
+         * in such case, set indirect to false and continue
+         *
+         * In case where both operand are not from array, one op is ptr, one op is int,
+         * ues there data to calculate either way
+         *
+         * In such case, set only need to call algebra no mater what the indirection is
+         */
 
 
-        return algebra(indirect1||indirect2,ADD, op1, op2, free1, free2);
+        return algebra(false,ADD, op1, op2, free1, free2);
     }
 
 
