@@ -2160,7 +2160,7 @@ yyreduce:
 
   case 97:
 #line 256 "src/C90.y" /* yacc.c:1646  */
-    { (yyval.expr) = new specifier_qualifier_list((yyvsp[0].expr)); }
+    { (yyval.expr) = (yyvsp[0].expr); }
 #line 2165 "src/C90_parser.tab.cpp" /* yacc.c:1646  */
     break;
 

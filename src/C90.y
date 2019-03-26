@@ -253,7 +253,7 @@ type_specifier
 
 specifier_qualifier_list
 	: type_specifier specifier_qualifier_list   { $$ = new specifier_qualifier_list($1,$2); }
-	| type_specifier                            { $$ = new specifier_qualifier_list($1); }
+	| type_specifier                            { $$ = $1; }
 //	| type_qualifier specifier_qualifier_list
 //	| type_qualifier
 	;

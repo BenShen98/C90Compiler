@@ -26,7 +26,7 @@ class direct_abstract_declarator: public ast_abs{
 
 
 public:
-    direct_abstract_declarator(int t, astPtr p):type(t),direct(p){}
+    direct_abstract_declarator(int t, astPtr p):type(t),conExp(p){}
     direct_abstract_declarator(int t, astPtr p, astPtr c):type(t),direct(p),conExp(c){}
 
 
@@ -42,11 +42,13 @@ public:
         Result r;
         conExp->mp(r);
 
+        result.addr.push_back(r.num);
+
+
         if(direct!=NULL){
             direct->mp(result);
         }
 
-        result.addr.push_back(r.num);
 
     }
 

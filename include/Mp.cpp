@@ -1252,6 +1252,12 @@ std::string Mp::calOffset(const std::string &str) {//not finished
         return immediate(4,std::to_string(size),TYPE_SIGNED_INT,"size of"+input.str());
     }
 
+    StackId Mp::SIZEOF(Type t,const AddressType& addr) {
+        int size=sizeOf(t,addr, false);
+        setAddressFlag(t);
+        return immediate(4,std::to_string(size),TYPE_SIGNED_INT,"size of abs type");
+    }
+
     StackId Mp::squareBracket(bool indirect1, bool indirect2,StackId op1, StackId op2, bool free1, bool free2){
 
 //        RegPtr r2=loadGenReg(op2);
