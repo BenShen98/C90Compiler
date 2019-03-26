@@ -1,4 +1,9 @@
-int f(){
-    return sizeof(    int (*[3][9])[4][2]);
+void x(){
+    return;
 }
 
+int main()
+{
+    x();
+    return 10;
+}

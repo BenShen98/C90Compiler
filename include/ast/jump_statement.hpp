@@ -25,7 +25,7 @@ public:
         std::string e;
         switch (type){
             case 3: // RETURN ';'
-                dst="return"+'\n' ;
+                dst="return\n";
                 break;
             case 4: // RETURN expression ';'
                 exp->py(e);

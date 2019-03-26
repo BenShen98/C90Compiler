@@ -19,13 +19,13 @@ debug: clean ./bin/c_compiler d
 
 
 r:
-#	 ./bin/c_compiler --translate test.c -o x.py
-	 ./bin/c_compiler -S test.c -o x.s
-	 cat x.s
+	 ./bin/c_compiler --translate test.c -o x.py
+#	 ./bin/c_compiler -S test.c -o x.s
+	 cat x.py
 
 d:
-#	gdb --args ./bin/c_compiler --translate test.c -o x.py
-	gdb --args ./bin/c_compiler -S test.c -o x.s
+	gdb --args ./bin/c_compiler --translate test.c -o x.py
+#	gdb --args ./bin/c_compiler -S test.c -o x.s
 
 src/C90_parser.tab.cpp src/C90_parser.tab.hpp : src/C90.y
 	bison -v -d src/C90.y -o src/C90_parser.tab.cpp
