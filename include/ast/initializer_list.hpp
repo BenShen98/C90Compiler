@@ -5,7 +5,7 @@
 
 /*
 initializer_list
-	: initializer
+X	: initializer
 	| initializer_list ',' initializer
 	;
  */
@@ -18,6 +18,13 @@ public:
 
     initializer_list(astPtr e)
         :left_list(e){}
+
+
+    void mp(Result& para) const override{
+        list->mp(para);
+        para.id.top_id-=4;
+        element->mp(para);
+    }
 
 };
 

@@ -52,11 +52,11 @@ public:
 
         if(isAddressFlagSet(info.type)){
             // array deceleration
-            if(initializer==NULL){
-                mips.reserveArray(info.type, info.addr, info.str);
-            }else{
-                notImplemented();
-            }
+               info.id = mips.reserveArray(info.type, info.addr, info.str);
+
+               if(initializer!=NULL){
+                   initializer->mp(info);
+               }
 
         }else if (!isVoid(info.type)){
             // basic type deceleration

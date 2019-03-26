@@ -32,12 +32,14 @@ public:
     }
 
     void mp(Result& para) const override{
-       if(type==0){
-           Result op1;
+
+
+        if(type==0){
+            Result op1;
             data->mp(op1);
             mips.assignment(para.isIndirection,para.isIndirection,para.id, op1.id,ASSIGN, op1.freeable);
        }else{
-           notImplemented();
+            data->mp(para);
        }
 
     }

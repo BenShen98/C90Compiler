@@ -1,10 +1,8 @@
-int main()
-{
-    int i=0,sum;
-    for (; i<100; i++) {
-        sum--;
-        continue;
-    }
+int f(){
+    int a[5]={0,5,2,3,4},y;
 
-    return sum;
+
+    y=a[1];
+
+    return y;
 }
