@@ -51,8 +51,5 @@ Vagrant.configure(2) do |config|
       # QEMU run-time emulator
       sudo apt-get -y install qemu
 
-      # Install boost
-      sudo apt-get -y install libboost-all-dev
-
    SHELL
 end
