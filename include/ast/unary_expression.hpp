@@ -92,7 +92,9 @@ public:
                     break;
 
                 case 4: //todo::
-                    notImplemented();
+                    result.id=mips.SIZEOF(result.type, result.addr);
+                    result.freeable= true;
+                    result.isIndirection= false;
                     break;
 
                 case '&':

@@ -480,6 +480,8 @@ public:
     void beq(StackId id1,StackId id2,std::string label);
 
     StackId SIZEOF(StackId input);
+    StackId SIZEOF(Type t, const AddressType& addr);
+
 
 };
 
