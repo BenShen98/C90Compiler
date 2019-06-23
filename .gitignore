@@ -8,6 +8,9 @@ _playground
 output
 tmp
 cmake-build-debug
-test/C_output
-test/C_log
-test/C_mips_bin
+
+# ** Keep log for quick online reference **
+# test_deliverable/C_output
+# test_deliverable/C_log
+# test_deliverable/C_mips_bin
+# test_deliverable/ansi
